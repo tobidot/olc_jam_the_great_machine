@@ -1,14 +1,13 @@
 import p5 from "p5";
+import { StellarBody } from "./bodies/StellarBody";
+import { Asteroid } from "./bodies/Asteroid";
 
 export class Game {
-    public static assets: {
-        sprinkler?: p5.Image,
-        mud?: p5.Image,
-        gras?: p5.Image,
-        stones?: p5.Image,
-        flowers?: p5.Image,
-        action_next?: p5.Image,
-    } = {};
+    private stellar_bodies: Array<StellarBody> = [
+        new Asteroid(new p5.Vector().set(5, 5)),
+        new Asteroid(new p5.Vector().set(50, 50)),
+    ];
+
 
     constructor() {
 
@@ -16,12 +15,6 @@ export class Game {
 
     public init(p: p5) {
         const images = require('../assets/images/*.png');
-        p.loadImage(images.sprinkler, (image) => { Game.assets.sprinkler = image; });
-        p.loadImage(images.mud, (image) => { Game.assets.mud = image; });
-        p.loadImage(images.flowers, (image) => { Game.assets.flowers = image; });
-        p.loadImage(images.gras, (image) => { Game.assets.gras = image; });
-        p.loadImage(images.stones, (image) => { Game.assets.stones = image; });
-        p.loadImage(images.action_next, (image) => { Game.assets.action_next = image; });
 
         p.mousePressed = () => {
             const x = p.mouseX;
@@ -30,12 +23,19 @@ export class Game {
     }
 
     public update(dt: number) {
+        for (let i = 0; i < this.stellar_bodies.length; ++i) {
+            const body = this.stellar_bodies[i];
+            body.update(dt);
+        }
     }
 
     public draw(p: p5) {
         p.background(0);
 
-
+        for (let i = 0; i < this.stellar_bodies.length; ++i) {
+            const body = this.stellar_bodies[i];
+            body.draw(p);
+        }
     }
 
 }

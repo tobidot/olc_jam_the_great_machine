@@ -16,7 +16,7 @@ function connect_container_to_game_screen(container: HTMLDivElement, p5Instance:
             if (canvas) {
                 canvas.style.visibility = "hidden";
             }
-            signal.old.removeChild(container);
+            if (signal.old) signal.old.removeChild(container);
         } else {
             signal.new.append(container);
             if (canvas) {
