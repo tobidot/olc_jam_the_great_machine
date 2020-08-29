@@ -3,9 +3,11 @@ import { Collider } from "../collision/Colider";
 import p5, { Vector } from "p5";
 
 export class StellarBody extends Collider {
+    // Consts
     public static readonly GRAVITATIONAL_CONSTANT = 10;
     public static readonly CELL_MASS = 25;
     public static readonly CELL_SIZE = 20;
+    // 
     private cellmap_size: number;
     private cells: Array<BodyCell | null>;
 
@@ -14,19 +16,26 @@ export class StellarBody extends Collider {
         super(position, cellmap_size * StellarBody.CELL_SIZE);
         this.cellmap_size = cellmap_size;
         this.cells = new Array<BodyCell>(cellmap_size * cellmap_size);
-        let i = 0;
-        for (let y = 0; y < cellmap_size; ++y) {
-            for (let x = 0; x < cellmap_size; ++x) {
-                const cell = new BodyCell(new p5.Vector().set(x, y));
-                cell.mass = 1;
-                this.cells[i] = cell;
-                i++;
-            }
-        }
+        this.for_each_cell((x, y, cell) => {
+            cell = new BodyCell(new p5.Vector().set(x, y));
+            cell.mass = 1;
+            return cell;
+        });
     }
 
     public update(dt: number) {
 
+    }
+
+    public for_each_cell(callback: (x: number, y: number, cell: BodyCell | null) => BodyCell | null) {
+        let i = 0;
+        for (let y = 0; y < this.cellmap_size; ++y) {
+            for (let x = 0; x < this.cellmap_size; ++x) {
+                const cell = this.cells[i];
+                this.cells[i] = callback(x, y, cell);
+                i++;
+            }
+        }
     }
 
     public get_cellmap_size(): number {
@@ -41,21 +50,18 @@ export class StellarBody extends Collider {
         p.beginShape(p.QUADS);
         const start_x = this.position.x - hsize;
         const start_y = this.position.y - hsize;
-        let cell_id = 0;
-        for (let y = 0; y < this.cellmap_size; ++y) {
-            for (let x = 0; x < this.cellmap_size; ++x) {
-                if (this.cells[cell_id++]) {
-                    const left = start_x + x * StellarBody.CELL_SIZE;
-                    const right = start_x + (1 + x) * StellarBody.CELL_SIZE + 1;
-                    const top = start_y + y * StellarBody.CELL_SIZE;
-                    const bottom = start_y + (1 + y) * StellarBody.CELL_SIZE + 1;
-                    p.vertex(left, top);
-                    p.vertex(right, top);
-                    p.vertex(right, bottom);
-                    p.vertex(left, bottom);
-                }
-            }
-        }
+        this.for_each_cell((x, y, cell) => {
+            if (!cell) return cell;
+            const left = start_x + x * StellarBody.CELL_SIZE;
+            const right = start_x + (1 + x) * StellarBody.CELL_SIZE + 1;
+            const top = start_y + y * StellarBody.CELL_SIZE;
+            const bottom = start_y + (1 + y) * StellarBody.CELL_SIZE + 1;
+            p.vertex(left, top);
+            p.vertex(right, top);
+            p.vertex(right, bottom);
+            p.vertex(left, bottom);
+            return cell;
+        });
         p.endShape();
     }
 
