@@ -42,7 +42,7 @@ export class Drone extends GameObject {
         if (this.attached_to && this.attached_coords) {
             const cell = this.attached_to.get_cell_at(this.attached_coords);
             if (cell) {
-                this.position.set(this.attached_to.cell_coord_to_global_coord(cell.coord));
+                this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
                 this.progress -= dt;
                 if (this.progress < 0) {
                     this.attached_to.remove_cell_at(cell.coord);
@@ -63,7 +63,7 @@ export class Drone extends GameObject {
                         this.attached_to = relation.stelar_body;
                         this.attached_coords = cell.coord;
                         this.velocity.set(0, 0);
-                        this.position.set(this.attached_to.cell_coord_to_global_coord(cell.coord));
+                        this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
                         cell.occupied_by = this;
                         this.progress = 5;
                     } else {

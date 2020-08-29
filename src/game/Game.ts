@@ -27,7 +27,7 @@ export class Game {
         const count = Math.floor(Math.random() * 20) + 5
         for (let i = 0; i < count; ++i) {
             const asteroid = new Asteroid();
-            asteroid.get_position().set(
+            asteroid.set_position(
                 p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2)
             );
 
