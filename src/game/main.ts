@@ -38,7 +38,7 @@ function setup_p5_instance(p: p5) {
         p.frameRate(60);
     }
     p.draw = function () {
-        game.update(1.0 / 60.0);
+        game.update(1.0 / 60.0, p);
         game.draw(p);
     }
 }

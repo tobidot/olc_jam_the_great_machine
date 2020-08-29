@@ -2,14 +2,12 @@ import p5 from "p5";
 import { StellarBody } from "./bodies/StellarBody";
 import { Asteroid } from "./bodies/Asteroid";
 import { Drone } from "./drones/Drone";
+import { Camera } from "./helper/Camera";
 
 export class Game {
-    private stellar_bodies: Array<StellarBody> = [
-    ];
-    private drones: Array<Drone> = [
-
-    ];
-
+    private stellar_bodies: Array<StellarBody> = [];
+    private drones: Array<Drone> = [];
+    private camera: Camera = new Camera;
 
     constructor() {
 
@@ -22,6 +20,10 @@ export class Game {
             const x = p.mouseX;
             const y = p.mouseY;
         }
+        p.mouseWheel = (event: { delta: number }) => {
+            if (event.delta > 0) this.camera.zoom_in();
+            if (event.delta < 0) this.camera.zoom_out();
+        };
 
         const universe_size = 500;
         const count = Math.floor(Math.random() * 20) + 5
@@ -45,7 +47,7 @@ export class Game {
         }
     }
 
-    public update(dt: number) {
+    public update(dt: number, p: p5) {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
             body.update(dt);
@@ -66,11 +68,27 @@ export class Game {
             drone.update(dt);
 
         }
+        const cam_speed = 400 / this.camera.zoom;
+        if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(65)) {
+            this.camera.move(new p5.Vector().set(dt * cam_speed, 0));
+        }
+        if (p.keyIsDown(p.RIGHT_ARROW) || p.keyIsDown(68)) {
+            this.camera.move(new p5.Vector().set(-dt * cam_speed, 0));
+        }
+        if (p.keyIsDown(p.UP_ARROW) || p.keyIsDown(87)) {
+            this.camera.move(new p5.Vector().set(0, dt * cam_speed));
+        }
+        if (p.keyIsDown(p.DOWN_ARROW) || p.keyIsDown(83)) {
+            this.camera.move(new p5.Vector().set(0, -dt * cam_speed));
+        }
+        this.camera.update(dt);
     }
 
     public draw(p: p5) {
         p.background(0);
-
+        p.translate(400, 300);
+        p.scale(this.camera.zoom);
+        p.translate(this.camera.position);
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
             body.draw(p);

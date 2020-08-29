@@ -39,42 +39,57 @@ export class Drone extends GameObject {
 
     public update(dt: number) {
         this.DEBUG_colliding = false;
-        if (this.attached_to && this.attached_coords) {
-            const cell = this.attached_to.get_cell_at(this.attached_coords);
-            if (cell) {
-                this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
-                this.progress -= dt;
-                if (this.progress < 0) {
-                    this.attached_to.remove_cell_at(cell.coord);
-                }
-                // console.log(p5.Vector.sub(this.position, this.attached_to.get_position()));
-            } else {
-                this.attached_to = null;
-                this.attached_coords = null;
-            }
+        if (this.update_when_attached(dt)) {
         } else {
-            this.frame_information.stelar_body_relations.forEach((relation) => {
-                const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
-                this.apply_force(acting_force);
-                if (relation.stelar_body.contains(this.position)) {
-                    this.DEBUG_colliding = true;
-                    const cell = relation.stelar_body.get_cell_at_global_coord(this.position);
-                    if (cell && cell.occupied_by === null) {
-                        this.attached_to = relation.stelar_body;
-                        this.attached_coords = cell.coord;
-                        this.velocity.set(0, 0);
-                        this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
-                        cell.occupied_by = this;
-                        this.progress = 5;
-                    } else {
-                        // Space for debug
-                    }
-                }
-            });
-            if (!this.attached_to) {
-                this.position.add(p5.Vector.mult(this.velocity, dt));
-            }
+            this.update_when_not_attached(dt);
         }
+    }
+
+    public update_when_not_attached(dt: number): boolean {
+        this.frame_information.stelar_body_relations.forEach((relation) => {
+            const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+            this.apply_force(acting_force);
+            if (relation.stelar_body.contains(this.position)) {
+                this.DEBUG_colliding = true;
+                const cell = relation.stelar_body.get_cell_at_global_coord(this.position);
+                if (cell && cell.occupied_by === null) {
+                    this.attached_to = relation.stelar_body;
+                    this.attached_coords = cell.coord;
+                    this.velocity.set(0, 0);
+                    this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
+                    cell.occupied_by = this;
+                    this.progress = 5;
+                } else {
+                    // Space for debug
+                }
+            }
+        });
+        if (this.attached_to === null) {
+            this.position.add(p5.Vector.mult(this.velocity, dt));
+        }
+        return true;
+    }
+
+    public update_when_attached(dt: number): boolean {
+        if (this.attached_to === null || this.attached_coords === null) return false;
+        const cell = this.attached_to.get_cell_at(this.attached_coords);
+        if (cell) {
+            this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
+            this.progress -= dt;
+            if (this.progress < 0) {
+                this.attached_to.remove_cell_at(cell.coord);
+                this.detach_from_stelar_body();
+            }
+            // console.log(p5.Vector.sub(this.position, this.attached_to.get_position()));
+        } else {
+            this.attached_to = null;
+            this.attached_coords = null;
+        }
+        return true;
+    }
+
+    public is_attached_to_stelar_body(): boolean {
+        return this.attached_to !== null && this.attached_coords !== null;
     }
 
     public apply_force(force: p5.Vector) {
@@ -83,5 +98,16 @@ export class Drone extends GameObject {
             / Drone.LIGHTSPEED_PIXEL_PER_SECOND__ROOT2;
         const effective_force = p5.Vector.mult(force, near_lighspeed_modifier);
         this.velocity.add(effective_force).limit(Drone.LIGHTSPEED_PIXEL_PER_SECOND * 0.9);
+    }
+
+    public detach_from_stelar_body() {
+        if (this.attached_to && this.attached_coords) {
+            const attached_to = this.attached_to;
+            const attached_coords = this.attached_coords;
+            this.attached_to = null;
+            this.attached_coords = null;
+            const cell = attached_to.get_cell_at(attached_coords);
+            if (cell) cell.occupied_by = null;
+        }
     }
 }
