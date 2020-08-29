@@ -6,7 +6,7 @@ export class StellarBody extends Collider {
     public static readonly GRAVITATIONAL_CONSTANT = 10;
     public static readonly CELL_MASS = 25;
     public static readonly CELL_SIZE = 20;
-    public readonly cellmap_size: number;
+    private cellmap_size: number;
     private cells: Array<BodyCell | null>;
 
 
@@ -27,6 +27,10 @@ export class StellarBody extends Collider {
 
     public update(dt: number) {
 
+    }
+
+    public get_cellmap_size(): number {
+        return this.cellmap_size;
     }
 
     public draw(p: p5) {
