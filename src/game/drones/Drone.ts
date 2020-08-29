@@ -15,7 +15,7 @@ export class Drone extends GameObject {
     public DEBUG_colliding: boolean = false;
     public attached_to: StellarBody | null = null;
     public attached_coords: p5.Vector | null = null;
-
+    public progress: number = 0;
 
 
 
@@ -43,6 +43,10 @@ export class Drone extends GameObject {
             const cell = this.attached_to.get_cell_at(this.attached_coords);
             if (cell) {
                 this.position.set(this.attached_to.cell_coord_to_global_coord(cell.coord));
+                this.progress -= dt;
+                if (this.progress < 0) {
+                    this.attached_to.remove_cell_at(cell.coord);
+                }
                 // console.log(p5.Vector.sub(this.position, this.attached_to.get_position()));
             } else {
                 this.attached_to = null;
@@ -55,12 +59,15 @@ export class Drone extends GameObject {
                 if (relation.stelar_body.contains(this.position)) {
                     this.DEBUG_colliding = true;
                     const cell = relation.stelar_body.get_cell_at_global_coord(this.position);
-                    if (cell) {
+                    if (cell && cell.occupied_by === null) {
                         this.attached_to = relation.stelar_body;
                         this.attached_coords = cell.coord;
                         this.velocity.set(0, 0);
                         this.position.set(this.attached_to.cell_coord_to_global_coord(cell.coord));
+                        cell.occupied_by = this;
+                        this.progress = 5;
                     } else {
+                        // Space for debug
                     }
                 }
             });

@@ -23,21 +23,22 @@ export class Game {
             const y = p.mouseY;
         }
 
-        const count = Math.floor(Math.random() * 50) + 5
+        const universe_size = 500;
+        const count = Math.floor(Math.random() * 20) + 5
         for (let i = 0; i < count; ++i) {
             const asteroid = new Asteroid();
             asteroid.get_position().set(
-                p5.Vector.random2D().mult(Math.random() * 500).add(250, 250)
+                p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2)
             );
 
             this.stellar_bodies.push(asteroid);
         }
 
         {
-            const count = Math.floor(Math.random() * 100) + 2
+            const count = Math.floor(Math.random() * 200) + 2
             for (let i = 0; i < count; ++i) {
                 const drone = new Drone();
-                drone.position.set(p5.Vector.random2D().mult(Math.random() * 500).add(250, 250));
+                drone.position.set(p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2));
                 drone.velocity.set(p5.Vector.random2D().mult(Math.random() * 25));
                 this.drones.push(drone);
             }
