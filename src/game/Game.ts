@@ -5,8 +5,6 @@ import { Drone } from "./drones/Drone";
 
 export class Game {
     private stellar_bodies: Array<StellarBody> = [
-        new Asteroid(new p5.Vector().set(5, 5)),
-        new Asteroid(new p5.Vector().set(50, 50)),
     ];
     private drones: Array<Drone> = [
 
@@ -25,11 +23,24 @@ export class Game {
             const y = p.mouseY;
         }
 
-        for (let i = 0; i < 5; ++i) {
-            const drone = new Drone();
-            drone.position.set(p5.Vector.random2D().mult(Math.random() * 500).add(250, 250));
-            drone.velocity.set(p5.Vector.random2D().mult(Math.random() * 25));
-            this.drones.push(drone);
+        const count = Math.floor(Math.random() * 50) + 5
+        for (let i = 0; i < count; ++i) {
+            const asteroid = new Asteroid();
+            asteroid.get_position().set(
+                p5.Vector.random2D().mult(Math.random() * 500).add(250, 250)
+            );
+
+            this.stellar_bodies.push(asteroid);
+        }
+
+        {
+            const count = Math.floor(Math.random() * 10) + 2
+            for (let i = 0; i < count; ++i) {
+                const drone = new Drone();
+                drone.position.set(p5.Vector.random2D().mult(Math.random() * 500).add(250, 250));
+                drone.velocity.set(p5.Vector.random2D().mult(Math.random() * 25));
+                this.drones.push(drone);
+            }
         }
     }
 
@@ -40,8 +51,13 @@ export class Game {
         }
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
+            for (let j = 0; j < this.stellar_bodies.length; ++j) {
+                const stelar_body = this.stellar_bodies[j];
+                const acting_force = stelar_body.calculate_gravitational_force_on(1, drone.position).mult(dt);
+                drone.apply_force(acting_force);
+            }
             drone.update(dt);
-            console.log(drone);
+
         }
     }
 

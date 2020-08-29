@@ -35,9 +35,10 @@ function setup_p5_instance(p: p5) {
         (<any>p).canvas.remove();
         p.createCanvas(800, 600, "p2d");
         game.init(p);
+        p.frameRate(60);
     }
     p.draw = function () {
-        game.update(1 / 60);
+        game.update(1.0 / 60.0);
         game.draw(p);
     }
 }
