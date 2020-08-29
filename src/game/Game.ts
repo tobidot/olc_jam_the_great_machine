@@ -34,7 +34,7 @@ export class Game {
         }
 
         {
-            const count = Math.floor(Math.random() * 10) + 2
+            const count = Math.floor(Math.random() * 100) + 2
             for (let i = 0; i < count; ++i) {
                 const drone = new Drone();
                 drone.position.set(p5.Vector.random2D().mult(Math.random() * 500).add(250, 250));

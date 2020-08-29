@@ -13,10 +13,13 @@ export class Collider extends GameObject {
     }
 
     public contains(point: Vector): boolean {
-        const diff = this.position.sub(point);
+        const diff = p5.Vector.sub(this.position, point);
         const has_overlap_x = Math.abs(diff.x) < this.size / 2;
         const has_overlap_y = Math.abs(diff.y) < this.size / 2;
         return has_overlap_x && has_overlap_y;
     }
 
+    public get_half_size() {
+        return this.size / 2;
+    }
 }

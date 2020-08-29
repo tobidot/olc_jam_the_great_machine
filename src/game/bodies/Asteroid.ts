@@ -4,6 +4,6 @@ import p5, { Vector } from "p5";
 export class Asteroid extends StellarBody {
 
     constructor(position: Vector = new p5.Vector) {
-        super(position, Math.floor(Math.random() * 50) + 10);
+        super(position, Math.floor(Math.random() * 10) + 2);
     }
 }
