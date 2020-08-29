@@ -51,10 +51,16 @@ export class Game {
         }
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
+            drone.frame_information.reset();
             for (let j = 0; j < this.stellar_bodies.length; ++j) {
                 const stelar_body = this.stellar_bodies[j];
-                const acting_force = stelar_body.calculate_gravitational_force_on(1, drone.position).mult(dt);
-                drone.apply_force(acting_force);
+                const to_other = p5.Vector.sub(drone.position, stelar_body.get_position());
+                const distance2 = to_other.magSq();
+                drone.frame_information.add_position_relation({
+                    stelar_body: stelar_body,
+                    to_other,
+                    distance2
+                });
             }
             drone.update(dt);
 
