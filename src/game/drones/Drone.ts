@@ -45,12 +45,10 @@ export class Drone extends GameObject {
 
     public update_when_not_attached(dt: number): boolean {
         this.frame_information.stelar_body_relations.forEach((relation) => {
-            const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
-            this.apply_force(acting_force);
             if (relation.stelar_body.contains(this.position)) {
                 this.DEBUG_colliding = true;
                 const cell = relation.stelar_body.get_cell_at_global_coord(this.position);
-                if (cell && cell.attached === null) {
+                if (cell && (cell.attached === null || cell.attached.get_attachement_data() === null)) {
                     const link = new DroneAttachmentLink(this, cell);
                     this.velocity.set(0, 0);
                     this.position.set(relation.stelar_body.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
@@ -58,6 +56,9 @@ export class Drone extends GameObject {
                 } else {
                     // Space for debug
                 }
+            } else {
+                const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+                this.apply_force(acting_force);
             }
         });
         if (this.attached === null) {

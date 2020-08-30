@@ -34,7 +34,7 @@ export class DroneAttachmentLink {
         return this.data;
     }
 
-    public assert_consitency(): boolean {
+    protected assert_consitency(): boolean {
         if (this.data) {
             const is_drone_attached = this.data.drone.attached === this;
             const is_stelar_body_cell_attached = this.data.stelar_body_cell.attached === this;
