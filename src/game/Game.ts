@@ -8,6 +8,8 @@ export class Game {
     private stellar_bodies: Array<StelarBody> = [];
     private drones: Array<Drone> = [];
     private camera: Camera = new Camera;
+    private readonly universe_size = 5000;
+    private readonly universe_density = 0.1;
 
     constructor() {
 
@@ -33,12 +35,19 @@ export class Game {
             prevMouse.set(x, y);
         }
 
-        const universe_size = 500;
-        const count = Math.floor(Math.random() * 20) + 5
+        const universe_size = this.universe_size;
+        const universe_max_bodies = universe_size * universe_size / 4000;
+        const universe_bodies = universe_max_bodies * this.universe_density;
+        const curve = (x: number): number => {
+            return 1 - ((x) * (0.4 - x) * (0.9 - x) * 11) - 0.5;
+        }
+        const dice1 = Math.floor(Math.random() * universe_bodies) + 1;
+        const dice2 = Math.floor(Math.random() * universe_bodies) + 1;
+        const count = dice1 + dice2;
         for (let i = 0; i < count; ++i) {
             const asteroid = new Asteroid();
             asteroid.set_position(
-                p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2)
+                p5.Vector.random2D().mult(curve(Math.random()) * universe_size)
             );
 
             this.stellar_bodies.push(asteroid);
@@ -60,6 +69,7 @@ export class Game {
     public update(dt: number, p: p5) {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
+            body.reset_frame_buffers();
             body.update(dt);
             if (body.is_to_delete) {
                 this.stellar_bodies.splice(i, 1);
@@ -102,14 +112,35 @@ export class Game {
         p.translate(400, 300);
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
+        p.noFill();
+        p.stroke(50, 50, 200);
+        p.strokeWeight(this.universe_size / 1000);
+        p.ellipse(0, 0, this.universe_size * 2, this.universe_size * 2);
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
-            body.draw(p);
+
+            if (this.should_object_be_drawn(body.get_position())) {
+                const rough_drawing = this.camera.zoom < 0.5;
+                if (rough_drawing) {
+                    body.draw_roughly(p);
+                } else {
+                    body.draw(p);
+                }
+            }
         }
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
-            drone.draw(p);
+            if (this.camera.zoom > 0.25 && this.should_object_be_drawn(drone.position)) {
+                drone.draw(p);
+            }
         }
+    }
+
+    public should_object_be_drawn(pos: p5.Vector): boolean {
+        if (this.camera.zoom < 0.1) return true;
+        const diff = pos.copy().add(this.camera.position);
+        const dist2 = diff.magSq();
+        return dist2 < 400 * 400 / (this.camera.zoom * this.camera.zoom);
     }
 
 }

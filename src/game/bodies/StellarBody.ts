@@ -18,6 +18,11 @@ export class StelarBody extends Collider {
         global_coord_to_cell_coord: SameTypeTranslator<p5.Vector>
     };
     public is_to_delete: boolean = false;
+    private frame_buffer: {
+        mass_center: { mass: number, center: p5.Vector } | null,
+    } = {
+            mass_center: null
+        };
 
     constructor(position: Vector, cellmap_size: number) {
         super(position, cellmap_size * StelarBody.CELL_SIZE);
@@ -49,6 +54,7 @@ export class StelarBody extends Collider {
     }
 
     public get_mass_center(): { mass: number, center: p5.Vector } {
+        if (this.frame_buffer.mass_center) return this.frame_buffer.mass_center;
         let mass = 0;
         let center = new p5.Vector();
         let count = 0;
@@ -61,7 +67,7 @@ export class StelarBody extends Collider {
             return cell;
         });
         if (mass === 0) return { mass, center };
-        return { mass, center: center.mult(1 / mass) };
+        return this.frame_buffer.mass_center = { mass, center: center.mult(1 / mass) };
     }
 
     public get_cellmap_size(): number {
@@ -108,6 +114,18 @@ export class StelarBody extends Collider {
         p.endShape();
     }
 
+
+    public draw_roughly(p: p5) {
+        const mass = this.get_mass_center().mass;
+        p.fill(Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size)));
+        p.noStroke();
+        const size = this.size;
+        const hsize = size / 2;
+        const start_x = this.position.x - hsize;
+        const start_y = this.position.y - hsize;
+        p.rect(start_x, start_y, size, size);
+    }
+
     public calculate_gravitational_force_on(other_mass: number, other_position: p5.Vector): p5.Vector {
         const my_mass_data = this.get_mass_center();
         const my_center = this.translator.global_coord_to_cell_coord.translate_to_source(my_mass_data.center);
@@ -152,4 +170,7 @@ export class StelarBody extends Collider {
         return cell_coord.x >= 0 && cell_coord.y >= 0 && cell_coord.x < this.cellmap_size && cell_coord.y < this.cellmap_size;
     }
 
+    public reset_frame_buffers() {
+        this.frame_buffer.mass_center = null;
+    }
 }

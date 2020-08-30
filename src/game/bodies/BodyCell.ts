@@ -6,7 +6,7 @@ import { StelarBody } from "./StellarBody";
 export class BodyCell {
     public parent: StelarBody;
     public coord: p5.Vector;
-    public mass: number = Math.floor(Math.random() * 25);
+    public mass: number = Math.floor(Math.random() * 20) + 5;
     public attached: DroneAttachmentLink | null = null;
 
     constructor(parent: StelarBody, coord: p5.Vector) {
