@@ -10,6 +10,8 @@ export class Drone extends GameObject {
     public static readonly PIXEL_SIZE: number = 5;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND: number = 200;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND__ROOT2: number = Math.sqrt(Drone.LIGHTSPEED_PIXEL_PER_SECOND);
+
+
     public frame_information: DroneFrameInformation = new DroneFrameInformation(this);
     public position: p5.Vector;
     public velocity: p5.Vector;
@@ -17,15 +19,18 @@ export class Drone extends GameObject {
 
     public DEBUG_colliding: boolean = false;
     public attached: DroneAttachmentLink | null = null;
-    public fuels: number = 25;
+    public fuels: number = 5;
     public progress: number = 0;
     public duplicate_progress: number = 100;
+    public age: number = 0;
 
     constructor(drone_swarm: DroneSwarm, position: p5.Vector = new p5.Vector) {
         super();
         this.position = position;
         this.velocity = new p5.Vector();
         this.swarm_ref = drone_swarm;
+        this.duplicate_progress = drone_swarm.get_production_cost();
+        this.age = this.swarm_ref.get_durability();
     }
 
     public draw(p: p5) {
@@ -46,14 +51,18 @@ export class Drone extends GameObject {
         } else {
             this.update_when_not_attached(dt);
         }
-        this.restrict_velocity();
         if (this.fuels > 25) {
-            this.fuels -= dt;
-            this.duplicate_progress += dt;
+            const progress = dt * 25;
+            this.fuels -= progress;
+            this.duplicate_progress -= progress;
             if (this.duplicate_progress <= 0) {
-                this.duplicate_progress = 100;
+                this.duplicate_progress = this.swarm_ref.get_production_cost();
                 this.swarm_ref.queue_new_drone(this.position.copy());
             }
+        }
+        this.age -= dt;
+        if (this.age < 0) {
+            this.swarm_ref.queue_dying_drone(this);
         }
     }
 
@@ -66,8 +75,8 @@ export class Drone extends GameObject {
                     const cm_size = relation.stelar_body.get_half_cellmap_size();
                     if (relation.distance2 < cm_size * cm_size) {
                         const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
-                            1,
-                            this.position,
+                            this.swarm_ref.get_drone_weight(),
+                            relation.to_other.copy().mult(-1),
                             relation.distance2
                         ).mult(dt);
                         this.apply_force(acting_force);
@@ -75,7 +84,11 @@ export class Drone extends GameObject {
                 };
             }
             if (!is_colliding) {
-                const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+                const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
+                    this.swarm_ref.get_drone_weight(),
+                    relation.to_other.copy().mult(-1),
+                    relation.distance2
+                ).mult(dt);
                 this.apply_force(acting_force);
             }
         });
@@ -87,7 +100,8 @@ export class Drone extends GameObject {
                 this.apply_force(impuls);
                 this.fuels -= 1 * dt;
             }
-            // if (this.velocity.magSq() > 10000) this.velocity.mult(0.99);
+            this.velocity.mult(0.999);
+            this.restrict_velocity();
             this.position.add(p5.Vector.mult(this.velocity, dt));
         }
         return true;
@@ -99,7 +113,7 @@ export class Drone extends GameObject {
             const link = new DroneAttachmentLink(this, cell);
             this.velocity.set(0, 0);
             this.position.set(relation.stelar_body.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
-            this.progress = 6;
+            this.progress = this.swarm_ref.get_time_to_dock();
             return true;
         }
         return false;
@@ -121,7 +135,7 @@ export class Drone extends GameObject {
                     if (data.stelar_body_cell.mass <= 0) {
                         attachment_data.stelar_body.remove_cell_at(cell.coord);
                     } else {
-                        this.progress = 4;
+                        this.progress = this.swarm_ref.get_time_to_dig();
                     }
                 }
             }

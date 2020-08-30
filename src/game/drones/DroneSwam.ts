@@ -9,6 +9,7 @@ export class DroneSwarm {
     public center: p5.Vector = new p5.Vector;
     public deviation: number = 0;
     private queued_new_drones: Array<p5.Vector> = [];
+    private queued_dying_drones: Array<Drone> = [];
     private drones: Array<Drone> = [];
 
     constructor(game: Game) {
@@ -54,6 +55,12 @@ export class DroneSwarm {
             this.drones.push(new Drone(this, pos));
         });
         this.queued_new_drones = [];
+        this.queued_dying_drones.forEach((drone) => {
+            drone.attached = null;
+            const i = this.drones.indexOf(drone);
+            this.drones.splice(i, 1);
+        });
+        this.queued_dying_drones = [];
     }
 
     public draw(p: p5, camera: Camera) {
@@ -65,12 +72,12 @@ export class DroneSwarm {
         }
     }
 
-    public get_impuls_strength(): number {
-        return 200;
-    }
-
     public queue_new_drone(position: p5.Vector) {
         this.queued_new_drones.push(position);
+    }
+
+    public queue_dying_drone(drone: Drone) {
+        this.queued_dying_drones.push(drone);
     }
 
 
@@ -79,6 +86,30 @@ export class DroneSwarm {
         const diff = pos.copy().add(camera.position);
         const dist2 = diff.magSq();
         return dist2 < 400 * 400 / (camera.zoom * camera.zoom);
+    }
+
+    public get_production_cost(): number {
+        return 150;
+    }
+
+    public get_impuls_strength(): number {
+        return 5;
+    }
+
+    public get_time_to_dock(): number {
+        return 4;
+    }
+
+    public get_time_to_dig(): number {
+        return 1;
+    }
+
+    public get_drone_weight(): number {
+        return 1;
+    }
+
+    public get_durability(): number {
+        return 150;
     }
 
 }

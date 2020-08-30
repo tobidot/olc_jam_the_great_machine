@@ -154,8 +154,8 @@ export class StelarBody extends Collider {
         if (distance2 > 500 * 500) return new p5.Vector;
         const my_mass_data = this.get_mass_center();
         const my_mass = my_mass_data.mass;
-        const force_maginitude = StelarBody.GRAVITATIONAL_CONSTANT * my_mass * other_mass / distance2;
-        if (diff_other_to_center.magSq() < 0.01) return new p5.Vector();
+        const force_maginitude = StelarBody.GRAVITATIONAL_CONSTANT * my_mass * other_mass / Math.max(100, distance2);
+        if (distance2 < 0.001) return new p5.Vector().set(0, 0);
         return diff_other_to_center.setMag(force_maginitude);
     }
 

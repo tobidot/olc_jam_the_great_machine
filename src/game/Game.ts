@@ -49,23 +49,29 @@ export class Game {
         }
         const dice1 = Math.floor(Math.random() * universe_bodies) + 1;
         const dice2 = Math.floor(Math.random() * universe_bodies) + 1;
-        const count = dice1 + dice2;
-        for (let i = 0; i < count; ++i) {
-            const asteroid = new Asteroid();
-            asteroid.set_position(
-                p5.Vector.random2D().mult(curve(Math.random()) * universe_size)
-            );
 
-            this.stellar_bodies.push(asteroid);
+        {
+            const count = dice1 + dice2;
+            for (let i = 0; i < count; ++i) {
+                const asteroid = new Asteroid();
+                asteroid.set_position(
+                    p5.Vector.random2D().mult(curve(Math.random()) * universe_size)
+                );
+
+                this.stellar_bodies.push(asteroid);
+            }
         }
 
         {
-            const count = 100;
+            const count = 10;
             const center = p5.Vector.random2D().mult((Math.random() * 0.25) * universe_size + 0.6).add(universe_size / 2, universe_size / 2);
             for (let i = 0; i < count; ++i) {
                 const off = p5.Vector.random2D().mult(10);
                 this.swarm.queue_new_drone(center.copy().add(off));
             }
+
+            const asteroid = new Asteroid(center.copy(), 2);
+            this.stellar_bodies.push(asteroid);
             this.camera.target_position.set(this.camera.position.set(center.mult(-1)));
         }
     }
