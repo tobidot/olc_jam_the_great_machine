@@ -7,8 +7,7 @@ import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
 
 export class StelarBody extends Collider {
     // Consts
-    public static readonly GRAVITATIONAL_CONSTANT = 10;
-    public static readonly CELL_MASS = 25;
+    public static readonly GRAVITATIONAL_CONSTANT = 1000;
     public static readonly CELL_SIZE = 20;
     //    
     // 
@@ -18,6 +17,7 @@ export class StelarBody extends Collider {
     public readonly translator: {
         global_coord_to_cell_coord: SameTypeTranslator<p5.Vector>
     };
+    public is_to_delete: boolean = false;
 
     constructor(position: Vector, cellmap_size: number) {
         super(position, cellmap_size * StelarBody.CELL_SIZE);
@@ -47,6 +47,22 @@ export class StelarBody extends Collider {
                 i++;
             }
         }
+    }
+
+    public get_mass_center(): { mass: number, center: p5.Vector } {
+        let mass = 0;
+        let center = new p5.Vector();
+        let count = 0;
+        this.for_each_cell((x, y, cell) => {
+            if (cell) {
+                mass += cell.mass;
+                center.add(x * mass, y * mass);
+                count++;
+            }
+            return cell;
+        });
+        if (mass === 0) return { mass, center };
+        return { mass, center: center.mult(1 / mass) };
     }
 
     public get_cellmap_size(): number {
@@ -93,10 +109,13 @@ export class StelarBody extends Collider {
     }
 
     public calculate_gravitational_force_on(other_mass: number, other_position: p5.Vector): p5.Vector {
-        const my_mass = this.cellmap_size * this.cellmap_size * StelarBody.CELL_MASS;
-        const distance2 = Math.max(p5.Vector.sub(this.position, other_position).magSq(), this.cellmap_size * this.cellmap_size);
+        const my_mass_data = this.get_mass_center();
+        const my_center = this.translator.global_coord_to_cell_coord.translate_to_source(my_mass_data.center);
+        const my_mass = my_mass_data.mass;
+        const distance2 = Math.max(p5.Vector.sub(my_center, other_position).magSq(), this.cellmap_size * this.cellmap_size);
         const force_maginitude = StelarBody.GRAVITATIONAL_CONSTANT * my_mass * other_mass / distance2;
-        const force_direction = p5.Vector.sub(this.position, other_position);
+        const force_direction = p5.Vector.sub(my_center, other_position);
+        if (force_direction.magSq() < 0.01) return new p5.Vector();
         return force_direction.setMag(force_maginitude);
     }
 
@@ -107,6 +126,9 @@ export class StelarBody extends Collider {
         if (cell === null) throw "Cell does not exist";
         cell.attached = null;
         this.cells[cell_id] = null;
+        let count = 0;
+        this.for_each_cell((x, y, c) => { if (c) count++; return c; });
+        if (count === 0) this.is_to_delete = true;
     }
 
     public get_cell_id_at(cell_coord: p5.Vector): number | null {

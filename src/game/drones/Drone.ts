@@ -57,9 +57,9 @@ export class Drone extends GameObject {
                     // Space for debug
                 }
             } else {
-                const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
-                this.apply_force(acting_force);
             }
+            const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+            this.apply_force(acting_force);
         });
         if (this.attached === null) {
             this.position.add(p5.Vector.mult(this.velocity, dt));

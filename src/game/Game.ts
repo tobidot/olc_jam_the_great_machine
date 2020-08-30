@@ -31,7 +31,6 @@ export class Game {
             const y = p.mouseY;
             this.camera.move(prevMouse.copy().sub(x, y).mult(-1 / this.camera.zoom));
             prevMouse.set(x, y);
-            console.log(event);
         }
 
         const universe_size = 500;
@@ -60,6 +59,9 @@ export class Game {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
             body.update(dt);
+            if (body.is_to_delete) {
+                this.stellar_bodies.splice(i, 1);
+            }
         }
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
