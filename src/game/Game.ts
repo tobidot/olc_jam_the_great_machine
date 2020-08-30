@@ -45,10 +45,12 @@ export class Game {
         }
 
         {
-            const count = Math.floor(Math.random() * 200) + 2
+            const count = 5;
+            const center = p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2);
             for (let i = 0; i < count; ++i) {
                 const drone = new Drone();
-                drone.position.set(p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2));
+                const off = p5.Vector.random2D().mult(10);
+                drone.position.set(center.copy().add(off));
                 drone.velocity.set(p5.Vector.random2D().mult(Math.random() * 25));
                 this.drones.push(drone);
             }

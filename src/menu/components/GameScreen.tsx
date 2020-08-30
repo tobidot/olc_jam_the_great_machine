@@ -17,7 +17,12 @@ export class GameScreen extends React.PureComponent {
     render() {
         return (
             <Container>
-                <div id="game-screen" ref={this.game_screen_container} />
+                <div id="game-screen" ref={this.game_screen_container}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        display: "flex"
+                    }} />
             </Container>
         );
     }

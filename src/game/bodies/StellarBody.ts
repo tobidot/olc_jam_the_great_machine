@@ -8,7 +8,7 @@ import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
 export class StelarBody extends Collider {
     // Consts
     public static readonly GRAVITATIONAL_CONSTANT = 1000;
-    public static readonly CELL_SIZE = 20;
+    public static readonly CELL_SIZE = 15;
     //    
     // 
     private cellmap_size: number;
@@ -25,7 +25,6 @@ export class StelarBody extends Collider {
         this.cells = new Array<BodyCell>(cellmap_size * cellmap_size);
         this.for_each_cell((x, y, cell) => {
             cell = new BodyCell(this, new p5.Vector().set(x, y));
-            cell.mass = 1;
             return cell;
         });
         this.cells_coordinate_system = new FixedCenteredIntegerCoordinateSystem(
@@ -56,7 +55,7 @@ export class StelarBody extends Collider {
         this.for_each_cell((x, y, cell) => {
             if (cell) {
                 mass += cell.mass;
-                center.add(x * mass, y * mass);
+                center.add(x * cell.mass, y * cell.mass);
                 count++;
             }
             return cell;
@@ -99,6 +98,7 @@ export class StelarBody extends Collider {
             const right = start_x + (1 + x) * StelarBody.CELL_SIZE + 1;
             const top = start_y + y * StelarBody.CELL_SIZE;
             const bottom = start_y + (1 + y) * StelarBody.CELL_SIZE + 1;
+            p.fill(Math.min(200, cell.mass * 5));
             p.vertex(left, top);
             p.vertex(right, top);
             p.vertex(right, bottom);
