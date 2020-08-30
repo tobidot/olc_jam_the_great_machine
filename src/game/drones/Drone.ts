@@ -1,7 +1,8 @@
 import p5 from "p5";
 import { GameObject } from "../object/GameObject";
 import { DroneFrameInformation } from "./DroneFrameInformation";
-import { StellarBody } from "../bodies/StellarBody";
+import { StelarBody } from "../bodies/StellarBody";
+import { DroneAttachmentLink as DroneAttachmentLink } from "./DroneAttachementLink";
 
 export class Drone extends GameObject {
     public static readonly PIXEL_SIZE: number = 5;
@@ -13,11 +14,8 @@ export class Drone extends GameObject {
 
 
     public DEBUG_colliding: boolean = false;
-    public attached_to: StellarBody | null = null;
-    public attached_coords: p5.Vector | null = null;
+    public attached: DroneAttachmentLink | null = null;
     public progress: number = 0;
-
-
 
     constructor(position: p5.Vector = new p5.Vector) {
         super();
@@ -52,44 +50,34 @@ export class Drone extends GameObject {
             if (relation.stelar_body.contains(this.position)) {
                 this.DEBUG_colliding = true;
                 const cell = relation.stelar_body.get_cell_at_global_coord(this.position);
-                if (cell && cell.occupied_by === null) {
-                    this.attached_to = relation.stelar_body;
-                    this.attached_coords = cell.coord;
+                if (cell && cell.attached === null) {
+                    const link = new DroneAttachmentLink(this, cell);
                     this.velocity.set(0, 0);
-                    this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
-                    cell.occupied_by = this;
+                    this.position.set(relation.stelar_body.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
                     this.progress = 5;
                 } else {
                     // Space for debug
                 }
             }
         });
-        if (this.attached_to === null) {
+        if (this.attached === null) {
             this.position.add(p5.Vector.mult(this.velocity, dt));
         }
         return true;
     }
 
     public update_when_attached(dt: number): boolean {
-        if (this.attached_to === null || this.attached_coords === null) return false;
-        const cell = this.attached_to.get_cell_at(this.attached_coords);
-        if (cell) {
-            this.position.set(this.attached_to.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
-            this.progress -= dt;
-            if (this.progress < 0) {
-                this.attached_to.remove_cell_at(cell.coord);
-                this.detach_from_stelar_body();
-            }
-            // console.log(p5.Vector.sub(this.position, this.attached_to.get_position()));
-        } else {
-            this.attached_to = null;
-            this.attached_coords = null;
+        if (this.attached === null) return false;
+        const attachment_data = this.attached.get_attachement_data();
+        if (attachment_data === null) return false;
+        const cell = attachment_data.stelar_body_cell;
+        this.position.set(attachment_data.stelar_body.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
+        this.progress -= dt;
+        if (this.progress < 0) {
+            this.attached = null;
+            attachment_data.stelar_body.remove_cell_at(cell.coord);
         }
         return true;
-    }
-
-    public is_attached_to_stelar_body(): boolean {
-        return this.attached_to !== null && this.attached_coords !== null;
     }
 
     public apply_force(force: p5.Vector) {
@@ -100,14 +88,4 @@ export class Drone extends GameObject {
         this.velocity.add(effective_force).limit(Drone.LIGHTSPEED_PIXEL_PER_SECOND * 0.9);
     }
 
-    public detach_from_stelar_body() {
-        if (this.attached_to && this.attached_coords) {
-            const attached_to = this.attached_to;
-            const attached_coords = this.attached_coords;
-            this.attached_to = null;
-            this.attached_coords = null;
-            const cell = attached_to.get_cell_at(attached_coords);
-            if (cell) cell.occupied_by = null;
-        }
-    }
 }

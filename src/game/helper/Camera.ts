@@ -5,11 +5,12 @@ export class Camera {
     public zoom: number = 1;
     public target_position: p5.Vector = new p5.Vector;
     public target_zoom: number = 1;
+    private readonly smooth: number = 0.2;
 
     public update(dt: number) {
-        const diff = p5.Vector.sub(this.target_position, this.position).mult(Math.min(1, 0.9 * (dt * 60)));
+        const diff = p5.Vector.sub(this.target_position, this.position).mult(this.smooth);
         this.position.add(diff);
-        this.zoom = this.zoom * 0.1 + this.target_zoom * 0.9;
+        this.zoom = this.zoom * (1 - this.smooth) + this.target_zoom * this.smooth;
     }
 
     public move(off: p5.Vector) {
@@ -17,9 +18,9 @@ export class Camera {
     }
 
     public zoom_in() {
-        this.target_zoom *= 0.5;
+        this.target_zoom *= 0.75;
     }
     public zoom_out() {
-        this.target_zoom *= 2;
+        this.target_zoom *= 1.5;
     }
 }

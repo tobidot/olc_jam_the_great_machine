@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { StellarBody as StelarBody } from "../bodies/StellarBody";
+import { StelarBody as StelarBody } from "../bodies/StellarBody";
 
 export interface DroneStelarBodyRelation {
     stelar_body: StelarBody;

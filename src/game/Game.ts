@@ -1,11 +1,11 @@
 import p5 from "p5";
-import { StellarBody } from "./bodies/StellarBody";
+import { StelarBody } from "./bodies/StellarBody";
 import { Asteroid } from "./bodies/Asteroid";
 import { Drone } from "./drones/Drone";
 import { Camera } from "./helper/Camera";
 
 export class Game {
-    private stellar_bodies: Array<StellarBody> = [];
+    private stellar_bodies: Array<StelarBody> = [];
     private drones: Array<Drone> = [];
     private camera: Camera = new Camera;
 
