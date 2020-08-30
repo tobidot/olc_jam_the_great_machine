@@ -99,6 +99,10 @@ export class Drone extends GameObject {
                 const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt);
                 this.apply_force(impuls);
                 this.fuels -= 1 * dt;
+            } else {
+                const diff = this.position.copy().sub(this.swarm_ref.center.copy());
+                const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt / 10);
+                this.apply_force(impuls);
             }
             this.velocity.mult(0.999);
             this.restrict_velocity();

@@ -10,7 +10,7 @@ export class DroneSwarm {
     public deviation: number = 0;
     private queued_new_drones: Array<p5.Vector> = [];
     private queued_dying_drones: Array<Drone> = [];
-    private drones: Array<Drone> = [];
+    public drones: Array<Drone> = [];
 
     constructor(game: Game) {
         this.game = game;
@@ -89,7 +89,7 @@ export class DroneSwarm {
     }
 
     public get_production_cost(): number {
-        return 150;
+        return 200;
     }
 
     public get_impuls_strength(): number {
@@ -109,7 +109,7 @@ export class DroneSwarm {
     }
 
     public get_durability(): number {
-        return 150;
+        return 120;
     }
 
 }

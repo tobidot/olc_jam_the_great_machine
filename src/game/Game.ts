@@ -4,14 +4,19 @@ import { Asteroid } from "./bodies/Asteroid";
 import { Drone } from "./drones/Drone";
 import { Camera } from "./helper/Camera";
 import { DroneSwarm } from "./drones/DroneSwam";
+import { OrganicShip } from "./enemies/OrganicShips";
+import { Effect } from "./effects/Effect";
 
 export class Game {
     private stellar_bodies: Array<StelarBody> = [];
     private camera: Camera = new Camera;
     private swarm: DroneSwarm = new DroneSwarm(this);
+    private organic_ships: Array<OrganicShip> = [];
+    private effects: Array<Effect> = [];
+
 
     public readonly universe_size = 5000;
-    public readonly universe_density = 0.4;
+    public readonly universe_density = 0.6;
     public readonly system_density = 0.3;
 
 
@@ -43,13 +48,15 @@ export class Game {
         };
 
         const universe_size = this.universe_size;
-        const universe_max_systems = universe_size / 125;
+        const universe_max_systems = universe_size / 70;
         const universe_systems = universe_max_systems * this.universe_density;
-        const dice1 = Math.floor(Math.random() * universe_systems / 3) + 1;
-        const dice2 = Math.floor(Math.random() * universe_systems / 3) + 1;
-        const dice3 = Math.floor(Math.random() * universe_systems / 3) + 1;
+        // const dice1 = Math.floor(Math.random() * universe_systems / 3) + 1;
+        // const dice2 = Math.floor(Math.random() * universe_systems / 3) + 1;
+        // const dice3 = Math.floor(Math.random() * universe_systems / 3) + 1;
         {
-            const count = dice1 + dice2 + dice3;
+            const systems_random = Math.random();
+            const systems_random_smooth = systems_random * systems_random * 0.75 + 0.25;
+            const count = systems_random_smooth * universe_systems;
             for (let i = 0; i < count; ++i) {
                 const size = this.asteroid_distribution_function(Math.random()) * 800;
                 const dist = (Math.random() * 0.6 + 0.2) * universe_size;
@@ -65,8 +72,16 @@ export class Game {
                 const off = p5.Vector.random2D().mult(10);
                 this.swarm.queue_new_drone(center.copy().add(off));
             }
-            this.create_system(center, 100);
-            this.camera.target_position.set(this.camera.position.set(center.mult(-1)));
+            this.create_system(center, 150);
+            this.camera.target_position.set(this.camera.position.set(center.copy().mult(-1)));
+
+
+
+        }
+
+        for (let i = 0; i < 10; ++i) {
+            const ship = new OrganicShip(this, new p5.Vector().copy());
+            this.organic_ships.push(ship);
         }
     }
 
@@ -99,6 +114,18 @@ export class Game {
             }
         }
         this.swarm.update(dt, this.stellar_bodies);
+        this.organic_ships.forEach((ship) => {
+            ship.update(dt, p, this.swarm.drones);
+
+            const dist_to_univers_center = ship.position.magSq();
+            if (dist_to_univers_center > this.universe_size * this.universe_size) {
+                ship.position.set(0, 0);
+            }
+        });
+        this.effects = this.effects.filter((effect) => {
+            effect.update(dt);
+            return !effect.is_finished;
+        });
 
         const cam_speed = 400 / this.camera.zoom;
         if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(65)) {
@@ -138,6 +165,13 @@ export class Game {
             }
         }
         this.swarm.draw(p, this.camera);
+        this.organic_ships.forEach((ship) => {
+            ship.draw(p, this.camera);
+        });
+        this.effects.forEach((effect) => {
+            effect.draw(p, this.camera);
+        });
+
         if (this.camera.zoom <= .25) {
             p.noStroke();
             p.fill(200, 200, 0);
@@ -156,4 +190,8 @@ export class Game {
         return dist2 < 400 * 400 / (this.camera.zoom * this.camera.zoom);
     }
 
+
+    public add_effect(effect: Effect) {
+        this.effects.push(effect);
+    }
 }
