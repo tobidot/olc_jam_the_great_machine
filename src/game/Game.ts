@@ -3,16 +3,15 @@ import { StelarBody } from "./bodies/StellarBody";
 import { Asteroid } from "./bodies/Asteroid";
 import { Drone } from "./drones/Drone";
 import { Camera } from "./helper/Camera";
+import { DroneSwarm } from "./drones/DroneSwam";
 
 export class Game {
     private stellar_bodies: Array<StelarBody> = [];
-    private drones: Array<Drone> = [];
     private camera: Camera = new Camera;
-    private drone_center: p5.Vector = new p5.Vector;
-    private drone_deviation: number = 0;
+    private swarm: DroneSwarm = new DroneSwarm(this);
 
-    private readonly universe_size = 5000;
-    private readonly universe_density = 0.1;
+    public readonly universe_size = 5000;
+    public readonly universe_density = 0.1;
 
 
     constructor() {
@@ -39,7 +38,7 @@ export class Game {
             prevMouse.set(x, y);
         }
         p.keyPressed = () => {
-            if (p.keyIsDown(32)) this.camera.target(this.drone_center.mult(-1));
+            if (p.keyIsDown(32)) this.camera.target(this.swarm.center.mult(-1));
         };
 
         const universe_size = this.universe_size;
@@ -61,15 +60,13 @@ export class Game {
         }
 
         {
-            const count = 5;
+            const count = 100;
             const center = p5.Vector.random2D().mult((Math.random() * 0.25) * universe_size + 0.6).add(universe_size / 2, universe_size / 2);
             for (let i = 0; i < count; ++i) {
-                const drone = new Drone();
                 const off = p5.Vector.random2D().mult(10);
-                drone.position.set(center.copy().add(off));
-                drone.velocity.set(p5.Vector.random2D().mult(Math.random() * 25));
-                this.drones.push(drone);
+                this.swarm.queue_new_drone(center.copy().add(off));
             }
+            this.camera.target_position.set(this.camera.position.set(center.mult(-1)));
         }
     }
 
@@ -82,36 +79,7 @@ export class Game {
                 this.stellar_bodies.splice(i, 1);
             }
         }
-        this.drone_deviation = 0;
-        let drone_center_sum = new p5.Vector;
-        for (let i = 0; i < this.drones.length; ++i) {
-            const drone = this.drones[i];
-            drone.frame_information.reset();
-            for (let j = 0; j < this.stellar_bodies.length; ++j) {
-                const stelar_body = this.stellar_bodies[j];
-                const to_other = p5.Vector.sub(drone.position, stelar_body.get_position());
-                const distance2 = to_other.magSq();
-                drone.frame_information.add_position_relation({
-                    stelar_body: stelar_body,
-                    to_other,
-                    distance2
-                });
-            }
-            drone.update(dt);
-            const dist_to_univers_center = drone.position.magSq();
-            if (dist_to_univers_center > this.universe_size * this.universe_size) {
-                drone.position.set(0, 0);
-            }
-
-            drone_center_sum.add(drone.position);
-            const center_deviation = this.drone_center.copy().sub(drone.position).magSq();
-            if (center_deviation > this.drone_deviation) {
-                this.drone_deviation = center_deviation;
-            }
-        }
-        this.drone_deviation = Math.sqrt(this.drone_deviation);
-        if (this.drones.length > 0) drone_center_sum.mult(1 / this.drones.length);
-        this.drone_center.set(drone_center_sum);
+        this.swarm.update(dt, this.stellar_bodies);
 
         const cam_speed = 400 / this.camera.zoom;
         if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(65)) {
@@ -150,20 +118,15 @@ export class Game {
                 }
             }
         }
-        for (let i = 0; i < this.drones.length; ++i) {
-            const drone = this.drones[i];
-            if (this.camera.zoom > 0.25 && this.should_object_be_drawn(drone.position)) {
-                drone.draw(p);
-            }
-        }
+        this.swarm.draw(p, this.camera);
         if (this.camera.zoom <= .25) {
             p.noStroke();
             p.fill(200, 200, 0);
-            p.ellipse(this.drone_center.x, this.drone_center.y, 25 / this.camera.zoom, 25 / this.camera.zoom);
+            p.ellipse(this.swarm.center.x, this.swarm.center.y, 25 / this.camera.zoom, 25 / this.camera.zoom);
             p.noFill();
             p.stroke(200, 0, 0);
             p.strokeWeight(5 / this.camera.zoom);
-            p.ellipse(this.drone_center.x, this.drone_center.y, this.drone_deviation * 2, this.drone_deviation * 2);
+            p.ellipse(this.swarm.center.x, this.swarm.center.y, this.swarm.deviation * 2, this.swarm.deviation * 2);
         }
     }
 

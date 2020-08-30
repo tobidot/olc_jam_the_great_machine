@@ -19,7 +19,7 @@ export class StelarBody extends Collider {
     };
     public is_to_delete: boolean = false;
     private frame_buffer: {
-        mass_center: { mass: number, center: p5.Vector } | null,
+        mass_center: { mass: number, center: p5.Vector, global_center: p5.Vector } | null,
     } = {
             mass_center: null
         };
@@ -53,7 +53,7 @@ export class StelarBody extends Collider {
         }
     }
 
-    public get_mass_center(): { mass: number, center: p5.Vector } {
+    public get_mass_center(): { mass: number, center: p5.Vector, global_center: p5.Vector } {
         if (this.frame_buffer.mass_center) return this.frame_buffer.mass_center;
         let mass = 0;
         let center = new p5.Vector();
@@ -66,8 +66,14 @@ export class StelarBody extends Collider {
             }
             return cell;
         });
-        if (mass === 0) return { mass, center };
-        return this.frame_buffer.mass_center = { mass, center: center.mult(1 / mass) };
+        if (mass === 0) return { mass, center, global_center: this.position.copy() };
+        center.mult(1 / mass);
+        const global_center = this.translator.global_coord_to_cell_coord.translate_to_source(center);
+        return this.frame_buffer.mass_center = {
+            mass,
+            center,
+            global_center,
+        };
     }
 
     public get_cellmap_size(): number {
@@ -126,15 +132,31 @@ export class StelarBody extends Collider {
         p.rect(start_x, start_y, size, size);
     }
 
-    public calculate_gravitational_force_on(other_mass: number, other_position: p5.Vector): p5.Vector {
+    public calculate_gravitational_force_on(
+        other_mass: number,
+        other_position: p5.Vector
+    ): p5.Vector {
         const my_mass_data = this.get_mass_center();
-        const my_center = this.translator.global_coord_to_cell_coord.translate_to_source(my_mass_data.center);
-        const my_mass = my_mass_data.mass;
+        const my_center = my_mass_data.center;
         const distance2 = Math.max(p5.Vector.sub(my_center, other_position).magSq(), this.cellmap_size * this.cellmap_size);
+        return this.calculate_gravitational_force_on_relation(
+            other_mass,
+            my_center.copy().sub(other_position),
+            distance2
+        );
+    }
+
+    public calculate_gravitational_force_on_relation(
+        other_mass: number,
+        diff_other_to_center: p5.Vector,
+        distance2: number
+    ): p5.Vector {
+        if (distance2 > 500 * 500) return new p5.Vector;
+        const my_mass_data = this.get_mass_center();
+        const my_mass = my_mass_data.mass;
         const force_maginitude = StelarBody.GRAVITATIONAL_CONSTANT * my_mass * other_mass / distance2;
-        const force_direction = p5.Vector.sub(my_center, other_position);
-        if (force_direction.magSq() < 0.01) return new p5.Vector();
-        return force_direction.setMag(force_maginitude);
+        if (diff_other_to_center.magSq() < 0.01) return new p5.Vector();
+        return diff_other_to_center.setMag(force_maginitude);
     }
 
     public remove_cell_at(coord: p5.Vector) {
