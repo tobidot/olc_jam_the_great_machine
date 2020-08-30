@@ -8,8 +8,12 @@ export class Game {
     private stellar_bodies: Array<StelarBody> = [];
     private drones: Array<Drone> = [];
     private camera: Camera = new Camera;
+    private drone_center: p5.Vector = new p5.Vector;
+    private drone_deviation: number = 0;
+
     private readonly universe_size = 5000;
     private readonly universe_density = 0.1;
+
 
     constructor() {
 
@@ -34,6 +38,9 @@ export class Game {
             this.camera.move(prevMouse.copy().sub(x, y).mult(-1 / this.camera.zoom));
             prevMouse.set(x, y);
         }
+        p.keyPressed = () => {
+            if (p.keyIsDown(32)) this.camera.target(this.drone_center.mult(-1));
+        };
 
         const universe_size = this.universe_size;
         const universe_max_bodies = universe_size * universe_size / 4000;
@@ -75,6 +82,8 @@ export class Game {
                 this.stellar_bodies.splice(i, 1);
             }
         }
+        this.drone_deviation = 0;
+        let drone_center_sum = new p5.Vector;
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
             drone.frame_information.reset();
@@ -89,8 +98,16 @@ export class Game {
                 });
             }
             drone.update(dt);
-
+            drone_center_sum.add(drone.position);
+            const center_deviation = this.drone_center.copy().sub(drone.position).magSq();
+            if (center_deviation > this.drone_deviation) {
+                this.drone_deviation = center_deviation;
+            }
         }
+        this.drone_deviation = Math.sqrt(this.drone_deviation);
+        if (this.drones.length > 0) drone_center_sum.mult(1 / this.drones.length);
+        this.drone_center.set(drone_center_sum);
+
         const cam_speed = 400 / this.camera.zoom;
         if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(65)) {
             this.camera.move(new p5.Vector().set(dt * cam_speed, 0));
@@ -133,6 +150,15 @@ export class Game {
             if (this.camera.zoom > 0.25 && this.should_object_be_drawn(drone.position)) {
                 drone.draw(p);
             }
+        }
+        if (this.camera.zoom <= .25) {
+            p.noStroke();
+            p.fill(200, 200, 0);
+            p.ellipse(this.drone_center.x, this.drone_center.y, 25 / this.camera.zoom, 25 / this.camera.zoom);
+            p.noFill();
+            p.stroke(200, 0, 0);
+            p.strokeWeight(5 / this.camera.zoom);
+            p.ellipse(this.drone_center.x, this.drone_center.y, this.drone_deviation * 2, this.drone_deviation * 2);
         }
     }
 

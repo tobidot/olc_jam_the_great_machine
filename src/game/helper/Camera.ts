@@ -17,6 +17,10 @@ export class Camera {
         this.target_position.add(off);
     }
 
+    public target(target: p5.Vector) {
+        this.target_position.set(target);
+    }
+
     public zoom_in() {
         this.target_zoom *= 0.75;
     }
