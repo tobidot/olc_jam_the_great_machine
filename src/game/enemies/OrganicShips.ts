@@ -47,7 +47,7 @@ export class OrganicShip {
                 }, null);
             if (packet) {
                 const { drone } = packet;
-                drone.age = 0;
+                drone.age -= 50;
                 this.reset_destroy_cd();
                 const color = 0xff0000ff;
                 const laser_effect = new LaserDeathEffect(
@@ -72,8 +72,8 @@ export class OrganicShip {
         const half_size = size / 2;
         p.strokeWeight(size / 10);
         p.ellipse(
-            this.position.x - half_size,
-            this.position.y - half_size,
+            this.position.x,
+            this.position.y,
             size,
             size,
         );

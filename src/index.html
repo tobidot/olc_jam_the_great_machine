@@ -13,6 +13,16 @@
         <!-- <img id="sprinkler" src="../assets/sprinkler.png"> -->
     </div>
     <script src="index.ts"></script>
+    <script>
+        document.addEventListener('scroll', (event) => {
+            event.preventDefault();
+        }, {
+            passive: false
+        });
+        document.addEventListener('keydown', (event) => {
+            event.preventDefault();
+        });
+    </script>
 </body>
 
 </html>

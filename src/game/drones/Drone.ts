@@ -60,6 +60,9 @@ export class Drone extends GameObject {
                 this.swarm_ref.queue_new_drone(this.position.copy());
             }
         }
+        if (this.fuels <= 0) {
+            this.age -= dt;
+        }
         this.age -= dt;
         if (this.age < 0) {
             this.swarm_ref.queue_dying_drone(this);

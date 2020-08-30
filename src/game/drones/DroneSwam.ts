@@ -12,6 +12,15 @@ export class DroneSwarm {
     private queued_dying_drones: Array<Drone> = [];
     public drones: Array<Drone> = [];
 
+    public level_points: number = 0;
+    public level_points_needed: number = 1;
+    public level_progress: number = 0;
+    public levels = {
+        thruster_level: 1,
+        stability_level: 1,
+        collecting_level: 1,
+    }
+
     constructor(game: Game) {
         this.game = game;
     }
@@ -41,6 +50,8 @@ export class DroneSwarm {
                 drone.position.set(0, 0);
             }
 
+            this.level_progress += 0.01 * dt / this.level_points_needed;
+
             drone_center_sum.add(drone.position);
             const center_deviation = this.center.copy().sub(drone.position).magSq();
             if (center_deviation > this.deviation) {
@@ -61,6 +72,12 @@ export class DroneSwarm {
             this.drones.splice(i, 1);
         });
         this.queued_dying_drones = [];
+
+        while (this.level_progress > 1) {
+            this.level_points++;
+            this.level_points_needed = this.level_points_needed * 1.5 + 0.1;
+            this.level_progress = 0;
+        }
     }
 
     public draw(p: p5, camera: Camera) {
@@ -89,19 +106,22 @@ export class DroneSwarm {
     }
 
     public get_production_cost(): number {
-        return 200;
+        return 250;
     }
 
     public get_impuls_strength(): number {
-        return 5;
+        const level = Math.floor(this.levels.thruster_level);
+        return level * level * 4;
     }
 
     public get_time_to_dock(): number {
-        return 4;
+        const level = Math.floor(this.levels.collecting_level);
+        return (20 + level) / (4 * level);
     }
 
     public get_time_to_dig(): number {
-        return 1;
+        const level = Math.floor(this.levels.collecting_level);
+        return (2 + level) / (2 * level);
     }
 
     public get_drone_weight(): number {
@@ -109,7 +129,8 @@ export class DroneSwarm {
     }
 
     public get_durability(): number {
-        return 120;
+        const level = Math.floor(this.levels.stability_level);
+        return 80 + level * 10;
     }
 
 }

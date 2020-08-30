@@ -6,13 +6,16 @@ import { Camera } from "./helper/Camera";
 import { DroneSwarm } from "./drones/DroneSwam";
 import { OrganicShip } from "./enemies/OrganicShips";
 import { Effect } from "./effects/Effect";
+import { GameMenu } from "./GameMenu";
 
 export class Game {
     private stellar_bodies: Array<StelarBody> = [];
     private camera: Camera = new Camera;
-    private swarm: DroneSwarm = new DroneSwarm(this);
+    public swarm: DroneSwarm = new DroneSwarm(this);
     private organic_ships: Array<OrganicShip> = [];
     private effects: Array<Effect> = [];
+    private menu: GameMenu = new GameMenu(this);
+    private ship_spawn: number = 60;
 
 
     public readonly universe_size = 5000;
@@ -27,6 +30,7 @@ export class Game {
     public init(p: p5) {
         const images = require('../assets/images/*.png');
 
+        p.noSmooth();
         p.mouseWheel = (event: { delta: number }) => {
             if (event.delta > 0) this.camera.zoom_in();
             if (event.delta < 0) this.camera.zoom_out();
@@ -35,13 +39,22 @@ export class Game {
         p.mousePressed = () => {
             const x = p.mouseX;
             const y = p.mouseY;
-            prevMouse.set(x, y);
+            if (y < 500) {
+                prevMouse.set(x, y);
+            } else {
+                this.menu.mouse_pressed(x, y);
+            }
         }
         p.mouseDragged = (event) => {
             const x = p.mouseX;
             const y = p.mouseY;
-            this.camera.move(prevMouse.copy().sub(x, y).mult(-1 / this.camera.zoom));
-            prevMouse.set(x, y);
+            const drag = prevMouse.copy().sub(x, y);
+            if (y < 500) {
+                this.camera.move(drag.mult(-1 / this.camera.zoom));
+                prevMouse.set(x, y);
+            } else {
+                this.menu.mouse_dragged(x, y, drag);
+            }
         }
         p.keyPressed = () => {
             if (p.keyIsDown(32)) this.camera.target(this.swarm.center.mult(-1));
@@ -74,8 +87,6 @@ export class Game {
             }
             this.create_system(center, 150);
             this.camera.target_position.set(this.camera.position.set(center.copy().mult(-1)));
-
-
 
         }
 
@@ -122,10 +133,17 @@ export class Game {
                 ship.position.set(0, 0);
             }
         });
+
+        if ((this.ship_spawn -= dt) < 0) {
+            this.ship_spawn = 60;
+            const ship = new OrganicShip(this, new p5.Vector().copy());
+            this.organic_ships.push(ship);
+        }
         this.effects = this.effects.filter((effect) => {
             effect.update(dt);
             return !effect.is_finished;
         });
+
 
         const cam_speed = 400 / this.camera.zoom;
         if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(65)) {
@@ -145,6 +163,7 @@ export class Game {
 
     public draw(p: p5) {
         p.background(0);
+        p.push();
         p.translate(400, 300);
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
@@ -181,6 +200,8 @@ export class Game {
             p.strokeWeight(5 / this.camera.zoom);
             p.ellipse(this.swarm.center.x, this.swarm.center.y, this.swarm.deviation * 2, this.swarm.deviation * 2);
         }
+        p.pop();
+        this.menu.draw(p);
     }
 
     public should_object_be_drawn(pos: p5.Vector): boolean {
