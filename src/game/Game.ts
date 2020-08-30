@@ -11,7 +11,8 @@ export class Game {
     private swarm: DroneSwarm = new DroneSwarm(this);
 
     public readonly universe_size = 5000;
-    public readonly universe_density = 0.1;
+    public readonly universe_density = 0.4;
+    public readonly system_density = 0.3;
 
 
     constructor() {
@@ -42,23 +43,18 @@ export class Game {
         };
 
         const universe_size = this.universe_size;
-        const universe_max_bodies = universe_size * universe_size / 4000;
-        const universe_bodies = universe_max_bodies * this.universe_density;
-        const curve = (x: number): number => {
-            return 1 - ((x) * (0.4 - x) * (0.9 - x) * 11) - 0.5;
-        }
-        const dice1 = Math.floor(Math.random() * universe_bodies) + 1;
-        const dice2 = Math.floor(Math.random() * universe_bodies) + 1;
-
+        const universe_max_systems = universe_size / 125;
+        const universe_systems = universe_max_systems * this.universe_density;
+        const dice1 = Math.floor(Math.random() * universe_systems / 3) + 1;
+        const dice2 = Math.floor(Math.random() * universe_systems / 3) + 1;
+        const dice3 = Math.floor(Math.random() * universe_systems / 3) + 1;
         {
-            const count = dice1 + dice2;
+            const count = dice1 + dice2 + dice3;
             for (let i = 0; i < count; ++i) {
-                const asteroid = new Asteroid();
-                asteroid.set_position(
-                    p5.Vector.random2D().mult(curve(Math.random()) * universe_size)
-                );
-
-                this.stellar_bodies.push(asteroid);
+                const size = this.asteroid_distribution_function(Math.random()) * 800;
+                const dist = (Math.random() * 0.6 + 0.2) * universe_size;
+                const center = p5.Vector.random2D().mult(dist);
+                this.create_system(center, size);
             }
         }
 
@@ -69,11 +65,28 @@ export class Game {
                 const off = p5.Vector.random2D().mult(10);
                 this.swarm.queue_new_drone(center.copy().add(off));
             }
-
-            const asteroid = new Asteroid(center.copy(), 2);
-            this.stellar_bodies.push(asteroid);
+            this.create_system(center, 100);
             this.camera.target_position.set(this.camera.position.set(center.mult(-1)));
         }
+    }
+
+    public create_system(center: p5.Vector, system_size: number) {
+        const system_max_bodies = system_size / 5;
+        const system_bodies = system_max_bodies * this.system_density;
+
+        const dice1 = Math.floor(Math.random() * system_bodies / 2) + 1;
+        const dice2 = Math.floor(Math.random() * system_bodies / 2) + 1;
+        const count = dice1 + dice2;
+        for (let i = 0; i < count; ++i) {
+            const dist = this.asteroid_distribution_function(Math.random()) * system_size;
+            const pos = p5.Vector.random2D().mult(dist).add(center);
+            const asteroid = new Asteroid(pos);
+            this.stellar_bodies.push(asteroid);
+        }
+    }
+
+    public asteroid_distribution_function(x: number) {
+        return 1 - ((x) * (0.4 - x) * (0.9 - x) * 11) - 0.5;
     }
 
     public update(dt: number, p: p5) {
