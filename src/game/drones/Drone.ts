@@ -54,14 +54,19 @@ export class Drone extends GameObject {
                     this.position.set(relation.stelar_body.translator.global_coord_to_cell_coord.translate_to_source(cell.coord));
                     this.progress = 5;
                 } else {
-                    // Space for debug
+                    const cm_size = relation.stelar_body.get_half_cellmap_size();
+                    if (relation.distance2 < cm_size * cm_size) {
+                        const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+                        this.apply_force(acting_force);
+                    }
                 }
             } else {
+                const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
+                this.apply_force(acting_force);
             }
-            const acting_force = relation.stelar_body.calculate_gravitational_force_on(1, this.position).mult(dt);
-            this.apply_force(acting_force);
         });
         if (this.attached === null) {
+            if (this.velocity.magSq() > 10000) this.velocity.mult(0.99);
             this.position.add(p5.Vector.mult(this.velocity, dt));
         }
         return true;

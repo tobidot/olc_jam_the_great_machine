@@ -62,7 +62,7 @@ export class Game {
 
         {
             const count = 5;
-            const center = p5.Vector.random2D().mult(Math.random() * universe_size).add(universe_size / 2, universe_size / 2);
+            const center = p5.Vector.random2D().mult((Math.random() * 0.25) * universe_size + 0.6).add(universe_size / 2, universe_size / 2);
             for (let i = 0; i < count; ++i) {
                 const drone = new Drone();
                 const off = p5.Vector.random2D().mult(10);
@@ -98,6 +98,11 @@ export class Game {
                 });
             }
             drone.update(dt);
+            const dist_to_univers_center = drone.position.magSq();
+            if (dist_to_univers_center > this.universe_size * this.universe_size) {
+                drone.position.set(0, 0);
+            }
+
             drone_center_sum.add(drone.position);
             const center_deviation = this.drone_center.copy().sub(drone.position).magSq();
             if (center_deviation > this.drone_deviation) {
