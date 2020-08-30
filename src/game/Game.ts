@@ -16,14 +16,23 @@ export class Game {
     public init(p: p5) {
         const images = require('../assets/images/*.png');
 
-        p.mousePressed = () => {
-            const x = p.mouseX;
-            const y = p.mouseY;
-        }
         p.mouseWheel = (event: { delta: number }) => {
             if (event.delta > 0) this.camera.zoom_in();
             if (event.delta < 0) this.camera.zoom_out();
         };
+        let prevMouse = new p5.Vector();
+        p.mousePressed = () => {
+            const x = p.mouseX;
+            const y = p.mouseY;
+            prevMouse.set(x, y);
+        }
+        p.mouseDragged = (event) => {
+            const x = p.mouseX;
+            const y = p.mouseY;
+            this.camera.move(prevMouse.copy().sub(x, y).mult(-1 / this.camera.zoom));
+            prevMouse.set(x, y);
+            console.log(event);
+        }
 
         const universe_size = 500;
         const count = Math.floor(Math.random() * 20) + 5
