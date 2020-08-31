@@ -5,6 +5,7 @@ import { Camera } from "../helper/Camera";
 export class LaserDeathEffect extends Effect {
     private strength: number = 0;
     public time: number = 0;
+
     constructor(public source: p5.Vector, public target: p5.Vector, public duration: number, public color: number) {
         super();
     }
