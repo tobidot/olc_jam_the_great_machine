@@ -6,12 +6,12 @@
   "license": "MIT",
   "scripts": {
     "start": "npx parcel ./src/index.html",
+    "tsc": "tsc --noEmit",
     "clean": "rmdir /q 'dist'",
     "build": "npx parcel build ./src/index.html --public-url .",
     "release": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@types/node": "^14.6.0",
     "@types/p5": "^0.9.1",
     "@types/parcel-env": "^0.0.0",
     "@types/react": "^16.9.46",

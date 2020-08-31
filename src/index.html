@@ -14,12 +14,12 @@
     </div>
     <script src="index.ts"></script>
     <script>
-        document.addEventListener('scroll', (event) => {
+        document.body.addEventListener('wheel', (event) => {
             event.preventDefault();
         }, {
             passive: false
         });
-        document.addEventListener('keydown', (event) => {
+        document.body.addEventListener('keydown', (event) => {
             event.preventDefault();
         });
     </script>

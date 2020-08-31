@@ -2,7 +2,7 @@ import { SignalSocket } from "./SignalSocket";
 
 
 export class ObservableSocket<T> extends SignalSocket<{ old: T, new: T }> {
-    constructor(private value: T = null) {
+    constructor(private value: T) {
         super();
     }
 
