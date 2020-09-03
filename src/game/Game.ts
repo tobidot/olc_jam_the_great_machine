@@ -6,7 +6,7 @@ import { Camera } from "./helper/Camera";
 import { DroneSwarm } from "./drones/DroneSwam";
 import { OrganicShip } from "./enemies/OrganicShips";
 import { Effect } from "./effects/Effect";
-import { GameMenu } from "./GameMenu";
+import { GameMenu } from "./game-menu/GameMenu";
 
 export class Game {
     private stellar_bodies: Array<StelarBody> = [];
