@@ -82,7 +82,7 @@ export class Drone extends GameObject {
                             relation.to_other.copy().mult(-1),
                             relation.distance2
                         ).mult(dt);
-                        this.apply_force(acting_force);
+                        // this.apply_force(acting_force);
                     }
                 };
             }
@@ -92,7 +92,7 @@ export class Drone extends GameObject {
                     relation.to_other.copy().mult(-1),
                     relation.distance2
                 ).mult(dt);
-                this.apply_force(acting_force);
+                // this.apply_force(acting_force);
             }
         });
         if (this.attached === null) {
