@@ -6,10 +6,13 @@ import { TreeElementNotFoundException } from "../../src/tools/signals/trees/exce
 
 export class QuadTreeTest extends TestClass {
 
-    public tree = new QuadTree<DemoQuadElement<number>>();
+    public base_rect: helper.rect.IRect = {
+        x: -50, y: -50, w: 100, h: 100,
+    };
+    public tree = new QuadTree<DemoQuadElement<number>>(this.base_rect);
 
     public set_up() {
-        this.tree = new QuadTree();
+        this.tree = new QuadTree(this.base_rect);
     }
 
     public test_new_quad_tree_is_empty() {
@@ -49,14 +52,14 @@ export class QuadTreeTest extends TestClass {
     }
 
     public test_quad_tree_pick_returns_empty_array() {
-        const rect: helper.IRect = { x: 0, y: 0, w: 500, h: 500 };
+        const rect: helper.rect.IRect = { x: 0, y: 0, w: 500, h: 500 };
         const result: Array<DemoQuadElement<number>> = this.tree.pick(rect);
         this.assert_true(result.length === 0);
     }
 
     public test_quad_tree_picking_rect_with_element_within_returns_element_in_array() {
         const element = new DemoQuadElement<number>(0, 0, 0, 0, 10);
-        const rect = new helper.Rect(-1, -1, 3, 3);
+        const rect = new helper.rect.Rect(-1, -1, 3, 3);
         this.tree.add(element);
         const result = this.tree.pick(rect);
         this.assert_equals(result.length, 1);
@@ -64,7 +67,7 @@ export class QuadTreeTest extends TestClass {
     }
 }
 
-class DemoQuadElement<T> extends helper.Rect {
+class DemoQuadElement<T> extends helper.rect.Rect {
     public constructor(
         x: number, y: number, w: number, h: number, public data: T
     ) {

@@ -10,7 +10,7 @@ export class GameMenuLabel extends GameMenuRect {
     public text_color: string = "#fff";
     public text_size: number = 32;
 
-    constructor(rect: helper.Rect, text: string = '') {
+    constructor(rect: helper.rect.Rect, text: string = '') {
         super(rect);
         this.text = text;
     }

@@ -2,10 +2,10 @@ import { helper } from "../tools/Rect";
 import p5 from "p5";
 
 export abstract class GameMenuElement {
-    public rect: helper.Rect;
+    public rect: helper.rect.Rect;
     public on_draw?: (self: GameMenuElement) => void;
 
-    constructor(rect: helper.Rect) {
+    constructor(rect: helper.rect.Rect) {
         this.rect = rect;
     }
 

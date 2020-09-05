@@ -1,4 +1,4 @@
-import { IRect, helper } from "../tools/Rect";
+import { helper } from "../tools/Rect";
 import p5 from "p5";
 import { GameMenuRect } from "./GameMenuRect";
 import { GameMenuLabel } from "./GameMenuLabel";
@@ -6,7 +6,7 @@ import { GameMenuLabel } from "./GameMenuLabel";
 export class GameMenuButton extends GameMenuLabel {
     public on_click?: (rel_pos: p5.Vector) => void;
 
-    public constructor(rect: helper.Rect, text: string = '') {
+    public constructor(rect: helper.rect.Rect, text: string = '') {
         super(rect, text);
     }
 
