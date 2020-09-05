@@ -13,6 +13,9 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\tests-dist\\tests\\main.js",
+            "args": [
+                "QuadTreeTest"
+            ],
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

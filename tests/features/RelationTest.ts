@@ -18,19 +18,19 @@ export class RelationTest extends TestClass {
 
     public test_create_relation() {
         let relation = LinkLinkRelation.connect(this.a, this.b);
-        this.assertInstanceOf(relation, LinkLinkRelation);
+        this.assert_instance_of(relation, LinkLinkRelation);
     }
 
     public test_connected_relations_are_not_null() {
         let relation = LinkLinkRelation.connect(this.a, this.b);
-        this.assertNotEquals(relation.get_left(), null);
-        this.assertNotEquals(relation.get_right(), null);
+        this.assert_not_equals(relation.get_left(), null);
+        this.assert_not_equals(relation.get_right(), null);
     }
 
     public test_connected_objects_have_reference_to_relation() {
         let relation = LinkLinkRelation.connect(this.a, this.b);
-        this.assertEquals(this.a.link_link_relation, relation);
-        this.assertEquals(this.b.link_link_relation, relation);
+        this.assert_equals(this.a.link_link_relation, relation);
+        this.assert_equals(this.b.link_link_relation, relation);
     }
 
     public test_new_relation_invalidates_old_relation() {
@@ -38,15 +38,15 @@ export class RelationTest extends TestClass {
         const relation_bc = LinkLinkRelation.connect(this.b, this.c);
 
         const related_b_from_a = this.a.link_link_relation;
-        this.assertEquals(relation_ab, related_b_from_a);
-        this.assertEquals(related_b_from_a.get_left(), null);
-        this.assertEquals(related_b_from_a.get_right(), null);
+        this.assert_equals(relation_ab, related_b_from_a);
+        this.assert_equals(related_b_from_a.get_left(), null);
+        this.assert_equals(related_b_from_a.get_right(), null);
 
         const relation_ba = LinkLinkRelation.connect(this.b, this.a);
         const related_b_from_c = this.c.link_link_relation;
-        this.assertEquals(this.b.link_link_relation, relation_ba);
-        this.assertEquals(related_b_from_c.get_left(), null);
-        this.assertEquals(related_b_from_c.get_right(), null);
+        this.assert_equals(this.b.link_link_relation, relation_ba);
+        this.assert_equals(related_b_from_c.get_left(), null);
+        this.assert_equals(related_b_from_c.get_right(), null);
     }
 
     public test_with_multiple_relation_names_still_finds_other_object() {
@@ -55,10 +55,10 @@ export class RelationTest extends TestClass {
         let post = new Post;
         const comment_user = CommentUserRelation.connect(comment, user);
         const comment_post = CommentPostRelation.connect(comment, post);
-        this.assertEquals(comment_user.get_left(), comment);
-        this.assertEquals(comment_user.get_right(), user);
-        this.assertEquals(comment_post.get_left(), comment);
-        this.assertEquals(comment_post.get_right(), post);
+        this.assert_equals(comment_user.get_left(), comment);
+        this.assert_equals(comment_user.get_right(), user);
+        this.assert_equals(comment_post.get_left(), comment);
+        this.assert_equals(comment_post.get_right(), post);
     }
 
 }

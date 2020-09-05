@@ -1,9 +1,10 @@
-export interface IRect {
-    x: number, y: number, w: number, h: number
-}
+
 
 
 export namespace helper {
+    export interface IRect {
+        x: number, y: number, w: number, h: number
+    }
 
     export class Rect implements IRect {
         public constructor(public x: number = 0, public y: number = 0, public w: number = 0, public h: number = 0) {

@@ -2,9 +2,12 @@
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "lib": ["es6", "es2017", "DOM"],
     "noImplicitAny": false,
-    "outDir": "./tests-dist"
+    "outDir": "./tests-dist",
+    "target": "ES2015",
+    "module": "CommonJS",
   },
   "include": [
     "./tests"

@@ -20,35 +20,35 @@ export class TestClass {
         }
     }
 
-    public assertInstanceOf<T extends Printable<T>>(value: Printable<T>, expected: Class<T>): void {
+    public assert_instance_of<T extends Printable<T>>(value: Printable<T>, expected: Class<T>): void {
         if (false === value instanceof expected) {
             throw new Error('Expected ' + value?.toString() + ' to be of instance ' + expected.name);
         }
         this.success();
     }
 
-    public assertEquals<T>(value: T, expected: T): void {
+    public assert_equals<T>(value: T, expected: T): void {
         if (value !== expected) {
             throw new Error('Expected ' + String(value) + ' to be equal to ' + String(expected));
         }
         this.success();
     }
 
-    public assertNotEquals<T>(value: T, expected: T): void {
+    public assert_not_equals<T>(value: T, expected: T): void {
         if (value === expected) {
             throw new Error('Expected ' + String(value) + ' to be NOT equal to ' + String(expected));
         }
         this.success();
     }
 
-    public assertTrue<T>(value: boolean): void {
+    public assert_true<T>(value: boolean): void {
         if (value === false) {
             throw new Error('Expected ' + String(value) + ' to be true');
         }
         this.success();
     }
 
-    public assertFalse<T>(value: boolean): void {
+    public assert_false<T>(value: boolean): void {
         if (value === true) {
             throw new Error('Expected ' + String(value) + ' to be false');
         }

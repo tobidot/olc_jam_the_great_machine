@@ -35,7 +35,7 @@ export class Game {
         const sounds = require('../assets/sound/*.mp3');
         p.loadSound(sounds.the_great_machine_no_lead, (sound: p5.SoundFile) => {
             sound.setLoop(true);
-            sound.play();
+            // sound.play();
             this.shared.background_music.set(sound);
         });
 
