@@ -16,12 +16,6 @@ export class QuadTreeTest extends TestClass {
         this.assert_true(this.tree.is_empty());
     }
 
-    public test_quad_tree_pick_returns_empty_array() {
-        const rect: helper.IRect = { x: 0, y: 0, w: 500, h: 500 };
-        const result: Array<DemoQuadElement<number>> = this.tree.pick(rect);
-        this.assert_true(result.length === 0);
-    }
-
     public test_quad_tree_is_not_empty_after_add_element() {
         const element = new DemoQuadElement<number>(0, 0, 0, 0, 10);
         this.tree.add(element);
@@ -45,6 +39,29 @@ export class QuadTreeTest extends TestClass {
         this.assert_true(this.tree.is_empty());
     }
 
+    public test_quad_tree_after_once_add_twice_remove_throws_element_not_found() {
+        const element = new DemoQuadElement<number>(0, 0, 0, 0, 10);
+        this.tree.add(element);
+        this.tree.remove(element);
+        this.assert_exception(TreeElementNotFoundException, () => {
+            this.tree.remove(element);
+        });
+    }
+
+    public test_quad_tree_pick_returns_empty_array() {
+        const rect: helper.IRect = { x: 0, y: 0, w: 500, h: 500 };
+        const result: Array<DemoQuadElement<number>> = this.tree.pick(rect);
+        this.assert_true(result.length === 0);
+    }
+
+    public test_quad_tree_picking_rect_with_element_within_returns_element_in_array() {
+        const element = new DemoQuadElement<number>(0, 0, 0, 0, 10);
+        const rect = new helper.Rect(-1, -1, 3, 3);
+        this.tree.add(element);
+        const result = this.tree.pick(rect);
+        this.assert_equals(result.length, 1);
+        this.assert_equals(result[0], element);
+    }
 }
 
 class DemoQuadElement<T> extends helper.Rect {
