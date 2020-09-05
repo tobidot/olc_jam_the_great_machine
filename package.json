@@ -5,6 +5,10 @@
   "author": "tobidot <Object.name@live.de>",
   "license": "MIT",
   "scripts": {
+    "test": "yarn run test-build && yarn run test-run",
+    "test-build": "tsc --build ./tsconfig-test.json ",
+    "test-run": "node ./tests-dist/tests/main.js",
+    "test-watch": "tsc --build ./tsconfig-test.json --watch",
     "start": "npx parcel ./src/index.html",
     "tsc": "tsc --noEmit",
     "clean": "rmdir /q 'dist'",

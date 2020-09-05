@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": ["es6", "es2017", "DOM"],
+    "noImplicitAny": false,
+    "outDir": "./tests-dist"
+  },
+  "include": [
+    "./tests"
+  ],
+  "files": ["./tests/main.ts"]
+}
