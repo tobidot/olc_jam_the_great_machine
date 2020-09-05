@@ -7,6 +7,7 @@ import { DroneSwarm } from "./drones/DroneSwam";
 import { OrganicShip } from "./enemies/OrganicShips";
 import { Effect } from "./effects/Effect";
 import { GameMenu } from "./game-menu/GameMenu";
+import { Shared } from "../shared/Shared";
 
 export class Game {
     private stellar_bodies: Array<StelarBody> = [];
@@ -16,7 +17,9 @@ export class Game {
     private effects: Array<Effect> = [];
     private menu: GameMenu = new GameMenu(this);
     private ship_spawn: number = 60;
+    private background_music: any;
 
+    private shared: Shared = Shared.get_instance();
 
     public readonly universe_size = 5000;
     public readonly universe_density = 0.6;
@@ -27,8 +30,14 @@ export class Game {
 
     }
 
-    public init(p: p5) {
+    public init(p: p5 & p5.SoundFile) {
         const images = require('../assets/images/*.png');
+        const sounds = require('../assets/sound/*.mp3');
+        p.loadSound(sounds.the_great_machine_no_lead, (sound: p5.SoundFile) => {
+            sound.setLoop(true);
+            sound.play();
+            this.shared.background_music.set(sound);
+        });
 
         p.noSmooth();
         p.mouseWheel = (event: { delta: number }) => {

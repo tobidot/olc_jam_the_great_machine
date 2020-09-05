@@ -1,5 +1,8 @@
 import { Shared } from "../shared/Shared";
 import p5 from "p5";
+import "p5";
+(<any>window).p5 = p5;
+import 'p5/lib/addons/p5.sound';
 import { Game } from "./Game";
 
 export function load_game() {
@@ -28,8 +31,12 @@ function connect_container_to_game_screen(container: HTMLDivElement, p5Instance:
     });
 }
 
-function setup_p5_instance(p: p5) {
+function setup_p5_instance(p: p5 & p5.SoundFile) {
     let game = new Game();
+    let sound: p5.SoundFile;
+    p.preload = function () {
+        p.soundFormats('mp3');
+    }
     p.setup = function () {
         // where does this canvas come from=?
         (<any>p).canvas.remove();
