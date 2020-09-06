@@ -132,7 +132,7 @@ export class DroneSwarm {
 
     public get_durability(): number {
         const level = Math.floor(this.levels.stability_level);
-        return 80 + level * 10;
+        return 60 + level * 10;
     }
 
 }

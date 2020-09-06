@@ -64,6 +64,7 @@ export class Drone extends ColliderObject {
         } else {
             this.update_when_not_attached(dt);
         }
+        // clone yourself
         if (this.fuels > 25) {
             const progress = dt * 25;
             this.fuels -= progress;
@@ -75,10 +76,8 @@ export class Drone extends ColliderObject {
                 });
             }
         }
-        if (this.fuels <= 0) {
-            this.age -= dt;
-        }
-        this.age -= dt;
+        const control_modifier = this.game.control.distance / 1000 + this.game.control.speed / 100;
+        this.age -= dt * control_modifier;
         if (this.age < 0) {
             this.swarm_ref.queue_dying_drone(this);
         }
@@ -101,7 +100,7 @@ export class Drone extends ColliderObject {
                 if (this.parent) {
                     target = this.parent.get_position().copy();
                 } else {
-                    target = this.swarm_ref.center.copy().add(this.game.control.offset);
+                    target = this.swarm_ref.center.copy().add(this.game.control.offset.copy().mult(5 * Math.sqrt(this.game.control.speed)));
                 }
                 const off = p5.Vector.fromAngle((this.update_aim_rotate++) * Math.PI / 4).mult(this.game.control.distance);
                 this.target = p5.Vector.add(target, off);

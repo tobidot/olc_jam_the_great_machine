@@ -93,7 +93,7 @@ export class GameMenu {
             new helper.rect.Rect(50 - 25, 560 - 25, 50, 50),
             new helper.rect.Rect(50, 550, 200, 20),
         ).set_on_drag(() => {
-            this.game.control.speed = speed_controler.relative_value_x * 300 + 60;
+            this.game.control.speed = speed_controler.relative_value_x * 200 + 120;
         });
 
         let distance_controler = new GameMenuControler(
@@ -108,8 +108,8 @@ export class GameMenu {
             new helper.rect.Rect(660, 510, 80, 80),
         ).set_on_drag(() => {
             this.game.control.offset.set(
-                movement_controler.relative_value_x * 100 - 50,
-                movement_controler.relative_value_y * 100 - 50,
+                movement_controler.relative_value_x,
+                movement_controler.relative_value_y,
             )
         });
 
