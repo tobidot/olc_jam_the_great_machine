@@ -5,6 +5,7 @@ import { GameMenuLabel } from "./GameMenuLabel";
 import { helper } from "../tools/Rect";
 import { GameMenuButton } from "./GameMenuButton";
 import { GameMenuRect } from "./GameMenuRect";
+import { GameMenuControler } from "./GameMenuControler";
 
 export class GameMenu {
     private elements: Array<GameMenuElement> = [];
@@ -13,60 +14,62 @@ export class GameMenu {
         let textColor = "#00dd00";
         let buttonColor = "#444444";
 
-        let thrusters_button = (new GameMenuButton(new helper.rect.Rect(25, 510, 200, 50)))
-            .set_background_color(buttonColor)
-            .set_text_color(textColor)
-            .set_text('Thrusters')
-            .set_on_click(() => this.buy_level('thrusters'));
-        let collectors_button = (new GameMenuButton(new helper.rect.Rect(275, 510, 200, 50)))
-            .set_background_color(buttonColor)
-            .set_text_color(textColor)
-            .set_text('Collectors')
-            .set_on_click(() => this.buy_level('collectors'));
-        let durability_button = (new GameMenuButton(new helper.rect.Rect(525, 510, 200, 50)))
-            .set_background_color(buttonColor)
-            .set_text_color(textColor)
-            .set_text('Durability')
-            .set_on_click(() => this.buy_level('durability'));
 
-        let label_back_color = "#aaaa00";
-        let label_front_color = "#111";
-        let thruster_count_label = (new GameMenuLabel(new helper.rect.Rect(225, 510, 40, 50)))
-            .set_background_color(label_back_color)
-            .set_text_color(label_front_color)
-            .set_on_draw(() => {
-                thruster_count_label.set_text(this.game.swarm.levels.thruster_level.toString());
-            });
-        let collectors_count_label = (new GameMenuLabel(new helper.rect.Rect(475, 510, 40, 50)))
-            .set_background_color(label_back_color)
-            .set_text_color(label_front_color)
-            .set_on_draw(() => {
-                collectors_count_label.set_text(this.game.swarm.levels.collecting_level.toString());
-            });
-        let durability_count_label = (new GameMenuLabel(new helper.rect.Rect(725, 510, 40, 50)))
-            .set_background_color(label_back_color)
-            .set_text_color(label_front_color)
-            .set_on_draw(() => {
-                durability_count_label.set_text(this.game.swarm.levels.stability_level.toString());
-            });
 
-        let unspent_points_label = (new GameMenuLabel(new helper.rect.Rect(650, 580, 125, 20)))
-            .set_background_color(label_front_color)
-            .set_text_color("#bbbb00")
-            .set_text_size(24)
-            .set_alignment("left", "center")
-            .set_on_draw(() => {
-                unspent_points_label.set_text(this.game.swarm.level_points.toString());
-            });
+        // let thrusters_button = (new GameMenuButton(new helper.rect.Rect(25, 510, 200, 50)))
+        //     .set_background_color(buttonColor)
+        //     .set_text_color(textColor)
+        //     .set_text('Thrusters')
+        //     .set_on_click(() => this.buy_level('thrusters'));
+        // let collectors_button = (new GameMenuButton(new helper.rect.Rect(275, 510, 200, 50)))
+        //     .set_background_color(buttonColor)
+        //     .set_text_color(textColor)
+        //     .set_text('Collectors')
+        //     .set_on_click(() => this.buy_level('collectors'));
+        // let durability_button = (new GameMenuButton(new helper.rect.Rect(525, 510, 200, 50)))
+        //     .set_background_color(buttonColor)
+        //     .set_text_color(textColor)
+        //     .set_text('Durability')
+        //     .set_on_click(() => this.buy_level('durability'));
 
-        let progress_color = "#008800";
-        let level_progress_bar = (new GameMenuRect(new helper.rect.Rect(0, 580, 800, 20)))
-            .set_background_color(progress_color)
-            .set_on_draw(() => {
-                const green = Math.trunc(this.game.swarm.level_progress * 255).toString(16).padStart(2, '0');
-                level_progress_bar.background_color = "#00" + green + "00";
-                level_progress_bar.rect.w = this.game.swarm.level_progress * 600;
-            });
+        // let label_back_color = "#aaaa00";
+        // let label_front_color = "#111";
+        // let thruster_count_label = (new GameMenuLabel(new helper.rect.Rect(225, 510, 40, 50)))
+        //     .set_background_color(label_back_color)
+        //     .set_text_color(label_front_color)
+        //     .set_on_draw(() => {
+        //         thruster_count_label.set_text(this.game.swarm.levels.thruster_level.toString());
+        //     });
+        // let collectors_count_label = (new GameMenuLabel(new helper.rect.Rect(475, 510, 40, 50)))
+        //     .set_background_color(label_back_color)
+        //     .set_text_color(label_front_color)
+        //     .set_on_draw(() => {
+        //         collectors_count_label.set_text(this.game.swarm.levels.collecting_level.toString());
+        //     });
+        // let durability_count_label = (new GameMenuLabel(new helper.rect.Rect(725, 510, 40, 50)))
+        //     .set_background_color(label_back_color)
+        //     .set_text_color(label_front_color)
+        //     .set_on_draw(() => {
+        //         durability_count_label.set_text(this.game.swarm.levels.stability_level.toString());
+        //     });
+
+        // let unspent_points_label = (new GameMenuLabel(new helper.rect.Rect(650, 580, 125, 20)))
+        //     .set_background_color(label_front_color)
+        //     .set_text_color("#bbbb00")
+        //     .set_text_size(24)
+        //     .set_alignment("left", "center")
+        //     .set_on_draw(() => {
+        //         unspent_points_label.set_text(this.game.swarm.level_points.toString());
+        //     });
+
+        // let progress_color = "#008800";
+        // let level_progress_bar = (new GameMenuRect(new helper.rect.Rect(0, 580, 800, 20)))
+        //     .set_background_color(progress_color)
+        //     .set_on_draw(() => {
+        //         const green = Math.trunc(this.game.swarm.level_progress * 255).toString(16).padStart(2, '0');
+        //         level_progress_bar.background_color = "#00" + green + "00";
+        //         level_progress_bar.rect.w = this.game.swarm.level_progress * 600;
+        //     });
 
         let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 400, 50, 50))
             .set_background_color("#222222")
@@ -83,15 +86,35 @@ export class GameMenu {
             });
 
 
+        let menu_bar = new GameMenuRect(new helper.rect.Rect(0, 500, 800, 100))
+            .set_background_color("#442222");
+
+        let speed_controler = new GameMenuControler(
+            new helper.rect.Rect(50 - 25, 560 - 25, 50, 50),
+            new helper.rect.Rect(50, 550, 200, 20),
+        ).set_on_drag(() => {
+            this.game.control.speed = speed_controler.relative_value_x * 200 + 30;
+        });
+
+        let distance_controler = new GameMenuControler(
+            new helper.rect.Rect(350 - 25, 560 - 25, 50, 50),
+            new helper.rect.Rect(350, 550, 200, 20),
+        ).set_on_drag(() => {
+            this.game.control.distance = distance_controler.relative_value_x * 1000 + 50;
+        });
+
         this.elements = [
-            thrusters_button,
-            thruster_count_label,
-            collectors_button,
-            collectors_count_label,
-            durability_button,
-            durability_count_label,
-            level_progress_bar,
-            unspent_points_label,
+            // thrusters_button,
+            // thruster_count_label,
+            // collectors_button,
+            // collectors_count_label,
+            // durability_button,
+            // durability_count_label,
+            // level_progress_bar,
+            // unspent_points_label,
+            menu_bar,
+            speed_controler,
+            distance_controler,
             fps_counter,
             drone_counter,
             ...this.create_stats_dislpay(),
@@ -145,9 +168,6 @@ export class GameMenu {
     }
 
     public draw(p: p5) {
-        p.fill("#442222");
-        p.noStroke();
-        p.rect(0, 500, 800, 100);
 
         // this.draw_button(p, 25, 510, 'Thrusters', this.game.swarm.levels.thruster_level);
         // this.draw_button(p, 275, 510, 'Collectors', this.game.swarm.levels.collecting_level);
@@ -197,13 +217,23 @@ export class GameMenu {
     }
 
     mouse_dragged(x: number, y: number, drag: p5.Vector) {
-
+        let hit = false;
+        this.elements.forEach((element) => {
+            if (element.handle_drag(new p5.Vector().set(x, y), drag)) {
+                hit = hit || true;
+            };
+        });
+        return hit;
     }
 
-    mouse_pressed(x: number, y: number) {
+    mouse_pressed(x: number, y: number): boolean {
+        let hit = false;
         this.elements.forEach((element) => {
-            element.handle_click(new p5.Vector().set(x, y));
+            if (element.handle_click(new p5.Vector().set(x, y))) {
+                hit = hit || true;
+            };
         });
+        return hit;
     }
 
 }

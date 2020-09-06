@@ -14,10 +14,14 @@ export class GameMenuButton extends GameMenuLabel {
         super.draw(p);
     }
 
-    public handle_click(global: p5.Vector): void {
+    public handle_click(global: p5.Vector): boolean {
         if (this.rect.contains(global.x, global.y)) {
-            if (this.on_click) this.on_click(global.copy().sub(this.rect.x, this.rect.y))
+            if (this.on_click) {
+                this.on_click(global.copy().sub(this.rect.x, this.rect.y));
+            }
+            return true;
         }
+        return false;
     }
 
     public set_on_click(handler: () => void): this {

@@ -22,5 +22,17 @@ export abstract class GameMenuElement {
         return this;
     }
 
-    public handle_click(global: p5.Vector): void { }
+    public handle_click(global: p5.Vector): boolean {
+        if (this.rect.contains(global.x, global.y)) {
+            return true;
+        }
+        return false;
+    }
+
+    public handle_drag(global: p5.Vector, drag: p5.Vector): boolean {
+        if (this.rect.contains(global.x, global.y)) {
+            return true;
+        }
+        return false;
+    }
 }

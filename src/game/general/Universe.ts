@@ -56,7 +56,7 @@ export class Universe {
         for (let i = 0; i < count; ++i) {
             const off = p5.Vector.random2D().mult(10);
 
-            this.game.swarm.queue_new_drone(center.copy().add(off));
+            this.game.swarm.queue_new_drone(center.copy().add(off), () => { });
         }
         this.create_system(center, 150);
         this.starting_position = center;

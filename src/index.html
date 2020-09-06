@@ -22,6 +22,10 @@
         document.body.addEventListener('keydown', (event) => {
             event.preventDefault();
         });
+        document.body.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
     </script>
 </body>
 

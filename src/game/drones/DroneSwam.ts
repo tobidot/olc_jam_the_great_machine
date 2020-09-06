@@ -8,7 +8,7 @@ export class DroneSwarm {
     public readonly game: Game;
     public center: p5.Vector = new p5.Vector;
     public deviation: number = 0;
-    private queued_new_drones: Array<p5.Vector> = [];
+    private queued_new_drones: Array<{ position: p5.Vector, cb(drone: Drone): void }> = [];
     private queued_dying_drones: Array<Drone> = [];
     public drones: Array<Drone> = [];
 
@@ -64,8 +64,10 @@ export class DroneSwarm {
         if (this.drones.length > 0) drone_center_sum.mult(1 / this.drones.length);
         this.center.set(drone_center_sum);
 
-        this.queued_new_drones.forEach((pos) => {
-            this.drones.push(new Drone(this.game, this, pos));
+        this.queued_new_drones.forEach((data) => {
+            const drone = new Drone(this.game, this, data.position);
+            data.cb(drone);
+            this.drones.push(drone);
         });
         this.queued_new_drones = [];
         this.queued_dying_drones.forEach((drone) => {
@@ -91,8 +93,8 @@ export class DroneSwarm {
         }
     }
 
-    public queue_new_drone(position: p5.Vector) {
-        this.queued_new_drones.push(position);
+    public queue_new_drone(position: p5.Vector, cb) {
+        this.queued_new_drones.push({ position, cb });
     }
 
     public queue_dying_drone(drone: Drone) {

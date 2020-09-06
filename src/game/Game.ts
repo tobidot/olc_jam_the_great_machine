@@ -27,11 +27,18 @@ export class Game {
     private stellar_bodies: Array<StelarBody | null> = [];
     private organic_ships: Array<OrganicShip | null> = [];
     private effects: Array<Effect> = [];
+    public aim: p5.Vector = new p5.Vector;
+    public control = {
+        distance: 100,
+        speed: 50
+    }
 
     public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];
 
     public universe: Universe = new Universe(5000, 0, 0, this);
+
+
 
     public game_stats = {
         enemy_ships: 0,
@@ -50,6 +57,12 @@ export class Game {
         this.shared.debug_mode.add((mode) => {
             this.debug_stats.active = mode.new;
         });
+        window['far'] = () => {
+            this.control.distance *= 2;
+        };
+        window['speed'] = () => {
+            this.control.speed *= 2;
+        };
     }
 
     public add_game_object(object: GameObject) {
@@ -85,14 +98,17 @@ export class Game {
         this.game_objects.forEach(callback);
     }
 
-    public init(p: p5 & p5.SoundFile) {
+    public init(p: p5) {
         const images = require('../assets/images/*.png');
         const sounds = require('../assets/sound/*.mp3');
-        p.loadSound(sounds.the_great_machine_no_lead, (sound: p5.SoundFile) => {
-            sound.setLoop(true);
-            // sound.play();
-            this.shared.background_music.set(sound);
-        });
+        if (p.hasOwnProperty('loadSound')) {
+            const loadSound = (<any>p).loadSound;
+            loadSound(sounds.the_great_machine_no_lead, (sound) => {
+                sound.setLoop(true);
+                // sound.play();
+                this.shared.background_music.set(sound);
+            });
+        }
 
         p.noSmooth();
         p.mouseWheel = (event: { delta: number }) => {
@@ -103,21 +119,26 @@ export class Game {
         p.mousePressed = () => {
             const x = p.mouseX;
             const y = p.mouseY;
-            if (y < 500) {
-                prevMouse.set(x, y);
-            } else {
+            prevMouse.set(x, y);
+            if (p.mouseButton === p.LEFT) {
                 this.menu.mouse_pressed(x, y);
+            } else if (p.mouseButton === p.RIGHT) {
+                const x = (p.mouseX - 400) / this.camera.zoom - this.camera.position.x;
+                const y = (p.mouseY - 300) / this.camera.zoom - this.camera.position.y;
+                this.aim.set(x, y);
             }
         }
         p.mouseDragged = (event) => {
             const x = p.mouseX;
             const y = p.mouseY;
             const drag = prevMouse.copy().sub(x, y);
-            if (y < 500) {
+            prevMouse.set(x, y);
+            if (p.mouseButton === p.LEFT) {
+                if (this.menu.mouse_dragged(x, y, drag)) return;
+                // const x = (p.mouseX - 400) / this.camera.zoom - this.camera.position.x;
+                // const y = (p.mouseY - 300) / this.camera.zoom - this.camera.position.y;
+                // this.aim.set(x, y);
                 this.camera.move(drag.mult(-1 / this.camera.zoom));
-                prevMouse.set(x, y);
-            } else {
-                this.menu.mouse_dragged(x, y, drag);
             }
         }
         p.keyPressed = () => {
@@ -238,6 +259,12 @@ export class Game {
             p.strokeWeight(5 / this.camera.zoom);
             p.ellipse(this.swarm.center.x, this.swarm.center.y, this.swarm.deviation * 2, this.swarm.deviation * 2);
         }
+
+        p.stroke(0, 0, 200);
+        p.strokeWeight(2 / this.camera.zoom);
+        p.fill(200, 200, 0);
+        p.ellipse(this.aim.x, this.aim.y, 20 / this.camera.zoom, 20 / this.camera.zoom);
+
         this.debug_draw(p);
         p.pop();
         this.menu.draw(p);

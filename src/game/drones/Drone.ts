@@ -16,6 +16,10 @@ export class Drone extends ColliderObject {
 
 
     public parent: Drone | null = null;
+    public target: p5.Vector = new p5.Vector;
+    public cd_update_aim: number = 0;
+    public update_aim_rotate: number = 0;
+
     public frame_information: DroneFrameInformation = new DroneFrameInformation(this);
     public velocity: p5.Vector;
     public swarm_ref: DroneSwarm;
@@ -38,6 +42,8 @@ export class Drone extends ColliderObject {
         this.swarm_ref = drone_swarm;
         this.duplicate_progress = drone_swarm.get_production_cost();
         this.age = this.swarm_ref.get_durability();
+        this.target = this.get_position();
+        this.update_aim_rotate = Math.floor(Math.random() * 4);
     }
 
     public draw(p: p5) {
@@ -64,7 +70,9 @@ export class Drone extends ColliderObject {
             this.duplicate_progress -= progress;
             if (this.duplicate_progress <= 0) {
                 this.duplicate_progress = this.swarm_ref.get_production_cost();
-                this.swarm_ref.queue_new_drone(this.get_position().copy());
+                this.swarm_ref.queue_new_drone(this.get_position().copy(), (drone: Drone) => {
+                    drone.parent = this;
+                });
             }
         }
         if (this.fuels <= 0) {
@@ -104,19 +112,35 @@ export class Drone extends ColliderObject {
         });
         if (this.attached === null) {
             // drive away from center if possible
-            if (this.fuels > 0) {
-                const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
-                const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt);
-                this.apply_force(impuls);
-                this.fuels -= 1 * dt;
-            } else {
-                const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
-                const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt / 10);
-                this.apply_force(impuls);
+
+            // if (this.fuels > 0) {
+            //     const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
+            //     const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt);
+            //     this.apply_force(impuls);
+            //     this.fuels -= 1 * dt;
+            // } else {
+            //     const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
+            //     const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt / 10);
+            //     this.apply_force(impuls);
+            // }
+            // this.velocity.mult(0.999);
+            // this.restrict_velocity();
+            const diff = this.target.copy().sub(this.x, this.y)
+            if (this.cd_update_aim-- < 0 && diff.magSq() < 10000) {
+                this.cd_update_aim = 30;
+                let target = new p5.Vector;
+                if (this.parent) {
+                    target = this.parent.get_position().copy();
+                } else {
+                    target = this.swarm_ref.center.copy();
+                }
+                const off = p5.Vector.fromAngle((this.update_aim_rotate++) * Math.PI / 2).mult(this.game.control.distance);
+                this.target = p5.Vector.add(target, off);
             }
-            this.velocity.mult(0.999);
-            this.restrict_velocity();
+            const wanted_velocity = diff.setMag(this.game.control.speed);
+            this.velocity.lerp(wanted_velocity, 0.01);
             this.move(p5.Vector.mult(this.velocity, dt));
+
         }
         return true;
     }
