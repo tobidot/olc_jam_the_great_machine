@@ -34,9 +34,9 @@ export class OrganicShip extends ColliderObject {
         this.position.add(this.velocity.copy().mult(dt));
         this.velocity.add(this.acceleration).mult(0.99);
         if ((this.change_cd -= dt) < 0) {
-            this.change_cd = Math.random() * 5 + 2;
-            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 500));
-            const maginitude = Math.random() * 2 + 2;
+            this.change_cd = Math.random() * 2 + 2;
+            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 250));
+            const maginitude = Math.random() * 1.5 + 1.5;
             this.acceleration = target.sub(this.position).setMag(maginitude); // (Math.random() * Math.PI * 2);
         }
         if ((this.destroy_cd -= dt) <= 0) {

@@ -11,6 +11,8 @@ export class GameMenu {
     private elements: Array<GameMenuElement> = [];
 
     constructor(private game: Game) {
+
+
         let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 350, 50, 50))
             .set_background_color("#222222")
             .set_alignment("right", "center")
@@ -29,6 +31,11 @@ export class GameMenu {
         let menu_bar = new GameMenuRect(new helper.rect.Rect(0, 500, 800, 100))
             .set_background_color("#442222");
 
+        let speed_label = new GameMenuLabel(
+            new helper.rect.Rect(50, 505, 200, 25)
+        ).set_text('Velocity')
+            .set_text_size(16);
+
         let speed_controler = new GameMenuControler(
             new helper.rect.Rect(50 - 25, 560 - 25, 50, 50),
             new helper.rect.Rect(50, 550, 200, 20),
@@ -36,12 +43,24 @@ export class GameMenu {
             this.game.control.speed = speed_controler.relative_value_x * 200 + 120;
         });
 
+
+        let distance_label = new GameMenuLabel(
+            new helper.rect.Rect(350, 505, 200, 25)
+        ).set_text('Swarm Distance')
+            .set_text_size(16);
+
         let distance_controler = new GameMenuControler(
             new helper.rect.Rect(350 - 25, 560 - 25, 50, 50),
             new helper.rect.Rect(350, 550, 200, 20),
         ).set_on_drag(() => {
             this.game.control.distance = distance_controler.relative_value_x * 1000 + 50;
         });
+
+
+        let move_label = new GameMenuLabel(
+            new helper.rect.Rect(570, 540, 80, 25)
+        ).set_text('Move')
+            .set_text_size(16);
 
         let movement_controler = new GameMenuControler(
             new helper.rect.Rect(700 - 25, 550 - 25, 50, 50),
@@ -63,9 +82,12 @@ export class GameMenu {
             // level_progress_bar,
             // unspent_points_label,
             menu_bar,
+            speed_label,
             speed_controler,
+            distance_label,
             distance_controler,
             movement_controler,
+            move_label,
             fps_counter,
             drone_counter,
             ...this.create_stats_dislpay(),

@@ -37,6 +37,9 @@ export class MainMenu extends React.Component {
                             <Button onClick={this.toggle_debug_mode_func} color={is_debug_mode ? "orange" : "grey"} >
                                 Debug Mode: {is_debug_mode ? "ON" : "OFF"}
                             </Button>
+                            <Button onClick={this.new_game_func} color={"purple"} >
+                                New Game
+                            </Button>
                             <Button negative>
                                 Quit
                         </Button>
@@ -84,5 +87,12 @@ export class MainMenu extends React.Component {
         const shared = Shared.get_instance();
         shared.debug_mode.set(!shared.debug_mode.get());
         this.forceUpdate();
+    }
+
+    public new_game_func = () => {
+        const game = Shared.get_instance().game.get();
+        if (game) {
+            game.restart_game();
+        }
     }
 }

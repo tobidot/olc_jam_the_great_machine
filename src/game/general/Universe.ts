@@ -14,6 +14,8 @@ export class Universe {
         public readonly universe_size: number,
         public readonly universe_density: number,
         public readonly system_density: number,
+        public readonly planets: number,
+        public readonly drones: number,
         public readonly game: Game,
     ) {
     }
@@ -51,7 +53,7 @@ export class Universe {
     }
 
     protected generate_starting_condition() {
-        const count = 200;
+        const count = this.drones;
         const center = p5.Vector.random2D().mult((Math.random() * 0.25) * this.universe_size + 0.6).add(this.universe_size / 2, this.universe_size / 2);
         for (let i = 0; i < count; ++i) {
             const off = p5.Vector.random2D().mult(10);
@@ -63,7 +65,7 @@ export class Universe {
     }
 
     protected generate_enemy_starting_condition() {
-        for (let i = 0; i < 10; ++i) {
+        for (let i = 0; i < this.planets; ++i) {
             const planet_pos = this.random_point_inside().mult(0.8);
             const ship = new OrganicShip(this.game, planet_pos);
             const planet = new HabitablePlanet(this.game, planet_pos);

@@ -37,7 +37,7 @@ export class Game {
     public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];
 
-    public universe: Universe = new Universe(5000, 0, 0, this);
+    public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
 
 
 
@@ -58,12 +58,7 @@ export class Game {
         this.shared.debug_mode.add((mode) => {
             this.debug_stats.active = mode.new;
         });
-        window['far'] = () => {
-            this.control.distance *= 2;
-        };
-        window['speed'] = () => {
-            this.control.speed *= 2;
-        };
+        this.shared.game.set(this);
     }
 
     public add_game_object(object: GameObject) {
@@ -146,14 +141,41 @@ export class Game {
             if (p.keyIsDown(32)) this.camera.target(this.swarm.center.mult(-1));
         };
 
-        this.game_object_tree = new QuadTree<ColliderObject>({
-            x: -this.universe.universe_size,
-            y: -this.universe.universe_size,
-            w: this.universe.universe_size * 2,
-            h: this.universe.universe_size * 2
-        });
+        this.restart_game();
 
-        this.universe = new Universe(5000, 0.6, 0.3, this);
+    }
+
+
+    public restart_game() {
+        this.swarm.drones.forEach((drone) => {
+            if (drone) drone.before_destroy();
+        });
+        this.swarm.drones = [];
+        this.stellar_bodies.forEach((body) => {
+            if (body) body.before_destroy();
+        });
+        this.stellar_bodies = [];
+        this.organic_ships.forEach((ship) => {
+            ship?.before_destroy();
+        })
+        this.organic_ships = [];
+        this.game_objects = [];
+
+
+        this.universe = new Universe(
+            this.shared.universe_size.get(),
+            this.shared.asteroid_density.get(),
+            this.shared.system_density.get(),
+            this.shared.planets.get(),
+            this.shared.drones.get(),
+            this
+        );
+        this.game_object_tree = new QuadTree<ColliderObject>({
+            x: -this.universe.universe_size * 1.5,
+            y: -this.universe.universe_size * 1.5,
+            w: this.universe.universe_size * 3,
+            h: this.universe.universe_size * 3
+        });
         this.universe.generate();
         this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
 
