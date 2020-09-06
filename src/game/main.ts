@@ -37,9 +37,10 @@ function setup_p5_instance(p: p5 & p5.SoundFile) {
     p.preload = function () {
         p.soundFormats('mp3');
     }
+    let setup_done = false;
     p.setup = function () {
-        // where does this canvas come from=?
-        (<any>p).canvas.remove();
+        if (setup_done) return;
+        setup_done = true;
         p.createCanvas(800, 600, "p2d");
         game.init(p);
         p.frameRate(60);

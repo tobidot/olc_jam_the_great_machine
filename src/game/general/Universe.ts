@@ -59,7 +59,7 @@ export class Universe {
 
     protected generate_enemy_starting_condition() {
         for (let i = 0; i < 10; ++i) {
-            const ship = new OrganicShip(this.game, new p5.Vector().copy());
+            const ship = new OrganicShip(this.game, this.random_point_inside());
             this.game.add_game_object(ship);
         }
     }
@@ -82,6 +82,10 @@ export class Universe {
 
     protected asteroid_distribution_function(x: number) {
         return 1 - ((x) * (0.4 - x) * (0.9 - x) * 11) - 0.5;
+    }
+
+    public random_point_inside(): p5.Vector {
+        return p5.Vector.random2D().setMag(Math.random() * this.universe_size / 4);
     }
 
     public is_point_inside(pos: p5.Vector): boolean {
