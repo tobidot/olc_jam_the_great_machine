@@ -1,8 +1,8 @@
 import { Shared } from "../shared/Shared";
 import p5 from "p5";
 import "p5";
-// (<any>window).p5 = p5;
-// import 'p5/lib/addons/p5.sound';
+(<any>window).p5 = p5;
+import 'p5/lib/addons/p5.sound';
 import { Game } from "./Game";
 
 export function load_game() {
@@ -50,4 +50,4 @@ function setup_p5_instance(p: p5) {
         game.update(1.0 / 60.0, p);
         game.draw(p);
     }
-}
+} 
