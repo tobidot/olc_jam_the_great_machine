@@ -170,11 +170,12 @@ export class Game {
             this.shared.drones.get(),
             this
         );
+        const tree_size = this.universe.universe_size * 1.5 + 500;
         this.game_object_tree = new QuadTree<ColliderObject>({
-            x: -this.universe.universe_size * 1.5,
-            y: -this.universe.universe_size * 1.5,
-            w: this.universe.universe_size * 3,
-            h: this.universe.universe_size * 3
+            x: -tree_size,
+            y: -tree_size,
+            w: tree_size * 2,
+            h: tree_size * 2
         });
         this.universe.generate();
         this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
