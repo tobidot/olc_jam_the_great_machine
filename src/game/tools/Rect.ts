@@ -1,3 +1,4 @@
+import p5 from "p5";
 
 
 
@@ -12,8 +13,15 @@ export namespace helper {
 
             }
 
-            public contains(x: number, y: number) {
-                return helper.rect.contains(this, x, y)
+            public contains(point: { x: number, y: number }): boolean;
+            public contains(x: number, y: number): boolean;
+            public contains(x: number | { x: number, y: number }, y?: number): boolean {
+                if (typeof x !== "number") {
+                    y = x.y;
+                    x = x.x;
+                }
+                if (y === undefined) throw new Error();
+                return helper.rect.contains(this, x, y);
             }
 
             public overlaps_with(other: IRect): boolean {
@@ -25,11 +33,11 @@ export namespace helper {
             }
         }
 
-        export function contains(rect: IRect, x: number, y: number) {
+        export function contains(rect: IRect, x: number, y: number): boolean {
             return (x > rect.x && y > rect.y && x < rect.x + rect.w && y < rect.y + rect.h);
         }
 
-        export function overlap(a: IRect, b: IRect) {
+        export function overlap(a: IRect, b: IRect): boolean {
             const overlap_x = a.x + a.w > b.x || b.x + b.w > a.x;
             const overlap_y = a.y + a.h > b.y || b.y + b.h > a.y;
             return overlap_x && overlap_y;

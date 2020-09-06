@@ -3,18 +3,24 @@ import { Camera } from "../helper/Camera";
 import { Drone } from "../drones/Drone";
 import { Game } from "../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
+import { GameObject } from "../object/GameObject";
+import { ColliderObject } from "../collision/Colider";
 
-export class OrganicShip {
+export class OrganicShip extends ColliderObject {
     private static readonly PIXEL_SIZE = 40;
     public position: p5.Vector;
-    private game: Game;
     private velocity: p5.Vector;
     private rotation: number;
     private change_cd: number;
     private destroy_cd: number;
 
     constructor(game: Game, position: p5.Vector) {
-        this.game = game;
+        super(game, {
+            x: position.x,
+            y: position.y,
+            w: 20,
+            h: 20,
+        });
         this.position = position;
         this.velocity = new p5.Vector;
         this.rotation = Math.random() * Math.PI + 2;
@@ -35,7 +41,7 @@ export class OrganicShip {
         if ((this.destroy_cd -= dt) <= 0) {
             let packet = drones.reduce(
                 (packet: { drone: Drone, dist2: number } | null, drone: Drone): { drone: Drone, dist2: number } | null => {
-                    const diff = drone.position.copy().sub(this.position);
+                    const diff = drone.get_position().copy().sub(this.position);
                     const dist2 = diff.magSq();
                     if (packet && dist2 > packet.dist2) return packet;
                     if (dist2 > 800 * 800) return packet;
@@ -52,7 +58,7 @@ export class OrganicShip {
                 const color = 0xff0000ff;
                 const laser_effect = new LaserDeathEffect(
                     this.position.copy(),
-                    drone.position.copy(),
+                    drone.get_position().copy(),
                     5,
                     color
                 );

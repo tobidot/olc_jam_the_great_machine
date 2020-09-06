@@ -35,7 +35,7 @@ export class DroneSwarm {
 
             for (let j = 0; j < stelar_bodies.length; ++j) {
                 const stelar_body = stelar_bodies[j];
-                const to_other = p5.Vector.sub(drone.position, stelar_body.get_position());
+                const to_other = p5.Vector.sub(drone.get_position(), stelar_body.get_position());
                 const distance2 = to_other.magSq();
                 drone.frame_information.add_position_relation({
                     stelar_body: stelar_body,
@@ -45,15 +45,14 @@ export class DroneSwarm {
             }
 
             drone.update(dt);
-            const dist_to_univers_center = drone.position.magSq();
-            if (dist_to_univers_center > this.game.universe_size * this.game.universe_size) {
-                drone.position.set(0, 0);
+            if (!this.game.universe.is_point_inside(drone.get_position())) {
+                drone.get_position().set(0, 0);
             }
 
             this.level_progress += 0.01 * dt / this.level_points_needed;
 
-            drone_center_sum.add(drone.position);
-            const center_deviation = this.center.copy().sub(drone.position).magSq();
+            drone_center_sum.add(drone.get_position());
+            const center_deviation = this.center.copy().sub(drone.get_position()).magSq();
             if (center_deviation > this.deviation) {
                 this.deviation = center_deviation;
             }
@@ -63,7 +62,7 @@ export class DroneSwarm {
         this.center.set(drone_center_sum);
 
         this.queued_new_drones.forEach((pos) => {
-            this.drones.push(new Drone(this, pos));
+            this.drones.push(new Drone(this.game, this, pos));
         });
         this.queued_new_drones = [];
         this.queued_dying_drones.forEach((drone) => {
@@ -83,7 +82,7 @@ export class DroneSwarm {
     public draw(p: p5, camera: Camera) {
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
-            if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.position, camera)) {
+            if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.get_position(), camera)) {
                 drone.draw(p);
             }
         }

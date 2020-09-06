@@ -1,11 +1,12 @@
 import { BodyCell } from "./BodyCell";
-import { Collider } from "../collision/Colider";
+import { ColliderObject } from "../collision/Colider";
 import p5, { Vector } from "p5";
 import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../helper/CoordinatesSystem";
 import { Translator, SameTypeTranslator } from "../helper/Translator";
 import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
+import { Game } from "../Game";
 
-export class StelarBody extends Collider {
+export class StelarBody extends ColliderObject {
     // Consts
     public static readonly GRAVITATIONAL_CONSTANT = 1000;
     public static readonly CELL_SIZE = 15;
@@ -13,10 +14,6 @@ export class StelarBody extends Collider {
     // 
     private cellmap_size: number;
     private cells: Array<BodyCell | null>;
-    private cells_coordinate_system: FixedCenteredIntegerCoordinateSystem;
-    public readonly translator: {
-        global_coord_to_cell_coord: SameTypeTranslator<p5.Vector>
-    };
     public is_to_delete: boolean = false;
     private frame_buffer: {
         mass_center: { mass: number, center: p5.Vector, global_center: p5.Vector } | null,
@@ -24,22 +21,19 @@ export class StelarBody extends Collider {
             mass_center: null
         };
 
-    constructor(position: Vector, cellmap_size: number) {
-        super(position, cellmap_size * StelarBody.CELL_SIZE);
+    constructor(game: Game, position: Vector, cellmap_size: number) {
+        super(game, {
+            x: position.x,
+            y: position.y,
+            w: cellmap_size * StelarBody.CELL_SIZE,
+            h: cellmap_size * StelarBody.CELL_SIZE,
+        });
         this.cellmap_size = cellmap_size;
         this.cells = new Array<BodyCell>(cellmap_size * cellmap_size);
         this.for_each_cell((x, y, cell) => {
             cell = new BodyCell(this, new p5.Vector().set(x, y));
             return cell;
         });
-        this.cells_coordinate_system = new FixedCenteredIntegerCoordinateSystem(
-            position.copy().sub(this.size / 2, this.size / 2),
-            new p5.Vector().set(StelarBody.CELL_SIZE, 0),
-            new p5.Vector().set(0, StelarBody.CELL_SIZE),
-        );
-        this.translator = {
-            global_coord_to_cell_coord: (new CoordinateSystem).create_translator_to(this.cells_coordinate_system)
-        };
     }
 
     public for_each_cell(callback: (x: number, y: number, cell: BodyCell | null) => BodyCell | null) {
@@ -66,9 +60,9 @@ export class StelarBody extends Collider {
             }
             return cell;
         });
-        if (mass === 0) return { mass, center, global_center: this.position.copy() };
+        if (mass === 0) return { mass, center, global_center: this.get_position().copy() };
         center.mult(1 / mass);
-        const global_center = this.translator.global_coord_to_cell_coord.translate_to_source(center);
+        const global_center = this.transform_cells_coordinates_to_global_coordinates(center.copy());
         return this.frame_buffer.mass_center = {
             mass,
             center,
@@ -84,13 +78,12 @@ export class StelarBody extends Collider {
         return this.cellmap_size / 2;
     }
 
-    public get_position(): p5.Vector {
-        return this.position.copy();
+    public transform_cells_coordinates_to_global_coordinates(pos: p5.Vector): p5.Vector {
+        return pos.mult(StelarBody.CELL_SIZE).add(this.x + StelarBody.CELL_SIZE / 2, this.y + StelarBody.CELL_SIZE / 2);
     }
 
-    public set_position(pos: p5.Vector): void {
-        this.cells_coordinate_system.fix.set(pos.copy().sub(this.size / 2, this.size / 2))
-        this.position.set(pos);
+    public transform_global_coordinates_to_cells_coordinates(pos: p5.Vector): p5.Vector {
+        return pos.sub(this.x, this.y).mult(1 / StelarBody.CELL_SIZE);
     }
 
     public update(dt: number) {
@@ -99,11 +92,11 @@ export class StelarBody extends Collider {
     public draw(p: p5) {
         p.fill(100);
         p.noStroke();
-        const size = this.size;
+        const size = this.w;
         const hsize = size / 2;
         p.beginShape(p.QUADS);
-        const start_x = this.position.x - hsize;
-        const start_y = this.position.y - hsize;
+        const start_x = this.x;
+        const start_y = this.y;
         this.for_each_cell((x, y, cell) => {
             if (!cell) return cell;
             const left = start_x + x * StelarBody.CELL_SIZE;
@@ -125,11 +118,9 @@ export class StelarBody extends Collider {
         const mass = this.get_mass_center().mass;
         p.fill(Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size)));
         p.noStroke();
-        const size = this.size;
-        const hsize = size / 2;
-        const start_x = this.position.x - hsize;
-        const start_y = this.position.y - hsize;
-        p.rect(start_x, start_y, size, size);
+        const start_x = this.x;
+        const start_y = this.y;
+        p.rect(start_x, start_y, this.w, this.w);
     }
 
     public calculate_gravitational_force_on(
@@ -173,7 +164,7 @@ export class StelarBody extends Collider {
 
     public get_cell_id_at(cell_coord: p5.Vector): number | null {
         if (!this.contains_cell_coord(cell_coord)) return null;
-        const cell_id = cell_coord.x + cell_coord.y * this.cellmap_size;
+        const cell_id = Math.floor(cell_coord.x) + Math.floor(cell_coord.y) * this.cellmap_size;
         return cell_id;
     }
 
@@ -184,7 +175,7 @@ export class StelarBody extends Collider {
     }
 
     public get_cell_at_global_coord(global_coord: p5.Vector): BodyCell | null {
-        const cell_coord = this.translator.global_coord_to_cell_coord.translate(global_coord);
+        const cell_coord = this.transform_global_coordinates_to_cells_coordinates(global_coord.copy());
         return this.get_cell_at(cell_coord);
     }
 

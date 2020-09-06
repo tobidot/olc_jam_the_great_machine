@@ -8,28 +8,49 @@ import { OrganicShip } from "./enemies/OrganicShips";
 import { Effect } from "./effects/Effect";
 import { GameMenu } from "./game-menu/GameMenu";
 import { Shared } from "../shared/Shared";
+import { QuadTree } from "../tools/signals/trees/QuadTree";
+import { GameObject } from "./object/GameObject";
+import { Universe } from "./general/Universe";
+import { ColliderObject } from "./collision/Colider";
 
 export class Game {
-    private stellar_bodies: Array<StelarBody> = [];
+    private shared: Shared = Shared.get_instance();
     private camera: Camera = new Camera;
-    public swarm: DroneSwarm = new DroneSwarm(this);
-    private organic_ships: Array<OrganicShip> = [];
-    private effects: Array<Effect> = [];
     private menu: GameMenu = new GameMenu(this);
     private ship_spawn: number = 60;
     private background_music: any;
 
-    private shared: Shared = Shared.get_instance();
+    // entities
+    public swarm: DroneSwarm = new DroneSwarm(this);
+    private stellar_bodies: Array<StelarBody> = [];
+    private organic_ships: Array<OrganicShip> = [];
+    private effects: Array<Effect> = [];
 
-    public readonly universe_size = 5000;
-    public readonly universe_density = 0.6;
-    public readonly system_density = 0.3;
+    private game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
+    private game_objects: Array<GameObject> = [];
 
+    public universe: Universe = new Universe(5000, 0, 0, this);
 
     constructor() {
-
     }
 
+    public add_game_object(object: GameObject) {
+        if (object instanceof OrganicShip) {
+            return this.organic_ships.push(object);
+        } else if (object instanceof Drone) {
+            return  // this.swarm.queue_new_drone()
+        } else if (object instanceof Effect) {
+            return this.effects.push(object);
+        } else if (object instanceof StelarBody) {
+            return this.stellar_bodies.push(object);
+        }
+        throw "";
+    }
+
+
+    public for_each(callback: (game_object: GameObject) => void) {
+        this.game_objects.forEach(callback);
+    }
     public init(p: p5 & p5.SoundFile) {
         const images = require('../assets/images/*.png');
         const sounds = require('../assets/sound/*.mp3');
@@ -68,61 +89,18 @@ export class Game {
         p.keyPressed = () => {
             if (p.keyIsDown(32)) this.camera.target(this.swarm.center.mult(-1));
         };
+        this.universe = new Universe(5000, 0.6, 0.3, this);
+        this.universe.generate();
+        this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
 
-        const universe_size = this.universe_size;
-        const universe_max_systems = universe_size / 70;
-        const universe_systems = universe_max_systems * this.universe_density;
-        // const dice1 = Math.floor(Math.random() * universe_systems / 3) + 1;
-        // const dice2 = Math.floor(Math.random() * universe_systems / 3) + 1;
-        // const dice3 = Math.floor(Math.random() * universe_systems / 3) + 1;
-        {
-            const systems_random = Math.random();
-            const systems_random_smooth = systems_random * systems_random * 0.75 + 0.25;
-            const count = systems_random_smooth * universe_systems;
-            for (let i = 0; i < count; ++i) {
-                const size = this.asteroid_distribution_function(Math.random()) * 800;
-                const dist = (Math.random() * 0.6 + 0.2) * universe_size;
-                const center = p5.Vector.random2D().mult(dist);
-                this.create_system(center, size);
-            }
-        }
-
-        {
-            const count = 10;
-            const center = p5.Vector.random2D().mult((Math.random() * 0.25) * universe_size + 0.6).add(universe_size / 2, universe_size / 2);
-            for (let i = 0; i < count; ++i) {
-                const off = p5.Vector.random2D().mult(10);
-                this.swarm.queue_new_drone(center.copy().add(off));
-            }
-            this.create_system(center, 150);
-            this.camera.target_position.set(this.camera.position.set(center.copy().mult(-1)));
-
-        }
-
-        for (let i = 0; i < 10; ++i) {
-            const ship = new OrganicShip(this, new p5.Vector().copy());
-            this.organic_ships.push(ship);
-        }
+        this.game_object_tree = new QuadTree<ColliderObject>({
+            x: -this.universe.universe_size,
+            y: -this.universe.universe_size,
+            w: this.universe.universe_size * 2,
+            h: this.universe.universe_size * 2
+        });
     }
 
-    public create_system(center: p5.Vector, system_size: number) {
-        const system_max_bodies = system_size / 5;
-        const system_bodies = system_max_bodies * this.system_density;
-
-        const dice1 = Math.floor(Math.random() * system_bodies / 2) + 1;
-        const dice2 = Math.floor(Math.random() * system_bodies / 2) + 1;
-        const count = dice1 + dice2;
-        for (let i = 0; i < count; ++i) {
-            const dist = this.asteroid_distribution_function(Math.random()) * system_size;
-            const pos = p5.Vector.random2D().mult(dist).add(center);
-            const asteroid = new Asteroid(pos);
-            this.stellar_bodies.push(asteroid);
-        }
-    }
-
-    public asteroid_distribution_function(x: number) {
-        return 1 - ((x) * (0.4 - x) * (0.9 - x) * 11) - 0.5;
-    }
 
     public update(dt: number, p: p5) {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
@@ -137,8 +115,7 @@ export class Game {
         this.organic_ships.forEach((ship) => {
             ship.update(dt, p, this.swarm.drones);
 
-            const dist_to_univers_center = ship.position.magSq();
-            if (dist_to_univers_center > this.universe_size * this.universe_size) {
+            if (this.universe.is_point_inside(ship.position)) {
                 ship.position.set(0, 0);
             }
         });
@@ -176,10 +153,6 @@ export class Game {
         p.translate(400, 300);
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
-        p.noFill();
-        p.stroke(50, 50, 200);
-        p.strokeWeight(this.universe_size / 1000);
-        p.ellipse(0, 0, this.universe_size * 2, this.universe_size * 2);
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
 
