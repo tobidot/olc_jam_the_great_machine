@@ -61,6 +61,17 @@ export class Game {
         throw "";
     }
 
+    public remove_game_object(object: GameObject) {
+        object.before_destroy();
+        if (object instanceof ColliderObject) {
+            this.game_object_tree.remove(object);
+        }
+        if (object instanceof OrganicShip) {
+            const id = this.organic_ships.findIndex((check) => object === check);
+            if (id !== -1) this.organic_ships[id] = null;
+        }
+    }
+
 
     public for_each(callback: (game_object: GameObject) => void) {
         this.game_objects.forEach(callback);
@@ -127,6 +138,7 @@ export class Game {
             body.reset_frame_buffers();
             body.update(dt);
             if (body.is_to_delete) {
+                body.before_destroy();
                 this.game_object_tree.remove(body);
                 this.stellar_bodies[i] = this.stellar_bodies[this.stellar_bodies.length - 1];
                 this.stellar_bodies[this.stellar_bodies.length - 1] = null;
@@ -135,6 +147,9 @@ export class Game {
         this.swarm.update(dt);
         this.organic_ships.forEach((ship) => {
             if (ship === null) return;
+            if (ship.state.is_to_delete) {
+                return this.remove_game_object(ship);
+            }
             ship.update(dt, p, this.swarm.drones);
 
             if (!this.universe.is_point_inside(ship.position)) {

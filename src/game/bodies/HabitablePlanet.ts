@@ -3,12 +3,15 @@ import { StelarBody } from "./StellarBody";
 import { Game } from "../Game";
 import p5, { Vector } from "p5";
 import { BodyCell } from "./BodyCell";
+import { OrganicShip } from "../enemies/OrganicShips";
 
 export class HabitablePlanet extends StelarBody {
+    public readonly ships: Array<OrganicShip>;
 
     constructor(game: Game, position: Vector = new p5.Vector, size?: number) {
         if (!size) size = Math.floor(Math.random() * 10) + 4;
         super(game, position, size);
+        this.ships = [];
     }
 
     public before_draw_cell(p: p5, cell: BodyCell) {
@@ -35,4 +38,9 @@ export class HabitablePlanet extends StelarBody {
         p.fill(lerp);
     }
 
+    public before_destroy() {
+        this.ships.forEach((ship) => {
+            ship.state.is_to_delete = true;
+        });
+    }
 }
