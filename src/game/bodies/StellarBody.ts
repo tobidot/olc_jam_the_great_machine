@@ -12,8 +12,8 @@ export class StelarBody extends ColliderObject {
     public static readonly CELL_SIZE = 15;
     //    
     // 
-    private cellmap_size: number;
-    private cells: Array<BodyCell | null>;
+    protected cellmap_size: number;
+    protected cells: Array<BodyCell | null>;
     public is_to_delete: boolean = false;
     private frame_buffer: {
         mass_center: { mass: number, center: p5.Vector, global_center: p5.Vector } | null,
@@ -103,7 +103,7 @@ export class StelarBody extends ColliderObject {
             const right = start_x + (1 + x) * StelarBody.CELL_SIZE + 1;
             const top = start_y + y * StelarBody.CELL_SIZE;
             const bottom = start_y + (1 + y) * StelarBody.CELL_SIZE + 1;
-            p.fill(Math.min(200, cell.mass * 5));
+            this.before_draw_cell(p, cell);
             p.vertex(left, top);
             p.vertex(right, top);
             p.vertex(right, bottom);
@@ -113,14 +113,21 @@ export class StelarBody extends ColliderObject {
         p.endShape();
     }
 
+    public before_draw_cell(p: p5, cell: BodyCell) {
+        p.fill(Math.min(200, cell.mass * 5));
+    }
 
     public draw_roughly(p: p5) {
-        const mass = this.get_mass_center().mass;
-        p.fill(Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size)));
-        p.noStroke();
+        this.before_draw_roughly(p);
         const start_x = this.x;
         const start_y = this.y;
         p.rect(start_x, start_y, this.w, this.w);
+    }
+
+    public before_draw_roughly(p: p5) {
+        p.noStroke();
+        const mass = this.get_mass_center().mass;
+        p.fill(Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size)));
     }
 
     public calculate_gravitational_force_on(

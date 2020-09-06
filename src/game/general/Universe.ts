@@ -3,6 +3,7 @@ import p5, { Vector } from "p5";
 import { OrganicShip } from "../enemies/OrganicShips";
 import { Asteroid } from "../bodies/Asteroid";
 import { Game } from "../Game";
+import { HabitablePlanet } from "../bodies/HabitablePlanet";
 
 export class Universe {
     protected starting_position = new p5.Vector;
@@ -59,8 +60,11 @@ export class Universe {
 
     protected generate_enemy_starting_condition() {
         for (let i = 0; i < 10; ++i) {
-            const ship = new OrganicShip(this.game, this.random_point_inside().mult(0.8));
+            const planet_pos = this.random_point_inside().mult(0.8);
+            const ship = new OrganicShip(this.game, planet_pos);
+            const planet = new HabitablePlanet(this.game, planet_pos);
             this.game.add_game_object(ship);
+            this.game.add_game_object(planet);
         }
     }
 
