@@ -7,6 +7,8 @@ import { HabitablePlanet } from "../bodies/HabitablePlanet";
 
 export class Universe {
     protected starting_position = new p5.Vector;
+    public initial_mass = 0;
+    public initial_asteroids = 0;
 
     constructor(
         public readonly universe_size: number,
@@ -21,6 +23,8 @@ export class Universe {
     }
 
     public generate() {
+        this.initial_mass = 0;
+        this.initial_asteroids = 0;
         this.genreate_asteroids();
         this.generate_starting_condition();
         this.generate_enemy_starting_condition();
@@ -65,6 +69,7 @@ export class Universe {
             const planet = new HabitablePlanet(this.game, planet_pos);
             this.game.add_game_object(ship);
             this.game.add_game_object(planet);
+            this.initial_mass += planet.get_mass_center().mass;
         }
     }
 
@@ -81,6 +86,8 @@ export class Universe {
             const pos = p5.Vector.random2D().mult(dist).add(center);
             const asteroid = new Asteroid(this.game, pos);
             this.game.add_game_object(asteroid);
+            this.initial_mass += asteroid.get_mass_center().mass;
+            this.initial_asteroids++;
         }
     }
 

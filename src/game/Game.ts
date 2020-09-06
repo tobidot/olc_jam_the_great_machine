@@ -13,6 +13,7 @@ import { GameObject } from "./object/GameObject";
 import { Universe } from "./general/Universe";
 import { ColliderObject } from "./collision/Colider";
 import { PerformanceTracker } from "./tools/PerformanceTracker";
+import { HabitablePlanet } from "./bodies/HabitablePlanet";
 
 export class Game {
     private shared: Shared = Shared.get_instance();
@@ -32,6 +33,13 @@ export class Game {
 
     public universe: Universe = new Universe(5000, 0, 0, this);
 
+    public game_stats = {
+        enemy_ships: 0,
+        habitats_remaining: 0,
+        asteroids_remaining: 0,
+        asteroids_remaining_percent: 0,
+        drones: 0,
+    }
     public debug_stats = {
         active: this.shared.debug_mode.get(),
         fps: new PerformanceTracker(),
@@ -185,6 +193,13 @@ export class Game {
         if (this.debug_stats.active) {
             this.debug_stats.drones_allive = this.swarm.drones.length;
             this.debug_stats.fps.update();
+        }
+        {
+            this.game_stats.enemy_ships = this.organic_ships.length;
+            this.game_stats.habitats_remaining = this.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
+            this.game_stats.asteroids_remaining = this.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
+            this.game_stats.asteroids_remaining_percent = 100 * this.game_stats.asteroids_remaining / this.universe.initial_asteroids;
+            this.game_stats.drones = this.swarm.drones.length;
         }
     }
 

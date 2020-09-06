@@ -68,19 +68,20 @@ export class GameMenu {
                 level_progress_bar.rect.w = this.game.swarm.level_progress * 600;
             });
 
-        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 0, 50, 50))
+        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 400, 50, 50))
             .set_background_color("#222222")
             .set_alignment("right", "center")
             .set_on_draw(() => {
                 fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
             });
 
-        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 50, 75, 50))
+        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 450, 75, 50))
             .set_background_color("#228822")
             .set_alignment("right", "center")
             .set_on_draw(() => {
                 drone_counter.set_text(this.game.debug_stats.drones_allive.toString());
             });
+
 
         this.elements = [
             thrusters_button,
@@ -93,6 +94,53 @@ export class GameMenu {
             unspent_points_label,
             fps_counter,
             drone_counter,
+            ...this.create_stats_dislpay(),
+        ];
+    }
+
+    public create_stats_dislpay() {
+        let drone_counter = new GameMenuLabel(new helper.rect.Rect(625, 0, 80, 25))
+            .set_text_size(16)
+            .set_text_color("#ffffff")
+            .set_background_color("#000000")
+            .set_alignment("left", "center")
+            .set_on_draw(() => {
+                drone_counter.set_text("Drones : " + this.game.game_stats.drones.toString());
+            });
+        let asteroids_counter = new GameMenuLabel(new helper.rect.Rect(625, 25, 80, 25))
+            .set_text_size(16)
+            .set_text_color("#ffffff")
+            .set_background_color("#000000")
+            .set_alignment("left", "center")
+            .set_on_draw(() => {
+                const asteroids_abs = this.game.game_stats.asteroids_remaining.toString();
+                const asteroids_percent = this.game.game_stats.asteroids_remaining_percent.toFixed(1);
+                asteroids_counter.set_text("Asteroids : " + asteroids_abs + " (" + asteroids_percent + "%)");
+            });
+        let habitats_counter = new GameMenuLabel(new helper.rect.Rect(625, 50, 80, 25))
+            .set_text_size(16)
+            .set_text_color("#ffffff")
+            .set_background_color("#000000")
+            .set_alignment("left", "center")
+            .set_on_draw(() => {
+                const habitats = this.game.game_stats.habitats_remaining.toString();
+                habitats_counter.set_text("Planets : " + habitats);
+            });
+        let ships_counter = new GameMenuLabel(new helper.rect.Rect(625, 75, 80, 25))
+            .set_text_size(16)
+            .set_text_color("#ffffff")
+            .set_background_color("#000000")
+            .set_alignment("left", "center")
+            .set_on_draw(() => {
+                const ships = this.game.game_stats.enemy_ships.toString();
+                ships_counter.set_text("Destroyer : " + ships);
+            });
+
+        return [
+            asteroids_counter,
+            drone_counter,
+            habitats_counter,
+            ships_counter,
         ];
     }
 
