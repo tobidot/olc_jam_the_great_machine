@@ -22,6 +22,7 @@ export class MainMenu extends React.Component {
         const shared = Shared.get_instance();
         const is_music_playing = !!shared.background_music.get()?.isPlaying();
         const music_volume = Math.floor(this.state.music_volume * 100).toString();
+        const is_debug_mode = shared.debug_mode.get();
         return (
             <Grid centered columns={3}>
                 <Grid.Row>
@@ -30,9 +31,12 @@ export class MainMenu extends React.Component {
                             <Button positive>
                                 Start
                         </Button>
-                            <Button onClick={this.toggle_music_func} color={is_music_playing ? "grey" : "orange"} >
+                            <Button onClick={this.toggle_music_func} color={is_music_playing ? "orange" : "grey"} >
                                 {is_music_playing ? "Mute" : "Unmute"} music
                         </Button>
+                            <Button onClick={this.toggle_debug_mode_func} color={is_debug_mode ? "orange" : "grey"} >
+                                Debug Mode: {is_debug_mode ? "ON" : "OFF"}
+                            </Button>
                             <Button negative>
                                 Quit
                         </Button>
@@ -73,6 +77,12 @@ export class MainMenu extends React.Component {
         } else {
             music.play();
         }
+        this.forceUpdate();
+    }
+
+    public toggle_debug_mode_func = () => {
+        const shared = Shared.get_instance();
+        shared.debug_mode.set(!shared.debug_mode.get());
         this.forceUpdate();
     }
 }

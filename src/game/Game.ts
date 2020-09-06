@@ -33,12 +33,15 @@ export class Game {
     public universe: Universe = new Universe(5000, 0, 0, this);
 
     public debug_stats = {
-        active: true,
+        active: this.shared.debug_mode.get(),
         fps: new PerformanceTracker(),
         drones_allive: 0,
     };
 
     constructor() {
+        this.shared.debug_mode.add((mode) => {
+            this.debug_stats.active = mode.new;
+        });
     }
 
     public add_game_object(object: GameObject) {
