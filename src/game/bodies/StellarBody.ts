@@ -5,6 +5,7 @@ import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../helpe
 import { Translator, SameTypeTranslator } from "../helper/Translator";
 import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
 import { Game } from "../Game";
+import { HabitablePlanet } from "./HabitablePlanet";
 
 export class StelarBody extends ColliderObject {
     // Consts
@@ -49,6 +50,9 @@ export class StelarBody extends ColliderObject {
 
     public get_mass_center(): { mass: number, center: p5.Vector, global_center: p5.Vector } {
         if (this.frame_buffer.mass_center) return this.frame_buffer.mass_center;
+        if (this.hasOwnProperty('ships')) {
+            if ((<any>window).gog) debugger;
+        }
         let mass = 0;
         let center = new p5.Vector();
         let count = 0;
@@ -191,6 +195,7 @@ export class StelarBody extends ColliderObject {
     }
 
     public reset_frame_buffers() {
+        // if (this instanceof HabitablePlanet) debugger;
         this.frame_buffer.mass_center = null;
     }
 }

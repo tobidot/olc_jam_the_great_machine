@@ -30,8 +30,8 @@ export class HabitablePlanet extends StelarBody {
 
     public before_draw_roughly(p: p5) {
         const mass = this.get_mass_center().mass;
-        let from = p.color(80, 170, 10);
-        let to = p.color(60, 60, 20);
+        let from = p.color(0, 50, 0);
+        let to = p.color(100, 250, 20);
         let lerp = p.lerpColor(from, to, mass / (BodyCell.MAX_MASS * this.cellmap_size * this.cellmap_size));
         p.stroke(255, 0, 0);
         p.strokeWeight(4);

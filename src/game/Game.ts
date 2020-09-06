@@ -134,14 +134,13 @@ export class Game {
     public update(dt: number, p: p5) {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
-            if (body === null) break;
+            if (body === null) continue;
             body.reset_frame_buffers();
             body.update(dt);
             if (body.is_to_delete) {
                 body.before_destroy();
                 this.game_object_tree.remove(body);
-                this.stellar_bodies[i] = this.stellar_bodies[this.stellar_bodies.length - 1];
-                this.stellar_bodies[this.stellar_bodies.length - 1] = null;
+                this.stellar_bodies[i] = null;
             }
         }
         this.swarm.update(dt);
