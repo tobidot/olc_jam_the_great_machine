@@ -43,7 +43,7 @@ export class Drone extends ColliderObject {
         this.duplicate_progress = drone_swarm.get_production_cost();
         this.age = this.swarm_ref.get_durability();
         this.target = this.get_position();
-        this.update_aim_rotate = Math.floor(Math.random() * 4);
+        this.update_aim_rotate = Math.floor(Math.random() * 8);
     }
 
     public draw(p: p5) {
@@ -90,41 +90,10 @@ export class Drone extends ColliderObject {
             if (is_colliding) {
                 this.DEBUG_colliding = true;
                 if (!this.handle_attach_to_relation(relation)) {
-                    // const cm_size = relation.stelar_body.get_half_cellmap_size();
-                    // if (relation.distance2 < cm_size * cm_size) {
-                    // const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
-                    //     this.swarm_ref.get_drone_weight(),
-                    //     relation.to_other.copy().mult(-1),
-                    //     relation.distance2
-                    // ).mult(dt);
-                    // this.apply_force(acting_force);
-                    // }
                 };
             }
-            // if (!is_colliding) {
-            // const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
-            //     this.swarm_ref.get_drone_weight(),
-            //     relation.to_other.copy().mult(-1),
-            //     relation.distance2
-            // ).mult(dt);
-            // this.apply_force(acting_force);
-            // }
         });
         if (this.attached === null) {
-            // drive away from center if possible
-
-            // if (this.fuels > 0) {
-            //     const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
-            //     const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt);
-            //     this.apply_force(impuls);
-            //     this.fuels -= 1 * dt;
-            // } else {
-            //     const diff = this.get_position().copy().sub(this.swarm_ref.center.copy());
-            //     const impuls = diff.setMag(this.swarm_ref.get_impuls_strength() * dt / 10);
-            //     this.apply_force(impuls);
-            // }
-            // this.velocity.mult(0.999);
-            // this.restrict_velocity();
             const diff = this.target.copy().sub(this.x, this.y)
             if (this.cd_update_aim-- < 0 && diff.magSq() < 10000) {
                 this.cd_update_aim = 30;
@@ -132,9 +101,9 @@ export class Drone extends ColliderObject {
                 if (this.parent) {
                     target = this.parent.get_position().copy();
                 } else {
-                    target = this.swarm_ref.center.copy();
+                    target = this.swarm_ref.center.copy().add(this.game.control.offset);
                 }
-                const off = p5.Vector.fromAngle((this.update_aim_rotate++) * Math.PI / 2).mult(this.game.control.distance);
+                const off = p5.Vector.fromAngle((this.update_aim_rotate++) * Math.PI / 4).mult(this.game.control.distance);
                 this.target = p5.Vector.add(target, off);
             }
             const wanted_velocity = diff.setMag(this.game.control.speed);

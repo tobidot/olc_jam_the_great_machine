@@ -71,14 +71,14 @@ export class GameMenu {
         //         level_progress_bar.rect.w = this.game.swarm.level_progress * 600;
         //     });
 
-        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 400, 50, 50))
+        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 350, 50, 50))
             .set_background_color("#222222")
             .set_alignment("right", "center")
             .set_on_draw(() => {
                 fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
             });
 
-        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 450, 75, 50))
+        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 400, 75, 50))
             .set_background_color("#228822")
             .set_alignment("right", "center")
             .set_on_draw(() => {
@@ -93,7 +93,7 @@ export class GameMenu {
             new helper.rect.Rect(50 - 25, 560 - 25, 50, 50),
             new helper.rect.Rect(50, 550, 200, 20),
         ).set_on_drag(() => {
-            this.game.control.speed = speed_controler.relative_value_x * 200 + 30;
+            this.game.control.speed = speed_controler.relative_value_x * 300 + 60;
         });
 
         let distance_controler = new GameMenuControler(
@@ -101,6 +101,16 @@ export class GameMenu {
             new helper.rect.Rect(350, 550, 200, 20),
         ).set_on_drag(() => {
             this.game.control.distance = distance_controler.relative_value_x * 1000 + 50;
+        });
+
+        let movement_controler = new GameMenuControler(
+            new helper.rect.Rect(700 - 25, 550 - 25, 50, 50),
+            new helper.rect.Rect(660, 510, 80, 80),
+        ).set_on_drag(() => {
+            this.game.control.offset.set(
+                movement_controler.relative_value_x * 100 - 50,
+                movement_controler.relative_value_y * 100 - 50,
+            )
         });
 
         this.elements = [
@@ -115,6 +125,7 @@ export class GameMenu {
             menu_bar,
             speed_controler,
             distance_controler,
+            movement_controler,
             fps_counter,
             drone_counter,
             ...this.create_stats_dislpay(),

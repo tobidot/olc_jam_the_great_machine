@@ -30,7 +30,8 @@ export class Game {
     public aim: p5.Vector = new p5.Vector;
     public control = {
         distance: 100,
-        speed: 50
+        speed: 50,
+        offset: new p5.Vector
     }
 
     public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
@@ -179,10 +180,6 @@ export class Game {
                 return this.remove_game_object(ship);
             }
             ship.update(dt, p, this.swarm.drones);
-
-            if (!this.universe.is_point_inside(ship.position)) {
-                ship.set_position(new p5.Vector);
-            }
         });
 
         if ((this.ship_spawn -= dt) < 0) {

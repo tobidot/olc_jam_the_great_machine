@@ -12,13 +12,14 @@ export class DroneSwarm {
     private queued_dying_drones: Array<Drone> = [];
     public drones: Array<Drone> = [];
 
+
     public level_points: number = 0;
     public level_points_needed: number = 1;
     public level_progress: number = 0;
     public levels = {
         thruster_level: 1,
         stability_level: 1,
-        collecting_level: 1,
+        collecting_level: 1000,
     }
 
     constructor(game: Game) {
@@ -48,9 +49,6 @@ export class DroneSwarm {
             }
 
             drone.update(dt);
-            if (!this.game.universe.is_point_inside(drone.get_position())) {
-                drone.set_position(new p5.Vector);
-            }
 
             this.level_progress += 0.01 * dt / this.level_points_needed;
 
@@ -94,7 +92,7 @@ export class DroneSwarm {
     }
 
     public queue_new_drone(position: p5.Vector, cb) {
-        this.queued_new_drones.push({ position, cb });
+        if (this.drones.filter((drone) => drone !== null).length < 600) this.queued_new_drones.push({ position, cb });
     }
 
     public queue_dying_drone(drone: Drone) {
