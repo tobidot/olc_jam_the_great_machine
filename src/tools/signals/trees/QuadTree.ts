@@ -1,5 +1,6 @@
 import { helper } from "../../../game/tools/Rect";
 import { TreeElementNotFoundException } from "./exceptions/TreeElementNotFoundException";
+import p5 from "p5";
 
 export class QuadTree<T extends helper.rect.IRect> {
     private root_branch: QuadTreeBranch<T>;
@@ -13,8 +14,10 @@ export class QuadTree<T extends helper.rect.IRect> {
     }
 
     public add(element: T): void {
-        let success = helper.rect.is_within(element, this.root_branch);
-        if (!success) {
+        let is_within = helper.rect.is_within(element, this.root_branch);
+        if (is_within) {
+            this.root_branch.add(element);
+        } else {
             this.elevate_root_branch();
             this.add(element);
         }
@@ -33,6 +36,13 @@ export class QuadTree<T extends helper.rect.IRect> {
     public is_empty(): boolean {
         return this.root_branch.is_empty();
     }
+
+
+    public debug_draw(p: p5) {
+        p.noFill();
+        p.stroke(255, 0, 255);
+        this.root_branch.debug_draw(p);
+    }
 }
 
 export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rect {
@@ -43,7 +53,6 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
         if (this.child_branch_nodes === null) {
             this.elements.push(element);
             this.create_child_branches_if_necessary();
-            this.readd_own_elements();
             return true;
         };
         const overlapping_branches = this.child_branch_nodes.filter((branch) => {
@@ -68,6 +77,7 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
     public create_child_branches_if_necessary() {
         if (this.elements.length < 10) return;
         this.create_child_branches();
+        this.readd_own_elements();
     }
 
     public create_child_branches() {
@@ -83,13 +93,9 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
 
     public pick(rect: helper.rect.IRect, result: Array<T> = []): Array<T> {
         if (!this.overlaps_with(rect)) return result;
-        if (this.child_branch_nodes === null) {
-            result.push(...this.elements);
-            return result;
-        }
-        if (this.is_within(rect)) {
-            return this.pick_all(result);
-        }
+        result.push(...this.elements);
+        if (this.child_branch_nodes === null) return result;
+        if (this.is_within(rect)) return this.pick_all(result);
         for (let branch of this.child_branch_nodes) {
             branch.pick(rect, result);
         }
@@ -130,4 +136,13 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
     public is_self_empty(): boolean {
         return this.elements.length === 0;
     }
+
+    public debug_draw(p: p5) {
+        if (this.child_branch_nodes === null) {
+            p.rect(this.x, this.y, this.w, this.h);
+        } else {
+            this.child_branch_nodes.forEach((branch) => branch.debug_draw(p));
+        }
+    }
+
 }

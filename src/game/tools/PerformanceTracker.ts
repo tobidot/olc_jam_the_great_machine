@@ -9,7 +9,8 @@ export class PerformanceTracker {
     public update() {
         this.frame_count++;
         const now = performance.now();
-        if (now < this.last_time_stamp + 1000) {
+        if (now > this.last_time_stamp + 1000) {
+            this.last_time_stamp = now;
             this.current_fps = this.frame_count;
             this.frame_count = 0;
         }

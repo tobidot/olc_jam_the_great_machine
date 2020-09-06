@@ -75,6 +75,13 @@ export class GameMenu {
                 fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
             });
 
+        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 50, 75, 50))
+            .set_background_color("#228822")
+            .set_alignment("right", "center")
+            .set_on_draw(() => {
+                drone_counter.set_text(this.game.debug_stats.drones_allive.toString());
+            });
+
         this.elements = [
             thrusters_button,
             thruster_count_label,
@@ -85,6 +92,7 @@ export class GameMenu {
             level_progress_bar,
             unspent_points_label,
             fps_counter,
+            drone_counter,
         ];
     }
 

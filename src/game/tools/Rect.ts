@@ -38,8 +38,8 @@ export namespace helper {
         }
 
         export function overlap(a: IRect, b: IRect): boolean {
-            const overlap_x = a.x + a.w > b.x || b.x + b.w > a.x;
-            const overlap_y = a.y + a.h > b.y || b.y + b.h > a.y;
+            const overlap_x = (a.x + a.w > b.x && a.x <= b.x) || (b.x + b.w > a.x && b.x <= a.x);
+            const overlap_y = (a.y + a.h > b.y && a.y <= b.y) || (b.y + b.h > a.y && b.y <= a.y);
             return overlap_x && overlap_y;
         }
 

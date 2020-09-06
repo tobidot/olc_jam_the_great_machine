@@ -23,23 +23,29 @@ export class Game {
 
     // entities
     public swarm: DroneSwarm = new DroneSwarm(this);
-    private stellar_bodies: Array<StelarBody> = [];
-    private organic_ships: Array<OrganicShip> = [];
+    private stellar_bodies: Array<StelarBody | null> = [];
+    private organic_ships: Array<OrganicShip | null> = [];
     private effects: Array<Effect> = [];
 
-    private game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
-    private game_objects: Array<GameObject> = [];
+    public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
+    public game_objects: Array<GameObject> = [];
 
     public universe: Universe = new Universe(5000, 0, 0, this);
 
     public debug_stats = {
-        fps: new PerformanceTracker()
+        active: true,
+        fps: new PerformanceTracker(),
+        drones_allive: 0,
     };
 
     constructor() {
     }
 
     public add_game_object(object: GameObject) {
+        if (object instanceof ColliderObject) {
+            this.game_object_tree.add(object);
+        }
+
         if (object instanceof OrganicShip) {
             return this.organic_ships.push(object);
         } else if (object instanceof Drone) {
@@ -56,6 +62,7 @@ export class Game {
     public for_each(callback: (game_object: GameObject) => void) {
         this.game_objects.forEach(callback);
     }
+
     public init(p: p5 & p5.SoundFile) {
         const images = require('../assets/images/*.png');
         const sounds = require('../assets/sound/*.mp3');
@@ -94,9 +101,6 @@ export class Game {
         p.keyPressed = () => {
             if (p.keyIsDown(32)) this.camera.target(this.swarm.center.mult(-1));
         };
-        this.universe = new Universe(5000, 0.6, 0.3, this);
-        this.universe.generate();
-        this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
 
         this.game_object_tree = new QuadTree<ColliderObject>({
             x: -this.universe.universe_size,
@@ -104,21 +108,29 @@ export class Game {
             w: this.universe.universe_size * 2,
             h: this.universe.universe_size * 2
         });
+
+        this.universe = new Universe(5000, 0.6, 0.3, this);
+        this.universe.generate();
+        this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
+
+
     }
 
 
     public update(dt: number, p: p5) {
-        this.debug_stats.fps.update();
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
+            if (body === null) break;
             body.reset_frame_buffers();
             body.update(dt);
             if (body.is_to_delete) {
-                this.stellar_bodies.splice(i, 1);
+                this.stellar_bodies[i] = this.stellar_bodies[this.stellar_bodies.length - 1];
+                this.stellar_bodies[this.stellar_bodies.length - 1] = null;
             }
         }
-        this.swarm.update(dt, this.stellar_bodies);
+        this.swarm.update(dt);
         this.organic_ships.forEach((ship) => {
+            if (ship === null) return;
             ship.update(dt, p, this.swarm.drones);
 
             if (this.universe.is_point_inside(ship.position)) {
@@ -151,6 +163,11 @@ export class Game {
             this.camera.move(new p5.Vector().set(0, -dt * cam_speed));
         }
         this.camera.update(dt);
+
+        if (this.debug_stats.active) {
+            this.debug_stats.drones_allive = this.swarm.drones.length;
+            this.debug_stats.fps.update();
+        }
     }
 
     public draw(p: p5) {
@@ -161,7 +178,7 @@ export class Game {
         p.translate(this.camera.position);
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
-
+            if (body === null) continue;
             if (this.should_object_be_drawn(body.get_position())) {
                 const rough_drawing = this.camera.zoom < 0.5;
                 if (rough_drawing) {
@@ -173,7 +190,7 @@ export class Game {
         }
         this.swarm.draw(p, this.camera);
         this.organic_ships.forEach((ship) => {
-            ship.draw(p, this.camera);
+            if (ship) ship.draw(p, this.camera);
         });
         this.effects.forEach((effect) => {
             effect.draw(p, this.camera);
@@ -188,6 +205,7 @@ export class Game {
             p.strokeWeight(5 / this.camera.zoom);
             p.ellipse(this.swarm.center.x, this.swarm.center.y, this.swarm.deviation * 2, this.swarm.deviation * 2);
         }
+        this.game_object_tree.debug_draw(p);
         p.pop();
         this.menu.draw(p);
     }

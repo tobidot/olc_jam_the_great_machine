@@ -25,7 +25,7 @@ export class DroneSwarm {
         this.game = game;
     }
 
-    public update(dt: number, stelar_bodies: Array<StelarBody>) {
+    public update(dt: number) {
 
         this.deviation = 0;
         let drone_center_sum = new p5.Vector;
@@ -33,15 +33,18 @@ export class DroneSwarm {
             const drone = this.drones[i];
             drone.frame_information.reset();
 
-            for (let j = 0; j < stelar_bodies.length; ++j) {
-                const stelar_body = stelar_bodies[j];
-                const to_other = p5.Vector.sub(drone.get_position(), stelar_body.get_position());
-                const distance2 = to_other.magSq();
-                drone.frame_information.add_position_relation({
-                    stelar_body: stelar_body,
-                    to_other,
-                    distance2
-                });
+            const possible_collisions = this.game.game_object_tree.pick(drone);
+            for (let j = 0; j < possible_collisions.length; ++j) {
+                const stelar_body = possible_collisions[j];
+                if (stelar_body instanceof StelarBody) {
+                    const to_other = p5.Vector.sub(drone.get_position(), stelar_body.get_position());
+                    const distance2 = to_other.magSq();
+                    drone.frame_information.add_position_relation({
+                        stelar_body: stelar_body,
+                        to_other,
+                        distance2
+                    });
+                }
             }
 
             drone.update(dt);
