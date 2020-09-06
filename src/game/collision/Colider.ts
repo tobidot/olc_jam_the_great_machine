@@ -9,6 +9,8 @@ export class ColliderObject extends GameObject implements helper.rect.IRect {
     public y: number;
     public h: number;
     public w: number;
+    private position_center_is_valid: boolean = false;
+    private position_center: p5.Vector = new p5.Vector;
 
     constructor(game: Game, rect: helper.rect.IRect) {
         super(game);
@@ -23,21 +25,26 @@ export class ColliderObject extends GameObject implements helper.rect.IRect {
     }
 
     public get_position(): p5.Vector {
-        return new p5.Vector().set(this.x + this.w / 2, this.y + this.h / 2);
+        if (this.position_center_is_valid) return this.position_center;
+        this.position_center_is_valid = true;
+        return this.position_center.set(this.x + this.w / 2, this.y + this.h / 2);
     }
 
     public set_position(pos: p5.Vector): void {
         this.x = pos.x - this.w / 2;
         this.y = pos.y - this.h / 2;
+        this.position_center_is_valid = false;
     }
 
     public set_top_left_position(pos: p5.Vector) {
         this.x = pos.x;
         this.y = pos.y;
+        this.position_center_is_valid = false;
     }
 
     public move(offset: p5.Vector) {
         this.x += offset.x;
         this.y += offset.y;
+        this.position_center_is_valid = false;
     }
 }

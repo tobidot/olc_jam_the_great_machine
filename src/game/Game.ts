@@ -12,6 +12,7 @@ import { QuadTree } from "../tools/signals/trees/QuadTree";
 import { GameObject } from "./object/GameObject";
 import { Universe } from "./general/Universe";
 import { ColliderObject } from "./collision/Colider";
+import { PerformanceTracker } from "./tools/PerformanceTracker";
 
 export class Game {
     private shared: Shared = Shared.get_instance();
@@ -30,6 +31,10 @@ export class Game {
     private game_objects: Array<GameObject> = [];
 
     public universe: Universe = new Universe(5000, 0, 0, this);
+
+    public debug_stats = {
+        fps: new PerformanceTracker()
+    };
 
     constructor() {
     }
@@ -103,6 +108,7 @@ export class Game {
 
 
     public update(dt: number, p: p5) {
+        this.debug_stats.fps.update();
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
             body.reset_frame_buffers();

@@ -68,6 +68,13 @@ export class GameMenu {
                 level_progress_bar.rect.w = this.game.swarm.level_progress * 600;
             });
 
+        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 0, 50, 50))
+            .set_background_color("#222222")
+            .set_alignment("right", "center")
+            .set_on_draw(() => {
+                fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
+            });
+
         this.elements = [
             thrusters_button,
             thruster_count_label,
@@ -77,6 +84,7 @@ export class GameMenu {
             durability_count_label,
             level_progress_bar,
             unspent_points_label,
+            fps_counter,
         ];
     }
 
