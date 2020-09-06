@@ -9,8 +9,9 @@ import { ColliderObject } from "../collision/Colider";
 export class OrganicShip extends ColliderObject {
     private static readonly PIXEL_SIZE = 40;
     public position: p5.Vector;
+    private anchor: p5.Vector;
     private velocity: p5.Vector;
-    private rotation: number;
+    private acceleration: p5.Vector;
     private change_cd: number;
     private destroy_cd: number;
 
@@ -22,21 +23,21 @@ export class OrganicShip extends ColliderObject {
             h: 20,
         });
         this.position = position;
+        this.anchor = position.copy();
         this.velocity = new p5.Vector;
-        this.rotation = Math.random() * Math.PI + 2;
-        this.change_cd = Math.random() * 5;
+        this.acceleration = new p5.Vector;
+        this.change_cd = 0;
         this.destroy_cd = 0;
     }
 
     public update(dt: number, p: p5, drones: Array<Drone>) {
         this.position.add(this.velocity.copy().mult(dt));
-        const project_ahead = this.velocity.copy().setMag(25);
-        const rotation_offset = p5.Vector.fromAngle(this.rotation, 25);
-        const force = project_ahead.add(rotation_offset).mult(dt);
-        this.velocity.add(force).mult(0.99);
+        this.velocity.add(this.acceleration).mult(0.99);
         if ((this.change_cd -= dt) < 0) {
-            this.change_cd = Math.random() * 5;
-            this.rotation = (Math.random() * Math.PI * 2);
+            this.change_cd = Math.random() * 5 + 2;
+            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 500));
+            const maginitude = Math.random() * 2 + 2;
+            this.acceleration = target.sub(this.position).setMag(maginitude); // (Math.random() * Math.PI * 2);
         }
         if ((this.destroy_cd -= dt) <= 0) {
             let packet = drones.reduce(
