@@ -205,10 +205,32 @@ export class Game {
             p.strokeWeight(5 / this.camera.zoom);
             p.ellipse(this.swarm.center.x, this.swarm.center.y, this.swarm.deviation * 2, this.swarm.deviation * 2);
         }
-        this.game_object_tree.debug_draw(p);
+        this.debug_draw(p);
         p.pop();
         this.menu.draw(p);
     }
+
+    public debug_draw(p: p5) {
+        if (!this.debug_stats.active) return;
+        this.game_object_tree.debug_draw(p);
+        // mouse in game coords
+        const x = (p.mouseX - 400) / this.camera.zoom - this.camera.position.x;
+        const y = (p.mouseY - 300) / this.camera.zoom - this.camera.position.y;
+        p.fill(0, 200, 0);
+        p.ellipse(x, y, 20 / this.camera.zoom, 20 / this.camera.zoom);
+        const all_selected = this.game_object_tree.pick({
+            x,
+            y,
+            w: 0,
+            h: 0,
+        });
+        p.noFill();
+        p.stroke(255, 0, 0);
+        for (let selected of all_selected) {
+            p.rect(selected.x, selected.y, selected.w, selected.h);
+        }
+    }
+
 
     public should_object_be_drawn(pos: p5.Vector): boolean {
         if (this.camera.zoom < 0.1) return true;

@@ -41,6 +41,7 @@ export class QuadTree<T extends helper.rect.IRect> {
     public debug_draw(p: p5) {
         p.noFill();
         p.stroke(255, 0, 255);
+        p.strokeWeight(2);
         this.root_branch.debug_draw(p);
     }
 }
