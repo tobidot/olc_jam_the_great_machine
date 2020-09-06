@@ -108,8 +108,8 @@ export class GameMenu {
             new helper.rect.Rect(660, 510, 80, 80),
         ).set_on_drag(() => {
             this.game.control.offset.set(
-                movement_controler.relative_value_x,
-                movement_controler.relative_value_y,
+                movement_controler.relative_value_x - 0.5,
+                movement_controler.relative_value_y - 0.5,
             )
         });
 

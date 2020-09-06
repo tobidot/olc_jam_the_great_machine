@@ -108,7 +108,7 @@ export class DroneSwarm {
     }
 
     public get_production_cost(): number {
-        return 250;
+        return 500;
     }
 
     public get_impuls_strength(): number {
@@ -132,7 +132,7 @@ export class DroneSwarm {
 
     public get_durability(): number {
         const level = Math.floor(this.levels.stability_level);
-        return 60 + level * 10;
+        return 120 + level * 10;
     }
 
 }

@@ -56,11 +56,11 @@ export class OrganicShip extends ColliderObject {
                 const { drone } = packet;
                 drone.age -= 50;
                 this.reset_destroy_cd();
-                const color = 0xff0000ff;
+                const color = 0xffff00ff;
                 const laser_effect = new LaserDeathEffect(
                     this.position.copy(),
                     drone.get_position().copy(),
-                    5,
+                    0.5,
                     color
                 );
                 this.game.add_effect(laser_effect);

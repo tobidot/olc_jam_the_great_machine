@@ -94,13 +94,14 @@ export class Drone extends ColliderObject {
         });
         if (this.attached === null) {
             const diff = this.target.copy().sub(this.x, this.y)
-            if (this.cd_update_aim-- < 0 && diff.magSq() < 10000) {
+            if ((this.cd_update_aim-- < 0 && diff.magSq() < 10000)) {
                 this.cd_update_aim = 30;
                 let target = new p5.Vector;
                 if (this.parent) {
                     target = this.parent.get_position().copy();
                 } else {
-                    target = this.swarm_ref.center.copy().add(this.game.control.offset.copy().mult(5 * Math.sqrt(this.game.control.speed)));
+                    const control_offset = this.game.control.offset.copy().mult(50 * Math.sqrt(this.game.control.speed));
+                    target = this.swarm_ref.center.copy().add(control_offset);
                 }
                 const off = p5.Vector.fromAngle((this.update_aim_rotate++) * Math.PI / 4).mult(this.game.control.distance);
                 this.target = p5.Vector.add(target, off);

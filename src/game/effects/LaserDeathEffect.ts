@@ -14,7 +14,6 @@ export class LaserDeathEffect extends Effect {
         this.time += dt;
         const p = this.time / this.duration;
         this.strength = Math.max(1, this.calc_strength(p) * 5);
-        this.source.add(this.target.copy().sub(this.source).mult(0.3 * dt));
         if (this.time > this.duration) {
             this.is_finished = true;
         }
@@ -30,6 +29,8 @@ export class LaserDeathEffect extends Effect {
         p.noFill();
         p.strokeWeight(this.strength);
         p.color(this.color);
-        p.line(this.source.x, this.source.y, this.target.x, this.target.y);
+        const progress = this.time / this.duration;
+        const source = this.source.lerp(this.target, progress);
+        p.line(source.x, source.y, this.target.x, this.target.y);
     }
 }
