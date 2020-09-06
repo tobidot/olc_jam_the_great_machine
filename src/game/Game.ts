@@ -32,7 +32,14 @@ export class Game {
         distance: 100,
         speed: 50,
         offset: new p5.Vector
-    }
+    };
+    public dead_image?: p5.Image;
+    public assets: {
+        drone?: p5.Image
+        drone_idle_sheet?: p5.Image
+    } = {
+            drone: this.dead_image,
+        };
 
     public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];
@@ -59,6 +66,7 @@ export class Game {
             this.debug_stats.active = mode.new;
         });
         this.shared.game.set(this);
+
     }
 
     public add_game_object(object: GameObject) {
@@ -94,17 +102,32 @@ export class Game {
         this.game_objects.forEach(callback);
     }
 
-    public init(p: p5) {
-        const images = require('../assets/images/*.png');
-        const sounds = require('../assets/sound/*.mp3');
-        if (p.hasOwnProperty('loadSound')) {
-            const loadSound = (<any>p).loadSound;
-            loadSound(sounds.the_great_machine_no_lead, (sound) => {
-                sound.setLoop(true);
-                // sound.play();
-                this.shared.background_music.set(sound);
-            });
+    public init(p: p5 & p5.SoundFile) {
+
+        const image = p.createImage(1, 1);
+        image.set(0, 0, 100);
+        this.dead_image = image;
+        this.assets = {
+            drone: this.dead_image,
+            drone_idle_sheet: this.dead_image,
         }
+        const images = require('../assets/images/*.png');
+        p.loadImage(images.drone, (image) => {
+            this.assets.drone = image;
+        });
+        p.loadImage(images.drone_idle_sheet, (image) => {
+            this.assets.drone_idle_sheet = image;
+        });
+
+
+
+        const sounds = require('../assets/sound/*.mp3');
+        const loadSound = (<any>p).loadSound;
+        loadSound(sounds.the_great_machine_no_lead, (sound) => {
+            sound.setLoop(true);
+            // sound.play();
+            this.shared.background_music.set(sound);
+        });
 
         p.noSmooth();
         p.mouseWheel = (event: { delta: number }) => {

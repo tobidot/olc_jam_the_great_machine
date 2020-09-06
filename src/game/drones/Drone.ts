@@ -10,7 +10,7 @@ import { ColliderObject } from "../collision/Colider";
 import { helper } from "../tools/Rect";
 
 export class Drone extends ColliderObject {
-    public static readonly PIXEL_SIZE: number = 5;
+    public static readonly PIXEL_SIZE: number = 8;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND: number = 200;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND__ROOT2: number = Math.sqrt(Drone.LIGHTSPEED_PIXEL_PER_SECOND);
 
@@ -30,6 +30,27 @@ export class Drone extends ColliderObject {
     public progress: number = 0;
     public duplicate_progress: number = 100;
     public age: number = 0;
+    public animation_step: number = 0;
+    public animation_max_step: number = 160;
+    public frame = 0;
+    public frames = {
+        0: 0,
+        8: 1,
+        16: 2,
+        24: 3,
+        32: 4,
+        40: 5,
+        48: 6,
+        56: 7,
+        80: 5,
+        88: 6,
+        96: 5,
+        104: 4,
+        112: 3,
+        120: 2,
+        128: 1,
+        136: 0,
+    }
 
     constructor(game: Game, drone_swarm: DroneSwarm, position: p5.Vector = new p5.Vector) {
         super(game, {
@@ -49,13 +70,26 @@ export class Drone extends ColliderObject {
     public draw(p: p5) {
         p.noStroke();
         p.fill(255, 0, 0);
-        if (this.DEBUG_colliding) p.fill(0, 255, 0);
-        p.rect(
-            this.x,
-            this.y,
-            Drone.PIXEL_SIZE,
-            Drone.PIXEL_SIZE
-        );
+        if (!this.attached) this.animation_step = 0;
+        if (this.game.assets.drone_idle_sheet) {
+            this.animation_step++;
+            if (this.animation_step >= this.animation_max_step) {
+                this.animation_step = 0;
+            }
+            if (this.frames[this.animation_step]) {
+                this.frame = this.frames[this.animation_step];
+            }
+            const frame_offset = this.frame * 8;
+            p.image(this.game.assets.drone_idle_sheet, this.x, this.y, 8, 8, frame_offset, 0, 8, 8);
+        } else {
+            // if (this.DEBUG_colliding) p.fill(0, 255, 0);
+            p.rect(
+                this.x,
+                this.y,
+                Drone.PIXEL_SIZE,
+                Drone.PIXEL_SIZE
+            );
+        }
     }
 
     public update(dt: number) {
