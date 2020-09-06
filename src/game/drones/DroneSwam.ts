@@ -49,7 +49,7 @@ export class DroneSwarm {
 
             drone.update(dt);
             if (!this.game.universe.is_point_inside(drone.get_position())) {
-                drone.get_position().set(0, 0);
+                drone.set_position(new p5.Vector);
             }
 
             this.level_progress += 0.01 * dt / this.level_points_needed;

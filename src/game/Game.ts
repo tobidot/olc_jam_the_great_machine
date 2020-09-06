@@ -124,6 +124,7 @@ export class Game {
             body.reset_frame_buffers();
             body.update(dt);
             if (body.is_to_delete) {
+                this.game_object_tree.remove(body);
                 this.stellar_bodies[i] = this.stellar_bodies[this.stellar_bodies.length - 1];
                 this.stellar_bodies[this.stellar_bodies.length - 1] = null;
             }
@@ -133,8 +134,8 @@ export class Game {
             if (ship === null) return;
             ship.update(dt, p, this.swarm.drones);
 
-            if (this.universe.is_point_inside(ship.position)) {
-                ship.position.set(0, 0);
+            if (!this.universe.is_point_inside(ship.position)) {
+                ship.set_position(new p5.Vector);
             }
         });
 
