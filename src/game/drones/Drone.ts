@@ -15,6 +15,7 @@ export class Drone extends ColliderObject {
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND__ROOT2: number = Math.sqrt(Drone.LIGHTSPEED_PIXEL_PER_SECOND);
 
 
+    public parent: Drone | null = null;
     public frame_information: DroneFrameInformation = new DroneFrameInformation(this);
     public velocity: p5.Vector;
     public swarm_ref: DroneSwarm;
@@ -81,25 +82,25 @@ export class Drone extends ColliderObject {
             if (is_colliding) {
                 this.DEBUG_colliding = true;
                 if (!this.handle_attach_to_relation(relation)) {
-                    const cm_size = relation.stelar_body.get_half_cellmap_size();
-                    if (relation.distance2 < cm_size * cm_size) {
-                        const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
-                            this.swarm_ref.get_drone_weight(),
-                            relation.to_other.copy().mult(-1),
-                            relation.distance2
-                        ).mult(dt);
-                        // this.apply_force(acting_force);
-                    }
+                    // const cm_size = relation.stelar_body.get_half_cellmap_size();
+                    // if (relation.distance2 < cm_size * cm_size) {
+                    // const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
+                    //     this.swarm_ref.get_drone_weight(),
+                    //     relation.to_other.copy().mult(-1),
+                    //     relation.distance2
+                    // ).mult(dt);
+                    // this.apply_force(acting_force);
+                    // }
                 };
             }
-            if (!is_colliding) {
-                const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
-                    this.swarm_ref.get_drone_weight(),
-                    relation.to_other.copy().mult(-1),
-                    relation.distance2
-                ).mult(dt);
-                // this.apply_force(acting_force);
-            }
+            // if (!is_colliding) {
+            // const acting_force = relation.stelar_body.calculate_gravitational_force_on_relation(
+            //     this.swarm_ref.get_drone_weight(),
+            //     relation.to_other.copy().mult(-1),
+            //     relation.distance2
+            // ).mult(dt);
+            // this.apply_force(acting_force);
+            // }
         });
         if (this.attached === null) {
             // drive away from center if possible
