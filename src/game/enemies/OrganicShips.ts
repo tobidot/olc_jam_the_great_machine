@@ -14,6 +14,7 @@ export class OrganicShip extends ColliderObject {
     private acceleration: p5.Vector;
     private change_cd: number;
     private destroy_cd: number;
+    public radius: number;
 
     constructor(game: Game, position: p5.Vector) {
         super(game, {
@@ -22,6 +23,7 @@ export class OrganicShip extends ColliderObject {
             w: 20,
             h: 20,
         });
+        this.radius = 1;
         this.position = position;
         this.anchor = position.copy();
         this.velocity = new p5.Vector;
@@ -35,7 +37,7 @@ export class OrganicShip extends ColliderObject {
         this.velocity.add(this.acceleration).mult(0.99);
         if ((this.change_cd -= dt) < 0) {
             this.change_cd = Math.random() * 2 + 2;
-            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 250));
+            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 250 * this.radius));
             const maginitude = Math.random() * 1.5 + 1.5;
             this.acceleration = target.sub(this.position).setMag(maginitude); // (Math.random() * Math.PI * 2);
         }

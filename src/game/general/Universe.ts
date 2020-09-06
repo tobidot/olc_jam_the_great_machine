@@ -69,6 +69,7 @@ export class Universe {
             const planet_pos = this.random_point_inside().mult(0.8);
             const ship = new OrganicShip(this.game, planet_pos);
             const planet = new HabitablePlanet(this.game, planet_pos);
+            planet.ships.push(ship);
             this.game.add_game_object(ship);
             this.game.add_game_object(planet);
             this.initial_mass += planet.get_mass_center().mass;

@@ -17,6 +17,7 @@ export class GameMenu {
             .set_background_color("#222222")
             .set_alignment("right", "center")
             .set_on_draw(() => {
+                drone_counter.active = this.game.debug_stats.active;
                 fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
             });
 
@@ -24,6 +25,7 @@ export class GameMenu {
             .set_background_color("#228822")
             .set_alignment("right", "center")
             .set_on_draw(() => {
+                drone_counter.active = this.game.debug_stats.active;
                 drone_counter.set_text(this.game.debug_stats.drones_allive.toString());
             });
 

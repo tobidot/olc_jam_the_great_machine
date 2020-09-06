@@ -7,11 +7,25 @@ import { OrganicShip } from "../enemies/OrganicShips";
 
 export class HabitablePlanet extends StelarBody {
     public readonly ships: Array<OrganicShip>;
+    public spawn_time_cd: number;
+    public spawn_time: number;
 
     constructor(game: Game, position: Vector = new p5.Vector, size?: number) {
         if (!size) size = Math.floor(Math.random() * 10) + 4;
         super(game, position, size);
         this.ships = [];
+        this.spawn_time_cd = this.spawn_time = 36000 / (size + 100);
+    }
+
+    public update(dt: number) {
+        this.spawn_time_cd -= dt;
+        if (this.spawn_time_cd < 0) {
+            this.spawn_time_cd = this.spawn_time;
+            const ship = new OrganicShip(this.game, new p5.Vector().set(this.x, this.y).copy());
+            this.game.add_game_object(ship);
+            this.ships.push(ship);
+            ship.radius = Math.sqrt(this.ships.length);
+        }
     }
 
     public before_draw_cell(p: p5, cell: BodyCell) {

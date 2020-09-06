@@ -4,12 +4,14 @@ import p5 from "p5";
 export abstract class GameMenuElement {
     public rect: helper.rect.Rect;
     public on_draw?: (self: GameMenuElement) => void;
+    public active: boolean = true;
 
     constructor(rect: helper.rect.Rect) {
         this.rect = rect;
     }
 
     public draw(p: p5): void {
+        if (!this.active) return;
         if (this.on_draw) this.on_draw(this);
     };
 

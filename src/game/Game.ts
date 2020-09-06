@@ -205,11 +205,6 @@ export class Game {
             ship.update(dt, p, this.swarm.drones);
         });
 
-        if ((this.ship_spawn -= dt) < 0) {
-            this.ship_spawn = 60;
-            const ship = new OrganicShip(this, new p5.Vector().copy());
-            this.organic_ships.push(ship);
-        }
         this.effects = this.effects.filter((effect) => {
             effect.update(dt);
             return !effect.is_finished;
@@ -236,7 +231,7 @@ export class Game {
             this.debug_stats.fps.update();
         }
         {
-            this.game_stats.enemy_ships = this.organic_ships.length;
+            this.game_stats.enemy_ships = this.organic_ships.filter(body => body !== null).length;
             this.game_stats.habitats_remaining = this.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
             this.game_stats.asteroids_remaining = this.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
             this.game_stats.asteroids_remaining_percent = 100 * this.game_stats.asteroids_remaining / this.universe.initial_asteroids;
