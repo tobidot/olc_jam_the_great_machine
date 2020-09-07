@@ -47,10 +47,22 @@ export class HabitablePlanet extends StelarBody {
         const mass = this.get_mass_center().mass;
         let from = p.color(0, 50, 0);
         let to = p.color(100, 250, 20);
-        let lerp = p.lerpColor(from, to, mass / (BodyCell.MAX_MASS * this.cellmap_size * this.cellmap_size));
+        let progress = mass / (BodyCell.MAX_MASS * this.cellmap_size * this.cellmap_size);
+        let lerp = p.lerpColor(from, to, progress);
         p.stroke(255, 0, 0);
         p.strokeWeight(4);
         p.fill(lerp);
+        p.noTint();
+        // p.tint(2 * progress * 255);
+    }
+
+    public draw_roughly(p: p5) {
+        this.before_draw_roughly(p);
+        if (this.game.assets.planet) {
+            p.image(this.game.assets.planet, this.x, this.y, this.w, this.h);
+        } else {
+            super.draw_roughly(p);
+        }
     }
 
     public before_destroy() {

@@ -38,6 +38,8 @@ export class Game {
         drone?: p5.Image
         drone_idle_sheet?: p5.Image,
         battleship?: p5.Image,
+        asteroid?: p5.Image,
+        planet?: p5.Image,
     } = {
             drone: this.dead_image,
         };
@@ -112,6 +114,8 @@ export class Game {
             drone: this.dead_image,
             drone_idle_sheet: this.dead_image,
             battleship: this.dead_image,
+            planet: this.dead_image,
+            asteroid: this.dead_image,
         }
         const images = require('../assets/images/*.png');
         p.loadImage(images.drone, (image) => {
@@ -122,6 +126,12 @@ export class Game {
         });
         p.loadImage(images.battleship, (image) => {
             this.assets.battleship = image;
+        });
+        p.loadImage(images.planet, (image) => {
+            this.assets.planet = image;
+        });
+        p.loadImage(images.asteroid, (image) => {
+            this.assets.asteroid = image;
         });
 
 

@@ -131,7 +131,9 @@ export class StelarBody extends ColliderObject {
     public before_draw_roughly(p: p5) {
         p.noStroke();
         const mass = this.get_mass_center().mass;
-        p.fill(Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size)));
+        const grayscale = Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size))
+        p.fill(grayscale);
+        p.tint(255, grayscale)
     }
 
     public calculate_gravitational_force_on(

@@ -8,4 +8,17 @@ export class Asteroid extends StelarBody {
         if (!size) size = Math.floor(Math.random() * 5) + 2;
         super(game, position, size);
     }
+
+    public before_draw_roughly(p: p5) {
+        p.noTint();
+    }
+
+    public draw_roughly(p: p5) {
+        this.before_draw_roughly(p);
+        if (this.game.assets.asteroid) {
+            p.image(this.game.assets.asteroid, this.x, this.y, this.w, this.h);
+        } else {
+            super.draw_roughly(p);
+        }
+    }
 }
