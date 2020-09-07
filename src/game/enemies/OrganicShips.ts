@@ -75,17 +75,22 @@ export class OrganicShip extends ColliderObject {
     }
 
     public draw(p: p5, camera: Camera) {
-        p.stroke(70, 0, 250);
-        p.fill(0, 200, 0);
-        const size = OrganicShip.PIXEL_SIZE / Math.max(0.125, Math.sqrt(camera.zoom));
-        const half_size = size / 2;
-        p.strokeWeight(size / 10);
-        p.ellipse(
-            this.position.x,
-            this.position.y,
-            size,
-            size,
-        );
+        if (this.game.assets.battleship) {
+            const frame_offset = 0;
+            p.image(this.game.assets.battleship, this.position.x, this.position.y, 32, 32, frame_offset, 0, 32, 32);
+        } else {
+            p.stroke(70, 0, 250);
+            p.fill(0, 200, 0);
+            const size = OrganicShip.PIXEL_SIZE / Math.max(0.125, Math.sqrt(camera.zoom));
+            const half_size = size / 2;
+            p.strokeWeight(size / 10);
+            p.ellipse(
+                this.position.x,
+                this.position.y,
+                size,
+                size,
+            );
+        }
 
     }
 }

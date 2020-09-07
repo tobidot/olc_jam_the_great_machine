@@ -68,8 +68,6 @@ export class Drone extends ColliderObject {
     }
 
     public draw(p: p5) {
-        p.noStroke();
-        p.fill(255, 0, 0);
         if (!this.attached) this.animation_step = 0;
         if (this.game.assets.drone_idle_sheet) {
             this.animation_step++;
@@ -82,6 +80,8 @@ export class Drone extends ColliderObject {
             const frame_offset = this.frame * 8;
             p.image(this.game.assets.drone_idle_sheet, this.x, this.y, 8, 8, frame_offset, 0, 8, 8);
         } else {
+            p.noStroke();
+            p.fill(255, 0, 0);
             // if (this.DEBUG_colliding) p.fill(0, 255, 0);
             p.rect(
                 this.x,

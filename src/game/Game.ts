@@ -36,7 +36,8 @@ export class Game {
     public dead_image?: p5.Image;
     public assets: {
         drone?: p5.Image
-        drone_idle_sheet?: p5.Image
+        drone_idle_sheet?: p5.Image,
+        battleship?: p5.Image,
     } = {
             drone: this.dead_image,
         };
@@ -110,6 +111,7 @@ export class Game {
         this.assets = {
             drone: this.dead_image,
             drone_idle_sheet: this.dead_image,
+            battleship: this.dead_image,
         }
         const images = require('../assets/images/*.png');
         p.loadImage(images.drone, (image) => {
@@ -117,6 +119,9 @@ export class Game {
         });
         p.loadImage(images.drone_idle_sheet, (image) => {
             this.assets.drone_idle_sheet = image;
+        });
+        p.loadImage(images.battleship, (image) => {
+            this.assets.battleship = image;
         });
 
 
