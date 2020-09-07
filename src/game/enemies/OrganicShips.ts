@@ -36,8 +36,8 @@ export class OrganicShip extends ColliderObject {
         this.position.add(this.velocity.copy().mult(dt));
         this.velocity.add(this.acceleration).mult(0.99);
         if ((this.change_cd -= dt) < 0) {
-            this.change_cd = Math.random() * 2 + 2;
-            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 250 * this.radius));
+            this.change_cd = Math.random() * 1 + 1;
+            const target = this.anchor.copy().add(p5.Vector.random2D().mult(Math.random() * 125 * this.radius));
             const maginitude = Math.random() * 1.5 + 1.5;
             this.acceleration = target.sub(this.position).setMag(maginitude); // (Math.random() * Math.PI * 2);
         }
@@ -47,7 +47,7 @@ export class OrganicShip extends ColliderObject {
                     const diff = drone.get_position().copy().sub(this.position);
                     const dist2 = diff.magSq();
                     if (packet && dist2 > packet.dist2) return packet;
-                    if (dist2 > 800 * 800) return packet;
+                    if (dist2 > 250 * 250) return packet;
 
                     return {
                         drone,

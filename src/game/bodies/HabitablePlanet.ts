@@ -14,12 +14,12 @@ export class HabitablePlanet extends StelarBody {
         if (!size) size = Math.floor(Math.random() * 10) + 4;
         super(game, position, size);
         this.ships = [];
-        this.spawn_time = 12000;
+        this.spawn_time = 60;
         this.spawn_time_cd = this.spawn_time / 4;
     }
 
     public update(dt: number) {
-        this.spawn_time_cd -= dt * this.get_mass_center().mass / (100 * BodyCell.MAX_MASS);
+        this.spawn_time_cd -= dt * Math.sqrt(this.get_mass_center().mass / (100 * BodyCell.MAX_MASS));
         if (this.spawn_time_cd < 0) {
             this.spawn_time_cd = this.spawn_time + 30;
             const ship = new OrganicShip(this.game, new p5.Vector().set(this.x, this.y).copy());
