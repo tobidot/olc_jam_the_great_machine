@@ -1,4 +1,4 @@
-import { helper } from "../../../game/tools/Rect";
+import { helper } from "../../game/tools/Rect";
 import { TreeElementNotFoundException } from "./exceptions/TreeElementNotFoundException";
 import p5 from "p5";
 

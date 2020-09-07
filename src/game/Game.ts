@@ -8,7 +8,7 @@ import { OrganicShip } from "./enemies/OrganicShips";
 import { Effect } from "./effects/Effect";
 import { GameMenu } from "./game-menu/GameMenu";
 import { Shared } from "../shared/Shared";
-import { QuadTree } from "../tools/signals/trees/QuadTree";
+import { QuadTree } from "../tools/trees/QuadTree";
 import { GameObject } from "./object/GameObject";
 import { Universe } from "./general/Universe";
 import { ColliderObject } from "./collision/Colider";
@@ -40,9 +40,7 @@ export class Game {
         battleship?: p5.Image,
         asteroid?: p5.Image,
         planet?: p5.Image,
-    } = {
-            drone: this.dead_image,
-        };
+    } = {};
 
     public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];

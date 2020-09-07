@@ -1,8 +1,8 @@
-import { QuadTree } from "../../src/tools/signals/trees/QuadTree";
+import { QuadTree } from "../../src/tools/trees/QuadTree";
 import { TestClass } from "../base/TestClass";
 import { helper } from "../../src/game/tools/Rect";
 import p5 from "p5";
-import { TreeElementNotFoundException } from "../../src/tools/signals/trees/exceptions/TreeElementNotFoundException";
+import { TreeElementNotFoundException } from "../../src/tools/trees/exceptions/TreeElementNotFoundException";
 
 export class QuadTreeTest extends TestClass {
 
