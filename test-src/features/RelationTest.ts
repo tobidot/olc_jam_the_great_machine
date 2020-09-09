@@ -1,8 +1,12 @@
-import { TestClass } from "../base/TestClass";
 import { Relation } from "../../src/game/tools/Relation";
+import { TestClass } from "@game.object/ts-game-toolbox/dist/src/testing/TestClass";
 
 
 export class RelationTest extends TestClass {
+    public get_name(): string {
+        return "Relation Test"
+    }
+
     private a: Link = new Link;
     private b: Link = new Link;
     private c: Link = new Link;

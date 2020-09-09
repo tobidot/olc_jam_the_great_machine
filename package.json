@@ -5,10 +5,7 @@
   "author": "tobidot <Object.name@live.de>",
   "license": "MIT",
   "scripts": {
-    "test": "yarn run test-build && yarn run test-run",
-    "test-build": "tsc --build ./tsconfig-test.json ",
-    "test-run": "node ./tests-dist/tests/main.js",
-    "test-watch": "tsc --build ./tsconfig-test.json --watch",
+    "test": "npx parcel ./test-src/index.html --out-dir ./test-dist/",
     "start": "npx parcel ./src/index.html",
     "tsc": "tsc --noEmit",
     "clean": "rmdir /q 'dist'",
@@ -16,6 +13,7 @@
     "release": "npm run clean && npm run build"
   },
   "dependencies": {
+    "@game.object/ts-game-toolbox": "2.0.3",
     "@types/p5": "^0.9.1",
     "@types/parcel-env": "^0.0.0",
     "@types/react": "^16.9.46",

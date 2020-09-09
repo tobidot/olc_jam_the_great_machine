@@ -1,10 +1,13 @@
 import { QuadTree } from "../../src/tools/trees/QuadTree";
-import { TestClass } from "../base/TestClass";
 import { helper } from "../../src/game/tools/Rect";
+import { tools } from "@game.object/ts-game-toolbox";
 import p5 from "p5";
 import { TreeElementNotFoundException } from "../../src/tools/trees/exceptions/TreeElementNotFoundException";
 
-export class QuadTreeTest extends TestClass {
+export class QuadTreeTest extends tools.testing.TestClass {
+    public get_name(): string {
+        return "Quadtree Test";
+    }
 
     public base_rect: helper.rect.IRect = {
         x: -50, y: -50, w: 100, h: 100,
