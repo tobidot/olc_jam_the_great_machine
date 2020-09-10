@@ -6,24 +6,19 @@ import { helper } from "../tools/Rect";
 import { GameMenuButton } from "./GameMenuButton";
 import { GameMenuRect } from "./GameMenuRect";
 import { GameMenuControler } from "./GameMenuControler";
+import { Rect } from "@game.object/ts-game-toolbox/dist/src/geometries/Rect";
 
 export class GameMenu {
     private elements: Array<GameMenuElement> = [];
 
     constructor(private game: Game) {
-
-
-        let fps_counter = new GameMenuLabel(new helper.rect.Rect(750, 350, 50, 50))
-            .set_background_color("#222222")
-            .set_alignment("right", "center")
+        let fps_counter = new GreyMenuLabel(new Rect(750, 350, 50, 50))
             .set_on_draw(() => {
                 drone_counter.active = this.game.debug_stats.active;
                 fps_counter.set_text(this.game.debug_stats.fps.current_fps.toString());
             });
 
-        let drone_counter = new GameMenuLabel(new helper.rect.Rect(725, 400, 75, 50))
-            .set_background_color("#228822")
-            .set_alignment("right", "center")
+        let drone_counter = new GreyMenuLabel(new Rect(725, 400, 75, 50))
             .set_on_draw(() => {
                 drone_counter.active = this.game.debug_stats.active;
                 drone_counter.set_text(this.game.debug_stats.drones_allive.toString());
@@ -75,14 +70,6 @@ export class GameMenu {
         });
 
         this.elements = [
-            // thrusters_button,
-            // thruster_count_label,
-            // collectors_button,
-            // collectors_count_label,
-            // durability_button,
-            // durability_count_label,
-            // level_progress_bar,
-            // unspent_points_label,
             menu_bar,
             speed_label,
             speed_controler,
@@ -143,55 +130,12 @@ export class GameMenu {
     }
 
     public draw(p: p5) {
-
-        // this.draw_button(p, 25, 510, 'Thrusters', this.game.swarm.levels.thruster_level);
-        // this.draw_button(p, 275, 510, 'Collectors', this.game.swarm.levels.collecting_level);
-        // this.draw_button(p, 525, 510, 'Durability', this.game.swarm.levels.stability_level);
-
-        // p.fill(40);
-        // p.rect(0, 575, 600, 25);
-        // p.fill(200, 200, 0);
-        // p.rect(0, 575, 600 * this.game.swarm.level_progress, 25);
-
-        // p.textSize(24);
-        // p.fill(0, 255, 0);
-        // p.text('Upgrades: ' + this.game.swarm.level_points.toString(), 610, 590);
-
         this.elements.forEach((element) => {
             element.draw(p);
         })
     }
 
-
-
-    protected buy_level(type: string) {
-        // if (this.game.swarm.level_points <= 0) return;
-        this.game.swarm.level_points--;
-        switch (type) {
-            case "thrusters": this.game.swarm.levels.thruster_level++; break;
-            case "durability": this.game.swarm.levels.stability_level++; break;
-            case "collectors": this.game.swarm.levels.collecting_level++; break;
-        }
-    }
-
-    protected buy_thruster_level() {
-    }
-
-    public draw_button(p: p5, x: number, y: number, text: string, level: number) {
-        p.stroke(0);
-        p.textSize(24);
-        p.strokeWeight(1);
-        p.fill("#888888");
-        p.rect(x, y, 200, 50);
-
-        // p.fill(255);
-        // p.text(text, x + 10, y + 25);
-        // p.textSize(32);
-        // p.fill(0, 255, 0);
-        // p.text(level.toString(), x + 205, y + 35);
-    }
-
-    mouse_dragged(x: number, y: number, drag: p5.Vector) {
+    public mouse_dragged(x: number, y: number, drag: p5.Vector) {
         let hit = false;
         this.elements.forEach((element) => {
             if (element.handle_drag(new p5.Vector().set(x, y), drag)) {
@@ -201,7 +145,7 @@ export class GameMenu {
         return hit;
     }
 
-    mouse_pressed(x: number, y: number): boolean {
+    public mouse_pressed(x: number, y: number): boolean {
         let hit = false;
         this.elements.forEach((element) => {
             if (element.handle_click(new p5.Vector().set(x, y))) {
@@ -210,5 +154,12 @@ export class GameMenu {
         });
         return hit;
     }
+}
 
+class GreyMenuLabel extends GameMenuLabel {
+    constructor(rect: Rect, text?: string) {
+        super(rect, text);
+        this.set_background_color("#222222")
+            .set_alignment("right", "center");
+    }
 }

@@ -131,7 +131,7 @@ export class Drone extends ColliderObject {
             if ((this.cd_update_aim-- < 0 && diff.magSq() < 10000)) {
                 this.cd_update_aim = 30;
                 let target = new p5.Vector;
-                if (this.parent) {
+                if (this.parent && this.parent.state.is_to_delete === false) {
                     target = this.parent.get_position().copy();
                 } else {
                     const control_offset = this.game.control.offset.copy().mult(50 * Math.sqrt(this.game.control.speed));
