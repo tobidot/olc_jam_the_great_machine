@@ -37,7 +37,7 @@ export class DroneSwarm {
 
             const possible_collisions = this.game.game_object_tree.pick(drone.components.collider.rect);
             for (let j = 0; j < possible_collisions.length; ++j) {
-                const stelar_body = possible_collisions[j];
+                const stelar_body = possible_collisions[j].game_object;
                 if (stelar_body instanceof StelarBody) {
                     if (stelar_body.components.collider === undefined) throw new Error();
                     const to_other = p5.Vector.sub(drone.components.collider.cached.position_center.get(), stelar_body.components.collider.cached.position_center.get());
