@@ -27,6 +27,14 @@ export class GameObject {
         this.components.collider?.before_destroy();
     }
 
+    public before_update() {
+        this.components.collider?.before_update();
+    }
+
+    public update(dt: number) {
+        this.components.collider?.update(dt);
+    }
+
     public debug_draw(p: p5) {
         const rect = this.components.collider?.rect;
         if (rect === undefined) return;

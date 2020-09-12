@@ -17,16 +17,7 @@ export class ColliderFrameInformation extends FrameInformation {
             );
         });
 
-    public bounding_box_wrapper = new CachedVariable<GameObjectBoundingBoxWrapper>(
-        new GameObjectBoundingBoxWrapper(0, 0, 100, 100),
-        (old: GameObjectBoundingBoxWrapper) => {
-            old.x = this.collider.rect.x;
-            old.y = this.collider.rect.y;
-            old.w = this.collider.rect.w;
-            old.h = this.collider.rect.h;
-            return old;
-        }
-    )
+
 
     public constructor(collider: ColliderComponent) {
         super()

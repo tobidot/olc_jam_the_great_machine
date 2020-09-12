@@ -19,6 +19,7 @@ export class HabitablePlanet extends StelarBody {
     }
 
     public update(dt: number) {
+        super.update(dt);
         const collider = this.components.collider;
         if (collider === undefined) throw new Error();
         this.spawn_time_cd -= dt * Math.sqrt(this.get_mass_center().mass / (100 * BodyCell.MAX_MASS));

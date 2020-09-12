@@ -54,7 +54,7 @@ export class Drone extends GameObject {
 
     constructor(game: Game, drone_swarm: DroneSwarm, position: p5.Vector = new p5.Vector) {
         super(game);
-        this.components.collider = new ColliderComponent();
+        this.components.collider = new ColliderComponent(this);
         this.components.collider.rect.w = Drone.PIXEL_SIZE;
         this.components.collider.rect.h = Drone.PIXEL_SIZE;
         this.components.collider.set_position_center(position);
@@ -95,6 +95,7 @@ export class Drone extends GameObject {
     }
 
     public update(dt: number) {
+        super.update(dt);
         const collider = this.components.collider;
         if (collider === undefined) throw new Error();
         this.DEBUG_colliding = false;

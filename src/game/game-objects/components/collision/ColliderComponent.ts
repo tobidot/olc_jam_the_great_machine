@@ -2,18 +2,28 @@ import { GameObjectComponent } from "../base/GameObjectComponent"
 import { Rect, IRect } from "@game.object/ts-game-toolbox/dist/src/geometries/Rect"
 import { ColliderFrameInformation } from "./ColliderFrameInformation";
 import p5 from "p5";
+import { GameObjectBoundingBoxWrapper } from "../../base/GameObjectBoundingBoxWrapper";
+import { GameObject } from "../../base/GameObject";
 
 
 export class ColliderComponent extends GameObjectComponent<ColliderFrameInformation> {
     public cached = new ColliderFrameInformation(this);
     public rect: Rect = new Rect(0, 0, 100, 100);
+    public bounding_box_wrapper = new GameObjectBoundingBoxWrapper(new Rect(0, 0, 100, 100), this.game_object);
 
-    public constructor() {
+    public constructor(public game_object: GameObject) {
         super('Collider');
+        this.bounding_box_wrapper.x = this.rect.x;
+        this.bounding_box_wrapper.y = this.rect.y;
+        this.bounding_box_wrapper.w = this.rect.w;
+        this.bounding_box_wrapper.h = this.rect.h;
     }
 
     public update(dt: number): void {
-
+        this.bounding_box_wrapper.x = this.rect.x;
+        this.bounding_box_wrapper.y = this.rect.y;
+        this.bounding_box_wrapper.w = this.rect.w;
+        this.bounding_box_wrapper.h = this.rect.h;
     }
 
     public before_update() {

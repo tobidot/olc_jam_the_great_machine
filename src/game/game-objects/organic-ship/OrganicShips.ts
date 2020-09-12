@@ -15,11 +15,12 @@ export class OrganicShip extends GameObject {
     private change_cd: number;
     private destroy_cd: number;
     public radius: number;
+    public drones: Array<Drone> = [];
 
     constructor(game: Game, position: p5.Vector) {
         super(game);
 
-        this.components.collider = new ColliderComponent();
+        this.components.collider = new ColliderComponent(this);
         this.components.collider.rect.w = 20;
         this.components.collider.rect.h = 20;
         this.components.collider.set_position_center(position);
@@ -33,7 +34,8 @@ export class OrganicShip extends GameObject {
         this.destroy_cd = 0;
     }
 
-    public update(dt: number, p: p5, drones: Array<Drone>) {
+    public update(dt: number) {
+        super.update(dt);
         this.position.add(this.velocity.copy().mult(dt));
         this.velocity.add(this.acceleration).mult(0.99);
         if ((this.change_cd -= dt) < 0) {
@@ -43,7 +45,7 @@ export class OrganicShip extends GameObject {
             this.acceleration = target.sub(this.position).setMag(maginitude); // (Math.random() * Math.PI * 2);
         }
         if ((this.destroy_cd -= dt) <= 0) {
-            let packet = drones.reduce(
+            let packet = this.drones.reduce(
                 (packet: { drone: Drone, dist2: number } | null, drone: Drone): { drone: Drone, dist2: number } | null => {
                     if (drone.components.collider === undefined) throw new Error();
                     const diff = drone.components.collider.cached.position_center.get().copy().sub(this.position);

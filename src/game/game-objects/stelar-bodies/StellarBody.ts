@@ -24,7 +24,7 @@ export class StelarBody extends GameObject {
 
     constructor(game: Game, position: Vector, cellmap_size: number) {
         super(game);
-        this.components.collider = new ColliderComponent();
+        this.components.collider = new ColliderComponent(this);
         this.components.collider.rect.w = cellmap_size * StelarBody.CELL_SIZE;
         this.components.collider.rect.h = cellmap_size * StelarBody.CELL_SIZE;
         this.components.collider.set_position_center(position);
@@ -35,6 +35,7 @@ export class StelarBody extends GameObject {
             cell = new BodyCell(this, new p5.Vector().set(x, y));
             return cell;
         });
+        this.update(0);
     }
 
     public for_each_cell(callback: (x: number, y: number, cell: BodyCell | null) => BodyCell | null) {
@@ -98,6 +99,7 @@ export class StelarBody extends GameObject {
     }
 
     public update(dt: number) {
+        super.update(dt);
     }
 
     public draw(p: p5) {

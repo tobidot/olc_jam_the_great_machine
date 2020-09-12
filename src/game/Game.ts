@@ -74,7 +74,7 @@ export class Game {
     public add_game_object(object: GameObject) {
         const collider = object.components.collider;
         if (collider !== undefined) {
-            this.game_object_tree.add(collider.cached.bounding_box_wrapper.get());
+            this.game_object_tree.add(collider.bounding_box_wrapper);
         }
 
         if (object instanceof OrganicShip) {
@@ -93,7 +93,7 @@ export class Game {
         object.before_destroy();
         const collider = object.components.collider;
         if (collider !== undefined) {
-            this.game_object_tree.remove(collider.cached.bounding_box_wrapper.get());
+            this.game_object_tree.remove(collider.bounding_box_wrapper);
         }
         if (object instanceof OrganicShip) {
             const id = this.organic_ships.findIndex((check) => object === check);
@@ -231,7 +231,7 @@ export class Game {
             body.update(dt);
             if (body.is_to_delete) {
                 body.before_destroy();
-                const bounding_box_wrapper = body.components.collider?.cached.bounding_box_wrapper.get();
+                const bounding_box_wrapper = body.components.collider?.bounding_box_wrapper;
                 if (bounding_box_wrapper) this.game_object_tree.remove(bounding_box_wrapper);
                 this.stellar_bodies[i] = null;
             }
@@ -242,7 +242,8 @@ export class Game {
             if (ship.state.is_to_delete) {
                 return this.remove_game_object(ship);
             }
-            ship.update(dt, p, this.swarm.drones);
+            ship.drones = this.swarm.drones;
+            ship.update(dt);
         });
 
         this.effects = this.effects.filter((effect) => {
