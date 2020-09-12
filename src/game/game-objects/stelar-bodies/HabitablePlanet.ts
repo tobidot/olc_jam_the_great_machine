@@ -1,9 +1,9 @@
 import { Asteroid } from "./Asteroid";
 import { StelarBody } from "./StellarBody";
-import { Game } from "../Game";
+import { Game } from "../../Game";
 import p5, { Vector } from "p5";
 import { BodyCell } from "./BodyCell";
-import { OrganicShip } from "../enemies/OrganicShips";
+import { OrganicShip } from "../organic-ship/OrganicShips";
 
 export class HabitablePlanet extends StelarBody {
     public readonly ships: Array<OrganicShip>;

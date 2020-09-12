@@ -1,13 +1,13 @@
 import p5 from "p5";
-import { GameObject } from "../object/GameObject";
+import { GameObject } from "../base/GameObject";
 import { DroneFrameInformation } from "./DroneFrameInformation";
-import { StelarBody } from "../bodies/StellarBody";
+import { StelarBody } from "../stelar-bodies/StellarBody";
 import { DroneAttachmentLink as DroneAttachmentLink } from "./DroneAttachementLink";
 import { DroneSwarm } from "./DroneSwam";
 import { DroneStelarBodyRelation } from "./DronePositionRelation";
-import { Game } from "../Game";
-import { ColliderObject } from "../collision/Colider";
-import { helper } from "../tools/Rect";
+import { Game } from "../../Game";
+import { ColliderObject } from "../components/collision/Colider";
+import { helper } from "../../tools/Rect";
 
 export class Drone extends ColliderObject {
     public static readonly PIXEL_SIZE: number = 8;

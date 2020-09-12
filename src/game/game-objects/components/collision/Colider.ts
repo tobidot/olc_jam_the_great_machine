@@ -1,8 +1,8 @@
 import p5, { Vector } from "p5";
 import { CollisionInformation } from "./CollisionInformation";
-import { GameObject } from "../object/GameObject";
-import { helper } from "../tools/Rect";
-import { Game } from "../Game";
+import { GameObject } from "../../base/GameObject";
+import { helper } from "../../../tools/Rect";
+import { Game } from "../../../Game";
 
 export class ColliderObject extends GameObject implements helper.rect.IRect {
     public x: number;

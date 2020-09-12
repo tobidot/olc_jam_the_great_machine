@@ -1,6 +1,6 @@
 import p5 from "p5";
 import { Effect } from "./Effect";
-import { Camera } from "../helper/Camera";
+import { Camera } from "../../helper/Camera";
 
 export class LaserDeathEffect extends Effect {
     private strength: number = 0;

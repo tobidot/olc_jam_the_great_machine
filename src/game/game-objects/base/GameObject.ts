@@ -1,5 +1,5 @@
-import { Game } from "../Game";
-import { helper } from "../tools/Rect";
+import { Game } from "../../Game";
+import { helper } from "../../tools/Rect";
 
 export class GameObject {
     public static next_uuid = 0;

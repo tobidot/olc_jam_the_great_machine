@@ -34,15 +34,13 @@ function connect_container_to_game_screen(container: HTMLDivElement, p5Instance:
 function setup_p5_instance(p: p5 & p5.SoundFile) {
     let game = new Game();
     p.preload = function () {
-        if (p.hasOwnProperty('soundFormats')) {
-            (<any>p).soundFormats('mp3');
-        }
     }
     let setup_done = false;
     p.setup = function () {
         p.createCanvas(800, 600, "p2d");
         if (setup_done) return;
         setup_done = true;
+
         game.init(p);
         p.frameRate(60);
     }

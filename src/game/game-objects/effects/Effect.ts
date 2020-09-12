@@ -1,6 +1,6 @@
-import { GameObject } from "../object/GameObject";
+import { GameObject } from "../base/GameObject";
 import p5 from "p5";
-import { Camera } from "../helper/Camera";
+import { Camera } from "../../helper/Camera";
 
 export abstract class Effect {
     public is_finished: boolean = false;

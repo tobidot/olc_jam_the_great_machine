@@ -1,7 +1,7 @@
 import { Drone } from "./Drone";
-import { StelarBody as StelarBody } from "../bodies/StellarBody";
+import { StelarBody as StelarBody } from "../stelar-bodies/StellarBody";
 import p5 from "p5";
-import { BodyCell } from "../bodies/BodyCell";
+import { BodyCell } from "../stelar-bodies/BodyCell";
 
 interface Attachable {
     attached: DroneAttachmentLink | null

@@ -1,6 +1,6 @@
 import p5 from "p5";
-import { Drone } from "../drones/Drone";
-import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
+import { Drone } from "../drone/Drone";
+import { DroneAttachmentLink } from "../drone/DroneAttachementLink";
 import { StelarBody } from "./StellarBody";
 
 export class BodyCell {

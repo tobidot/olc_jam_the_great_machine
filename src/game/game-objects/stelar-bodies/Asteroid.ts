@@ -1,6 +1,6 @@
 import { StelarBody } from "./StellarBody";
 import p5, { Vector } from "p5";
-import { Game } from "../Game";
+import { Game } from "../../Game";
 
 export class Asteroid extends StelarBody {
 

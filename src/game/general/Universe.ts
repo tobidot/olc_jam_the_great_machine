@@ -1,9 +1,9 @@
-import { GameObject } from "../object/GameObject";
+import { GameObject } from "../game-objects/base/GameObject";
 import p5, { Vector } from "p5";
-import { OrganicShip } from "../enemies/OrganicShips";
-import { Asteroid } from "../bodies/Asteroid";
+import { OrganicShip } from "../game-objects/organic-ship/OrganicShips";
+import { Asteroid } from "../game-objects/stelar-bodies/Asteroid";
 import { Game } from "../Game";
-import { HabitablePlanet } from "../bodies/HabitablePlanet";
+import { HabitablePlanet } from "../game-objects/stelar-bodies/HabitablePlanet";
 
 export class Universe {
     protected starting_position = new p5.Vector;

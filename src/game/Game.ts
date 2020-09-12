@@ -1,19 +1,19 @@
 import p5 from "p5";
-import { StelarBody } from "./bodies/StellarBody";
-import { Asteroid } from "./bodies/Asteroid";
-import { Drone } from "./drones/Drone";
+import { StelarBody } from "./game-objects/stelar-bodies/StellarBody";
+import { Asteroid } from "./game-objects/stelar-bodies/Asteroid";
+import { Drone } from "./game-objects/drone/Drone";
 import { Camera } from "./helper/Camera";
-import { DroneSwarm } from "./drones/DroneSwam";
-import { OrganicShip } from "./enemies/OrganicShips";
-import { Effect } from "./effects/Effect";
+import { DroneSwarm } from "./game-objects/drone/DroneSwam";
+import { OrganicShip } from "./game-objects/organic-ship/OrganicShips";
+import { Effect } from "./game-objects/effects/Effect";
 import { GameMenu } from "./game-menu/GameMenu";
 import { Shared } from "../shared/Shared";
 import { QuadTree } from "../tools/trees/QuadTree";
-import { GameObject } from "./object/GameObject";
+import { GameObject } from "./game-objects/base/GameObject";
 import { Universe } from "./general/Universe";
-import { ColliderObject } from "./collision/Colider";
+import { ColliderObject } from "./game-objects/components/collision/Colider";
 import { PerformanceTracker } from "./tools/PerformanceTracker";
-import { HabitablePlanet } from "./bodies/HabitablePlanet";
+import { HabitablePlanet } from "./game-objects/stelar-bodies/HabitablePlanet";
 
 export class Game {
     private shared: Shared = Shared.get_instance();

@@ -1,10 +1,10 @@
 import p5 from "p5";
-import { Camera } from "../helper/Camera";
-import { Drone } from "../drones/Drone";
-import { Game } from "../Game";
+import { Camera } from "../../helper/Camera";
+import { Drone } from "../drone/Drone";
+import { Game } from "../../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
-import { GameObject } from "../object/GameObject";
-import { ColliderObject } from "../collision/Colider";
+import { GameObject } from "../base/GameObject";
+import { ColliderObject } from "../components/collision/Colider";
 
 export class OrganicShip extends ColliderObject {
     private static readonly PIXEL_SIZE = 40;

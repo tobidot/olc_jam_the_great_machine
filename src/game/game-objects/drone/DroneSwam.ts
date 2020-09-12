@@ -1,8 +1,8 @@
 import p5 from "p5";
 import { Drone } from "./Drone";
-import { Game } from "../Game";
-import { StelarBody } from "../bodies/StellarBody";
-import { Camera } from "../helper/Camera";
+import { Game } from "../../Game";
+import { StelarBody } from "../stelar-bodies/StellarBody";
+import { Camera } from "../../helper/Camera";
 
 export class DroneSwarm {
     public readonly game: Game;

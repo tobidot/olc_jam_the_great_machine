@@ -1,10 +1,10 @@
 import { BodyCell } from "./BodyCell";
-import { ColliderObject } from "../collision/Colider";
+import { ColliderObject } from "../components/collision/Colider";
 import p5, { Vector } from "p5";
-import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../helper/CoordinatesSystem";
-import { Translator, SameTypeTranslator } from "../helper/Translator";
-import { DroneAttachmentLink } from "../drones/DroneAttachementLink";
-import { Game } from "../Game";
+import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../../helper/CoordinatesSystem";
+import { Translator, SameTypeTranslator } from "../../helper/Translator";
+import { DroneAttachmentLink } from "../drone/DroneAttachementLink";
+import { Game } from "../../Game";
 import { HabitablePlanet } from "./HabitablePlanet";
 
 export class StelarBody extends ColliderObject {
