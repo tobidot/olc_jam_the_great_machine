@@ -23,19 +23,4 @@ export class ColliderObject extends GameObject implements helper.rect.IRect {
         this.h = rect.h;
     }
 
-    public get_half_size() {
-        return this.w / 2;
-    }
-
-    public set_top_left_position(pos: p5.Vector) {
-        this.x = pos.x;
-        this.y = pos.y;
-        this.position_center_is_valid = false;
-    }
-
-    public move(offset: p5.Vector) {
-        this.x += offset.x;
-        this.y += offset.y;
-        this.position_center_is_valid = false;
-    }
 }

@@ -148,7 +148,7 @@ export class Drone extends ColliderObject {
             }
             const wanted_velocity = diff.setMag(this.game.control.speed);
             this.velocity.lerp(wanted_velocity, 0.01);
-            this.move(p5.Vector.mult(this.velocity, dt));
+            this.components.collider?.move_by(p5.Vector.mult(this.velocity, dt));
 
         }
         return true;

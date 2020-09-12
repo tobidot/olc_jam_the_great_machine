@@ -24,4 +24,10 @@ export class ColliderComponent extends GameObjectComponent<ColliderFrameInformat
         this.rect.x = center.x - this.rect.w / 2;
         this.rect.h = center.y - this.rect.h / 2;
     }
+
+    public move_by(offset: p5.Vector) {
+        this.rect.x += offset.x;
+        this.rect.y += offset.y;
+        this.cached.reset();
+    }
 }
