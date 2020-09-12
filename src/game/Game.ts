@@ -11,7 +11,7 @@ import { Shared } from "../shared/Shared";
 import { QuadTree } from "../tools/trees/QuadTree";
 import { GameObject } from "./game-objects/base/GameObject";
 import { Universe } from "./general/Universe";
-import { ColliderObject } from "./game-objects/components/collision/Colider";
+import { ColliderObject } from "./game-objects/components/collision/Collider";
 import { PerformanceTracker } from "./tools/PerformanceTracker";
 import { HabitablePlanet } from "./game-objects/stelar-bodies/HabitablePlanet";
 

@@ -7,7 +7,7 @@
   "scripts": {
     "test": "npx parcel ./test-src/index.html --out-dir ./test-dist/",
     "start": "npx parcel ./src/index.html",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc --noEmit --watch",
     "clean": "rmdir /q 'dist'",
     "build": "npx parcel build ./src/index.html --public-url .",
     "release": "npm run clean && npm run build"

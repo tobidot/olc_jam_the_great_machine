@@ -1,5 +1,5 @@
 import { BodyCell } from "./BodyCell";
-import { ColliderObject } from "../components/collision/Colider";
+import { ColliderObject } from "../components/collision/Collider";
 import p5, { Vector } from "p5";
 import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../../helper/CoordinatesSystem";
 import { Translator, SameTypeTranslator } from "../../helper/Translator";

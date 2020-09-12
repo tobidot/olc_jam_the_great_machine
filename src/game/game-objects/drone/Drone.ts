@@ -6,7 +6,7 @@ import { DroneAttachmentLink as DroneAttachmentLink } from "./DroneAttachementLi
 import { DroneSwarm } from "./DroneSwam";
 import { DroneStelarBodyRelation } from "./DronePositionRelation";
 import { Game } from "../../Game";
-import { ColliderObject } from "../components/collision/Colider";
+import { ColliderObject } from "../components/collision/Collider";
 import { helper } from "../../tools/Rect";
 
 export class Drone extends ColliderObject {

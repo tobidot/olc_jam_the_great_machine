@@ -4,6 +4,9 @@ import { GameObject } from "../../base/GameObject";
 import { helper } from "../../../tools/Rect";
 import { Game } from "../../../Game";
 
+/**
+ * @deprecated
+ */
 export class ColliderObject extends GameObject implements helper.rect.IRect {
     public x: number;
     public y: number;

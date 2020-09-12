@@ -4,7 +4,7 @@ import { Drone } from "../drone/Drone";
 import { Game } from "../../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
 import { GameObject } from "../base/GameObject";
-import { ColliderObject } from "../components/collision/Colider";
+import { ColliderObject } from "../components/collision/Collider";
 
 export class OrganicShip extends ColliderObject {
     private static readonly PIXEL_SIZE = 40;
