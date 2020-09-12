@@ -6,11 +6,10 @@ import { DroneAttachmentLink as DroneAttachmentLink } from "./DroneAttachementLi
 import { DroneSwarm } from "./DroneSwam";
 import { DroneStelarBodyRelation } from "./DronePositionRelation";
 import { Game } from "../../Game";
-import { ColliderObject } from "../components/collision/Collider";
 import { helper } from "../../tools/Rect";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
 
-export class Drone extends ColliderObject {
+export class Drone extends GameObject {
     public static readonly PIXEL_SIZE: number = 8;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND: number = 200;
     public static readonly LIGHTSPEED_PIXEL_PER_SECOND__ROOT2: number = Math.sqrt(Drone.LIGHTSPEED_PIXEL_PER_SECOND);
@@ -54,13 +53,12 @@ export class Drone extends ColliderObject {
     }
 
     constructor(game: Game, drone_swarm: DroneSwarm, position: p5.Vector = new p5.Vector) {
-        super(game, {
-            x: position.x,
-            y: position.y,
-            w: Drone.PIXEL_SIZE,
-            h: Drone.PIXEL_SIZE,
-        });
+        super(game);
         this.components.collider = new ColliderComponent();
+        this.components.collider.rect.w = Drone.PIXEL_SIZE;
+        this.components.collider.rect.h = Drone.PIXEL_SIZE;
+        this.components.collider.set_position_center(position);
+
         this.velocity = new p5.Vector();
         this.swarm_ref = drone_swarm;
         this.duplicate_progress = drone_swarm.get_production_cost();

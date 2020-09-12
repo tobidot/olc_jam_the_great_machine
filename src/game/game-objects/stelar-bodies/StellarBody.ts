@@ -1,14 +1,13 @@
 import { BodyCell } from "./BodyCell";
-import { ColliderObject } from "../components/collision/Collider";
 import p5, { Vector } from "p5";
 import { CoordinateSystem, FixedCenteredIntegerCoordinateSystem } from "../../helper/CoordinatesSystem";
-import { Translator, SameTypeTranslator } from "../../helper/Translator";
 import { DroneAttachmentLink } from "../drone/DroneAttachementLink";
 import { Game } from "../../Game";
 import { HabitablePlanet } from "./HabitablePlanet";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
+import { GameObject } from "../base/GameObject";
 
-export class StelarBody extends ColliderObject {
+export class StelarBody extends GameObject {
     // Consts
     public static readonly GRAVITATIONAL_CONSTANT = 1000;
     public static readonly CELL_SIZE = 15;
@@ -24,13 +23,12 @@ export class StelarBody extends ColliderObject {
         };
 
     constructor(game: Game, position: Vector, cellmap_size: number) {
-        super(game, {
-            x: position.x,
-            y: position.y,
-            w: cellmap_size * StelarBody.CELL_SIZE,
-            h: cellmap_size * StelarBody.CELL_SIZE,
-        });
+        super(game);
         this.components.collider = new ColliderComponent();
+        this.components.collider.rect.w = cellmap_size * StelarBody.CELL_SIZE;
+        this.components.collider.rect.h = cellmap_size * StelarBody.CELL_SIZE;
+        this.components.collider.set_position_center(position);
+
         this.cellmap_size = cellmap_size;
         this.cells = new Array<BodyCell>(cellmap_size * cellmap_size);
         this.for_each_cell((x, y, cell) => {

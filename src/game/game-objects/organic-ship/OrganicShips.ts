@@ -4,10 +4,9 @@ import { Drone } from "../drone/Drone";
 import { Game } from "../../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
 import { GameObject } from "../base/GameObject";
-import { ColliderObject } from "../components/collision/Collider";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
 
-export class OrganicShip extends ColliderObject {
+export class OrganicShip extends GameObject {
     private static readonly PIXEL_SIZE = 40;
     public position: p5.Vector;
     private anchor: p5.Vector;
@@ -18,13 +17,13 @@ export class OrganicShip extends ColliderObject {
     public radius: number;
 
     constructor(game: Game, position: p5.Vector) {
-        super(game, {
-            x: position.x,
-            y: position.y,
-            w: 20,
-            h: 20,
-        });
+        super(game);
+
         this.components.collider = new ColliderComponent();
+        this.components.collider.rect.w = 20;
+        this.components.collider.rect.h = 20;
+        this.components.collider.set_position_center(position);
+
         this.radius = 1;
         this.position = position;
         this.anchor = position.copy();

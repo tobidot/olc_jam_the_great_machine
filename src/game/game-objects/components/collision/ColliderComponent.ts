@@ -22,7 +22,7 @@ export class ColliderComponent extends GameObjectComponent<ColliderFrameInformat
 
     public set_position_center(center: p5.Vector) {
         this.rect.x = center.x - this.rect.w / 2;
-        this.rect.h = center.y - this.rect.h / 2;
+        this.rect.y = center.y - this.rect.h / 2;
     }
 
     public move_by(offset: p5.Vector) {
