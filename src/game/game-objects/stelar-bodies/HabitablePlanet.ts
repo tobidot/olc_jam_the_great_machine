@@ -19,10 +19,12 @@ export class HabitablePlanet extends StelarBody {
     }
 
     public update(dt: number) {
+        const collider = this.components.collider;
+        if (collider === undefined) throw new Error();
         this.spawn_time_cd -= dt * Math.sqrt(this.get_mass_center().mass / (100 * BodyCell.MAX_MASS));
         if (this.spawn_time_cd < 0) {
             this.spawn_time_cd = this.spawn_time + 30;
-            const ship = new OrganicShip(this.game, new p5.Vector().set(this.x, this.y).copy());
+            const ship = new OrganicShip(this.game, new p5.Vector().set(collider.rect.x, collider.rect.y).copy());
             this.game.add_game_object(ship);
             this.ships.push(ship);
             ship.radius = Math.sqrt(this.ships.length);
@@ -59,7 +61,9 @@ export class HabitablePlanet extends StelarBody {
     public draw_roughly(p: p5) {
         this.before_draw_roughly(p);
         if (this.game.assets.planet) {
-            p.image(this.game.assets.planet, this.x, this.y, this.w, this.h);
+            const bounding_rect = this.components.collider?.rect;
+            if (bounding_rect === undefined) throw new Error();
+            p.image(this.game.assets.planet, bounding_rect.x, bounding_rect.y, bounding_rect.w, bounding_rect.h);
         } else {
             super.draw_roughly(p);
         }

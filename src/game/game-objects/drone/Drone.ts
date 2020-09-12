@@ -70,6 +70,8 @@ export class Drone extends ColliderObject {
     }
 
     public draw(p: p5) {
+        const bounding_rect = this.components.collider?.rect;
+        if (bounding_rect === undefined) throw new Error();
         if (!this.attached) this.animation_step = 0;
         if (this.game.assets.drone_idle_sheet) {
             this.animation_step++;
@@ -80,14 +82,14 @@ export class Drone extends ColliderObject {
                 this.frame = this.frames[this.animation_step];
             }
             const frame_offset = this.frame * 8;
-            p.image(this.game.assets.drone_idle_sheet, this.x, this.y, 8, 8, frame_offset, 0, 8, 8);
+            p.image(this.game.assets.drone_idle_sheet, bounding_rect.x, bounding_rect.y, 8, 8, frame_offset, 0, 8, 8);
         } else {
             p.noStroke();
             p.fill(255, 0, 0);
             // if (this.DEBUG_colliding) p.fill(0, 255, 0);
             p.rect(
-                this.x,
-                this.y,
+                bounding_rect.x,
+                bounding_rect.y,
                 Drone.PIXEL_SIZE,
                 Drone.PIXEL_SIZE
             );
@@ -123,7 +125,9 @@ export class Drone extends ColliderObject {
 
     public update_when_not_attached(dt: number): boolean {
         this.frame_information.stelar_body_relations.forEach((relation) => {
-            const is_colliding = helper.rect.overlap(relation.stelar_body, this);
+            if (relation.stelar_body.components.collider === undefined) throw new Error();
+            if (this.components.collider === undefined) throw new Error();
+            const is_colliding = helper.rect.overlap(relation.stelar_body.components.collider?.rect, this.components.collider?.rect);
             if (is_colliding) {
                 this.DEBUG_colliding = true;
                 if (!this.handle_attach_to_relation(relation)) {
@@ -131,7 +135,9 @@ export class Drone extends ColliderObject {
             }
         });
         if (this.attached === null) {
-            const diff = this.target.copy().sub(this.x, this.y)
+            const collider = this.components.collider;
+            if (collider === undefined) throw new Error();
+            const diff = this.target.copy().sub(collider.rect.x, collider.rect.y)
             if ((this.cd_update_aim-- < 0 && diff.magSq() < 10000)) {
                 this.cd_update_aim = 30;
                 let target = new p5.Vector;

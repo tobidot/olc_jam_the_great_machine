@@ -87,24 +87,31 @@ export class StelarBody extends ColliderObject {
     }
 
     public transform_cells_coordinates_to_global_coordinates(pos: p5.Vector): p5.Vector {
-        return pos.mult(StelarBody.CELL_SIZE).add(this.x + StelarBody.CELL_SIZE / 2, this.y + StelarBody.CELL_SIZE / 2);
+        if (this.components.collider === undefined) throw new Error();
+        return pos.mult(StelarBody.CELL_SIZE).add(
+            this.components.collider.rect.x + StelarBody.CELL_SIZE / 2,
+            this.components.collider.rect.y + StelarBody.CELL_SIZE / 2
+        );
     }
 
     public transform_global_coordinates_to_cells_coordinates(pos: p5.Vector): p5.Vector {
-        return pos.sub(this.x, this.y).mult(1 / StelarBody.CELL_SIZE);
+        if (this.components.collider === undefined) throw new Error();
+        return pos.sub(this.components.collider.rect.x, this.components.collider.rect.y).mult(1 / StelarBody.CELL_SIZE);
     }
 
     public update(dt: number) {
     }
 
     public draw(p: p5) {
+        const collider = this.components.collider;
+        if (collider === undefined) throw new Error();
         p.fill(100);
         p.noStroke();
-        const size = this.w;
+        const size = collider.rect.w;
         const hsize = size / 2;
         p.beginShape(p.QUADS);
-        const start_x = this.x;
-        const start_y = this.y;
+        const start_x = collider.rect.x;
+        const start_y = collider.rect.y;
         this.for_each_cell((x, y, cell) => {
             if (!cell) return cell;
             const left = start_x + x * StelarBody.CELL_SIZE;
@@ -126,10 +133,12 @@ export class StelarBody extends ColliderObject {
     }
 
     public draw_roughly(p: p5) {
+        const collider = this.components.collider;
+        if (collider === undefined) throw new Error();
         this.before_draw_roughly(p);
-        const start_x = this.x;
-        const start_y = this.y;
-        p.rect(start_x, start_y, this.w, this.w);
+        const start_x = collider.rect.x;
+        const start_y = collider.rect.y;
+        p.rect(start_x, start_y, collider.rect.w, collider.rect.w);
     }
 
     public before_draw_roughly(p: p5) {

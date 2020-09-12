@@ -14,6 +14,8 @@ import { Universe } from "./general/Universe";
 import { ColliderObject } from "./game-objects/components/collision/Collider";
 import { PerformanceTracker } from "./tools/PerformanceTracker";
 import { HabitablePlanet } from "./game-objects/stelar-bodies/HabitablePlanet";
+import { ColliderComponent } from "./game-objects/components/collision/ColliderComponent";
+import { GameObjectBoundingBoxWrapper } from "./game-objects/base/GameObjectBoundingBoxWrapper";
 
 export class Game {
     private shared: Shared = Shared.get_instance();
@@ -42,7 +44,7 @@ export class Game {
         planet?: p5.Image,
     } = {};
 
-    public game_object_tree: QuadTree<ColliderObject> = new QuadTree<ColliderObject>({ x: 0, y: 0, w: 100, h: 100 });
+    public game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];
 
     public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
@@ -71,8 +73,9 @@ export class Game {
     }
 
     public add_game_object(object: GameObject) {
-        if (object instanceof ColliderObject) {
-            this.game_object_tree.add(object);
+        const collider = object.components.collider;
+        if (collider !== undefined) {
+            this.game_object_tree.add(collider.cached.bounding_box_wrapper.get());
         }
 
         if (object instanceof OrganicShip) {
@@ -89,8 +92,9 @@ export class Game {
 
     public remove_game_object(object: GameObject) {
         object.before_destroy();
-        if (object instanceof ColliderObject) {
-            this.game_object_tree.remove(object);
+        const collider = object.components.collider;
+        if (collider !== undefined) {
+            this.game_object_tree.remove(collider.cached.bounding_box_wrapper.get());
         }
         if (object instanceof OrganicShip) {
             const id = this.organic_ships.findIndex((check) => object === check);
@@ -207,7 +211,7 @@ export class Game {
             this
         );
         const tree_size = this.universe.universe_size * 1.5 + 500;
-        this.game_object_tree = new QuadTree<ColliderObject>({
+        this.game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({
             x: -tree_size,
             y: -tree_size,
             w: tree_size * 2,
@@ -228,7 +232,8 @@ export class Game {
             body.update(dt);
             if (body.is_to_delete) {
                 body.before_destroy();
-                this.game_object_tree.remove(body);
+                const bounding_box_wrapper = body.components.collider?.cached.bounding_box_wrapper.get();
+                if (bounding_box_wrapper) this.game_object_tree.remove(bounding_box_wrapper);
                 this.stellar_bodies[i] = null;
             }
         }
@@ -340,7 +345,7 @@ export class Game {
         p.noFill();
         p.stroke(255, 0, 0);
         for (let selected of all_selected) {
-            p.rect(selected.x, selected.y, selected.w, selected.h);
+            selected.game_object?.debug_draw(p);
         }
     }
 

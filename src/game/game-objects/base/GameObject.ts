@@ -1,6 +1,7 @@
 import { Game } from "../../Game";
 import { helper } from "../../tools/Rect";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
+import p5 from "p5";
 
 export class GameObject {
     public static next_uuid = 0;
@@ -24,5 +25,16 @@ export class GameObject {
 
     public before_destroy() {
         this.components.collider?.before_destroy();
+    }
+
+    public debug_draw(p: p5) {
+        const rect = this.components.collider?.rect;
+        if (rect === undefined) return;
+        p.rect(
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h
+        );
     }
 }

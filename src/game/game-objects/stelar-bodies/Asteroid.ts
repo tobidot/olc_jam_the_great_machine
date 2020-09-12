@@ -16,7 +16,9 @@ export class Asteroid extends StelarBody {
     public draw_roughly(p: p5) {
         this.before_draw_roughly(p);
         if (this.game.assets.asteroid) {
-            p.image(this.game.assets.asteroid, this.x, this.y, this.w, this.h);
+            const rect = this.components.collider?.rect;
+            if (rect === undefined) throw new Error();
+            p.image(this.game.assets.asteroid, rect.x, rect.y, rect.w, rect.h);
         } else {
             super.draw_roughly(p);
         }
