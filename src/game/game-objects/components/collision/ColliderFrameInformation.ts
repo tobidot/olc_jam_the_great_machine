@@ -6,7 +6,7 @@ import { ColliderComponent } from "./ColliderComponent";
 export class ColliderFrameInformation extends FrameInformation {
     private collider: ColliderComponent;
 
-    private position_center = new CachedVariable<p5.Vector>(
+    public position_center = new CachedVariable<p5.Vector>(
         new p5.Vector,
         (old: p5.Vector) => {
             return old.set(

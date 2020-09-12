@@ -284,7 +284,9 @@ export class Game {
         for (let i = 0; i < this.stellar_bodies.length; ++i) {
             const body = this.stellar_bodies[i];
             if (body === null) continue;
-            if (this.should_object_be_drawn(body.get_position())) {
+            const position = body.components.collider?.cached.position_center.get();
+            if (position === undefined) continue;
+            if (this.should_object_be_drawn(position)) {
                 const rough_drawing = this.camera.zoom < 0.5;
                 if (rough_drawing) {
                     body.draw_roughly(p);

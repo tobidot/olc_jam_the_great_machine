@@ -32,13 +32,15 @@ export class DroneSwarm {
         let drone_center_sum = new p5.Vector;
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
+            if (drone.components.collider === undefined) throw new Error();
             drone.frame_information.reset();
 
             const possible_collisions = this.game.game_object_tree.pick(drone);
             for (let j = 0; j < possible_collisions.length; ++j) {
                 const stelar_body = possible_collisions[j];
                 if (stelar_body instanceof StelarBody) {
-                    const to_other = p5.Vector.sub(drone.get_position(), stelar_body.get_position());
+                    if (stelar_body.components.collider === undefined) throw new Error();
+                    const to_other = p5.Vector.sub(drone.components.collider.cached.position_center.get(), stelar_body.components.collider.cached.position_center.get());
                     const distance2 = to_other.magSq();
                     drone.frame_information.add_position_relation({
                         stelar_body: stelar_body,
@@ -52,8 +54,8 @@ export class DroneSwarm {
 
             this.level_progress += 0.01 * dt / this.level_points_needed;
 
-            drone_center_sum.add(drone.get_position());
-            const center_deviation = this.center.copy().sub(drone.get_position()).magSq();
+            drone_center_sum.add(drone.components.collider.cached.position_center.get());
+            const center_deviation = this.center.copy().sub(drone.components.collider.cached.position_center.get()).magSq();
             if (center_deviation > this.deviation) {
                 this.deviation = center_deviation;
             }
@@ -85,7 +87,8 @@ export class DroneSwarm {
     public draw(p: p5, camera: Camera) {
         for (let i = 0; i < this.drones.length; ++i) {
             const drone = this.drones[i];
-            if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.get_position(), camera)) {
+            if (drone.components.collider === undefined) throw new Error();
+            if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.components.collider.cached.position_center.get(), camera)) {
                 drone.draw(p);
             }
         }

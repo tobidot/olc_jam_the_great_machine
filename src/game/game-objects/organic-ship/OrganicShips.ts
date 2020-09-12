@@ -5,6 +5,7 @@ import { Game } from "../../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
 import { GameObject } from "../base/GameObject";
 import { ColliderObject } from "../components/collision/Collider";
+import { ColliderComponent } from "../components/collision/ColliderComponent";
 
 export class OrganicShip extends ColliderObject {
     private static readonly PIXEL_SIZE = 40;
@@ -23,6 +24,7 @@ export class OrganicShip extends ColliderObject {
             w: 20,
             h: 20,
         });
+        this.components.collider = new ColliderComponent();
         this.radius = 1;
         this.position = position;
         this.anchor = position.copy();
@@ -44,7 +46,8 @@ export class OrganicShip extends ColliderObject {
         if ((this.destroy_cd -= dt) <= 0) {
             let packet = drones.reduce(
                 (packet: { drone: Drone, dist2: number } | null, drone: Drone): { drone: Drone, dist2: number } | null => {
-                    const diff = drone.get_position().copy().sub(this.position);
+                    if (drone.components.collider === undefined) throw new Error();
+                    const diff = drone.components.collider.cached.position_center.get().copy().sub(this.position);
                     const dist2 = diff.magSq();
                     if (packet && dist2 > packet.dist2) return packet;
                     if (dist2 > 250 * 250) return packet;
@@ -56,12 +59,13 @@ export class OrganicShip extends ColliderObject {
                 }, null);
             if (packet) {
                 const { drone } = packet;
+                if (drone.components.collider === undefined) throw new Error();
                 drone.age -= 50;
                 this.reset_destroy_cd();
                 const color = 0xffff00ff;
                 const laser_effect = new LaserDeathEffect(
                     this.position.copy(),
-                    drone.get_position().copy(),
+                    drone.components.collider.cached.position_center.get().copy(),
                     0.5,
                     color
                 );

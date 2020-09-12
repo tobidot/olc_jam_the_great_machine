@@ -8,6 +8,7 @@ import { DroneStelarBodyRelation } from "./DronePositionRelation";
 import { Game } from "../../Game";
 import { ColliderObject } from "../components/collision/Collider";
 import { helper } from "../../tools/Rect";
+import { ColliderComponent } from "../components/collision/ColliderComponent";
 
 export class Drone extends ColliderObject {
     public static readonly PIXEL_SIZE: number = 8;
@@ -59,11 +60,12 @@ export class Drone extends ColliderObject {
             w: Drone.PIXEL_SIZE,
             h: Drone.PIXEL_SIZE,
         });
+        this.components.collider = new ColliderComponent();
         this.velocity = new p5.Vector();
         this.swarm_ref = drone_swarm;
         this.duplicate_progress = drone_swarm.get_production_cost();
         this.age = this.swarm_ref.get_durability();
-        this.target = this.get_position();
+        this.target = this.components.collider.cached.position_center.get();
         this.update_aim_rotate = Math.floor(Math.random() * 8);
     }
 
@@ -93,6 +95,8 @@ export class Drone extends ColliderObject {
     }
 
     public update(dt: number) {
+        const collider = this.components.collider;
+        if (collider === undefined) throw new Error();
         this.DEBUG_colliding = false;
         if (this.update_when_attached(dt)) {
         } else {
@@ -105,7 +109,7 @@ export class Drone extends ColliderObject {
             this.duplicate_progress -= progress;
             if (this.duplicate_progress <= 0) {
                 this.duplicate_progress = this.swarm_ref.get_production_cost();
-                this.swarm_ref.queue_new_drone(this.get_position().copy(), (drone: Drone) => {
+                this.swarm_ref.queue_new_drone(collider.cached.position_center.get().copy(), (drone: Drone) => {
                     drone.parent = this;
                 });
             }
@@ -132,7 +136,9 @@ export class Drone extends ColliderObject {
                 this.cd_update_aim = 30;
                 let target = new p5.Vector;
                 if (this.parent && this.parent.state.is_to_delete === false) {
-                    target = this.parent.get_position().copy();
+                    const parent_collider = this.parent.components.collider;
+                    if (parent_collider === undefined) throw new Error();
+                    target = parent_collider.cached.position_center.get().copy();
                 } else {
                     const control_offset = this.game.control.offset.copy().mult(50 * Math.sqrt(this.game.control.speed));
                     target = this.swarm_ref.center.copy().add(control_offset);
@@ -149,11 +155,13 @@ export class Drone extends ColliderObject {
     }
 
     public handle_attach_to_relation(relation: DroneStelarBodyRelation): boolean {
-        const cell = relation.stelar_body.get_cell_at_global_coord(this.get_position());
+        const collider = this.components.collider;
+        if (collider === undefined) throw new Error();
+        const cell = relation.stelar_body.get_cell_at_global_coord(collider.cached.position_center.get());
         if (cell && (cell.attached === null || cell.attached.get_attachement_data() === null)) {
             const link = new DroneAttachmentLink(this, cell);
             this.velocity.set(0, 0);
-            this.set_position(relation.stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
+            collider.set_position_center(relation.stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
             this.progress = this.swarm_ref.get_time_to_dock();
             return true;
         }
@@ -165,7 +173,7 @@ export class Drone extends ColliderObject {
         const attachment_data = this.attached.get_attachement_data();
         if (attachment_data === null) return false;
         const cell = attachment_data.stelar_body_cell;
-        this.set_position(attachment_data.stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
+        this.components.collider?.set_position_center(attachment_data.stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
         this.progress -= dt;
         if (this.progress < 0) {
             if (this.attached) {

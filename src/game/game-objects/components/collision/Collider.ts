@@ -27,18 +27,6 @@ export class ColliderObject extends GameObject implements helper.rect.IRect {
         return this.w / 2;
     }
 
-    public get_position(): p5.Vector {
-        if (this.position_center_is_valid) return this.position_center;
-        this.position_center_is_valid = true;
-        return this.position_center.set(this.x + this.w / 2, this.y + this.h / 2);
-    }
-
-    public set_position(pos: p5.Vector): void {
-        this.x = pos.x - this.w / 2;
-        this.y = pos.y - this.h / 2;
-        this.position_center_is_valid = false;
-    }
-
     public set_top_left_position(pos: p5.Vector) {
         this.x = pos.x;
         this.y = pos.y;

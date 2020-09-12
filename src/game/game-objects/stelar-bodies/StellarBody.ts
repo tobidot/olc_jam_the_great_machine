@@ -6,6 +6,7 @@ import { Translator, SameTypeTranslator } from "../../helper/Translator";
 import { DroneAttachmentLink } from "../drone/DroneAttachementLink";
 import { Game } from "../../Game";
 import { HabitablePlanet } from "./HabitablePlanet";
+import { ColliderComponent } from "../components/collision/ColliderComponent";
 
 export class StelarBody extends ColliderObject {
     // Consts
@@ -29,6 +30,7 @@ export class StelarBody extends ColliderObject {
             w: cellmap_size * StelarBody.CELL_SIZE,
             h: cellmap_size * StelarBody.CELL_SIZE,
         });
+        this.components.collider = new ColliderComponent();
         this.cellmap_size = cellmap_size;
         this.cells = new Array<BodyCell>(cellmap_size * cellmap_size);
         this.for_each_cell((x, y, cell) => {
@@ -49,6 +51,7 @@ export class StelarBody extends ColliderObject {
     }
 
     public get_mass_center(): { mass: number, center: p5.Vector, global_center: p5.Vector } {
+        if (this.components.collider === undefined) throw new Error();
         if (this.frame_buffer.mass_center) return this.frame_buffer.mass_center;
         if (this.hasOwnProperty('ships')) {
             if ((<any>window).gog) debugger;
@@ -64,7 +67,8 @@ export class StelarBody extends ColliderObject {
             }
             return cell;
         });
-        if (mass === 0) return { mass, center, global_center: this.get_position().copy() };
+        const position = this.components.collider?.cached.position_center.get().copy();
+        if (mass === 0) return { mass, center, global_center: position };
         center.mult(1 / mass);
         const global_center = this.transform_cells_coordinates_to_global_coordinates(center.copy());
         return this.frame_buffer.mass_center = {
