@@ -1,6 +1,6 @@
 import { FrameInformation } from "../../base/FrameInformation";
 import p5 from "p5";
-import { CachedVariable } from "../../base/CachedVariable";
+import { CachedVariable } from "../../../tools/CachedVariable";
 import { ColliderComponent } from "./ColliderComponent";
 import { GameObjectBoundingBoxWrapper } from "../../base/GameObjectBoundingBoxWrapper";
 import { Rect } from "@game.object/ts-game-toolbox/dist/src/geometries/Rect";
