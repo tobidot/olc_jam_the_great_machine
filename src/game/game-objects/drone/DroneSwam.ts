@@ -3,6 +3,8 @@ import { Drone } from "./Drone";
 import { Game } from "../../Game";
 import { StelarBody } from "../stelar-bodies/StellarBody";
 import { Camera } from "../../helper/Camera";
+import { GameObjectComponent } from "../components/base/GameObjectComponent";
+import { GameObject } from "../base/GameObject";
 
 export class DroneSwarm {
     public readonly game: Game;
@@ -26,48 +28,33 @@ export class DroneSwarm {
     }
 
     public update(dt: number) {
-
         this.deviation = 0;
         let drone_center_sum = new p5.Vector;
-        const drones = this.game.game_object_collection.drones;
-        for (let i = 0; i < drones.length; ++i) {
-            const drone = drones[i];
-            if (drone.components.collider === undefined) throw new Error();
-            drone.frame_information.reset();
-
-            const possible_collisions = this.game.game_object_tree.pick(drone.components.collider.rect);
-            for (let j = 0; j < possible_collisions.length; ++j) {
-                const stelar_body = possible_collisions[j].game_object;
-                if (stelar_body instanceof StelarBody) {
-                    if (stelar_body.components.collider === undefined) throw new Error();
-                    const to_other = p5.Vector.sub(drone.components.collider.cached.position_center.get(), stelar_body.components.collider.cached.position_center.get());
-                    const distance2 = to_other.magSq();
-                    drone.frame_information.add_position_relation({
-                        stelar_body: stelar_body,
-                        to_other,
-                        distance2
-                    });
-                }
-            }
-
-            drone.update(dt);
+        let drone_count = 0;
+        this.game.game_object_collection.for_all_game_objects((drone: GameObject) => {
+            if (drone instanceof Drone === false) return;
+            const drone_collider = drone.components.collider;
+            if (drone_collider === undefined) return;
 
             this.level_progress += 0.01 * dt / this.level_points_needed;
 
-            drone_center_sum.add(drone.components.collider.cached.position_center.get());
-            const center_deviation = this.center.copy().sub(drone.components.collider.cached.position_center.get()).magSq();
+            drone_count++;
+            drone_center_sum.add(drone_collider.cached.position_center.get());
+            const center_deviation = this.center.copy().sub(drone_collider.cached.position_center.get()).magSq();
             if (center_deviation > this.deviation) {
                 this.deviation = center_deviation;
             }
-        }
+        });
+
+        const drones = this.game.game_object_collection.drones;
         this.deviation = Math.sqrt(this.deviation);
-        if (drones.length > 0) drone_center_sum.mult(1 / drones.length);
+        if (drones.length > 0) drone_center_sum.mult(1 / drone_count);
         this.center.set(drone_center_sum);
 
         this.queued_new_drones.forEach((data) => {
             const drone = new Drone(this.game, this, data.position);
             data.cb(drone);
-            drones.push(drone);
+            this.game.game_object_collection.add(drone);
         });
         this.queued_new_drones = [];
         this.queued_dying_drones.forEach((drone) => {

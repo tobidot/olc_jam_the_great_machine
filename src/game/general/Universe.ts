@@ -71,7 +71,7 @@ export class Universe {
             const planet = new HabitablePlanet(this.game, planet_pos);
             // planet.ships.push(ship);
             // this.game.add_game_object(ship);
-            this.game.add_game_object(planet);
+            this.game.game_object_collection.add(planet);
             this.initial_mass += planet.get_mass_center().mass;
         }
     }
@@ -88,7 +88,7 @@ export class Universe {
             const dist = this.asteroid_distribution_function(Math.random()) * system_size;
             const pos = p5.Vector.random2D().mult(dist).add(center);
             const asteroid = new Asteroid(this.game, pos);
-            this.game.add_game_object(asteroid);
+            this.game.game_object_collection.add(asteroid);
             this.initial_mass += asteroid.get_mass_center().mass;
             this.initial_asteroids++;
         }

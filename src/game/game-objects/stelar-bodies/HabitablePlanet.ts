@@ -26,7 +26,7 @@ export class HabitablePlanet extends StelarBody {
         if (this.spawn_time_cd < 0) {
             this.spawn_time_cd = this.spawn_time + 30;
             const ship = new OrganicShip(this.game, new p5.Vector().set(collider.rect.x, collider.rect.y).copy());
-            this.game.add_game_object(ship);
+            this.game.game_object_collection.add(ship);
             this.ships.push(ship);
             ship.radius = Math.sqrt(this.ships.length);
         }

@@ -26,9 +26,6 @@ export class Game {
 
     // entities
     public swarm: DroneSwarm = new DroneSwarm(this);
-    private stellar_bodies: Array<StelarBody | null> = [];
-    private organic_ships: Array<OrganicShip | null> = [];
-    private effects: Array<Effect> = [];
     public aim: p5.Vector = new p5.Vector;
     public control = {
         distance: 100,
@@ -45,8 +42,7 @@ export class Game {
     } = {};
 
     public game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({ x: 0, y: 0, w: 100, h: 100 });
-    public game_objects: Array<GameObject> = [];
-    public game_object_collection: GameObjectCollection = new GameObjectCollection();
+    public game_object_collection: GameObjectCollection = new GameObjectCollection(this);
 
     public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
 
@@ -71,41 +67,6 @@ export class Game {
         });
         this.shared.game.set(this);
 
-    }
-
-    public add_game_object(object: GameObject) {
-        const collider = object.components.collider;
-        if (collider !== undefined) {
-            this.game_object_tree.add(collider.bounding_box_wrapper);
-        }
-
-        if (object instanceof OrganicShip) {
-            return this.organic_ships.push(object);
-        } else if (object instanceof Drone) {
-            return  // this.swarm.queue_new_drone()
-        } else if (object instanceof Effect) {
-            return this.effects.push(object);
-        } else if (object instanceof StelarBody) {
-            return this.stellar_bodies.push(object);
-        }
-        throw "";
-    }
-
-    public remove_game_object(object: GameObject) {
-        object.before_destroy();
-        const collider = object.components.collider;
-        if (collider !== undefined) {
-            this.game_object_tree.remove(collider.bounding_box_wrapper);
-        }
-        if (object instanceof OrganicShip) {
-            const id = this.organic_ships.findIndex((check) => object === check);
-            if (id !== -1) this.organic_ships[id] = null;
-        }
-    }
-
-
-    public for_each(callback: (game_object: GameObject) => void) {
-        this.game_objects.forEach(callback);
     }
 
     public init(p: p5 & p5.SoundFile) {
@@ -189,16 +150,6 @@ export class Game {
 
     public restart_game() {
         this.game_object_collection.clear();
-        this.stellar_bodies.forEach((body) => {
-            if (body) body.before_destroy();
-        });
-        this.stellar_bodies = [];
-        this.organic_ships.forEach((ship) => {
-            ship?.before_destroy();
-        })
-        this.organic_ships = [];
-        this.game_objects = [];
-
 
         this.universe = new Universe(
             this.shared.universe_size.get(),
@@ -223,8 +174,8 @@ export class Game {
 
 
     public update(dt: number, p: p5) {
-        for (let i = 0; i < this.stellar_bodies.length; ++i) {
-            const body = this.stellar_bodies[i];
+        for (let i = 0; i < this.game_object_collection.stellar_bodies.length; ++i) {
+            const body = this.game_object_collection.stellar_bodies[i];
             if (body === null) continue;
             body.reset_frame_buffers();
             body.update(dt);
@@ -232,14 +183,15 @@ export class Game {
                 body.before_destroy();
                 const bounding_box_wrapper = body.components.collider?.bounding_box_wrapper;
                 if (bounding_box_wrapper) this.game_object_tree.remove(bounding_box_wrapper);
-                this.stellar_bodies[i] = null;
+                this.game_object_collection.stellar_bodies[i] = null;
             }
         }
         this.swarm.update(dt);
-        this.organic_ships.forEach((ship) => {
+        this.game_object_collection.update(dt);
+        this.game_object_collection.organic_ships.forEach((ship) => {
             if (ship === null) return;
             if (ship.state.is_to_delete) {
-                return this.remove_game_object(ship);
+                return this.game_object_collection.remove(ship);
             }
             ship.drones = this.game_object_collection.drones;
             ship.update(dt);
@@ -271,9 +223,9 @@ export class Game {
             this.debug_stats.fps.update();
         }
         {
-            this.game_stats.enemy_ships = this.organic_ships.filter(body => body !== null).length;
-            this.game_stats.habitats_remaining = this.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
-            this.game_stats.asteroids_remaining = this.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
+            this.game_stats.enemy_ships = this.game_object_collection.organic_ships.filter(body => body !== null).length;
+            this.game_stats.habitats_remaining = this.game_object_collection.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
+            this.game_stats.asteroids_remaining = this.game_object_collection.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
             this.game_stats.asteroids_remaining_percent = 100 * this.game_stats.asteroids_remaining / this.universe.initial_asteroids;
             this.game_stats.drones = this.game_object_collection.drones.length;
         }
@@ -285,8 +237,8 @@ export class Game {
         p.translate(400, 300);
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
-        for (let i = 0; i < this.stellar_bodies.length; ++i) {
-            const body = this.stellar_bodies[i];
+        for (let i = 0; i < this.game_object_collection.stellar_bodies.length; ++i) {
+            const body = this.game_object_collection.stellar_bodies[i];
             if (body === null) continue;
             const position = body.components.collider?.cached.position_center.get();
             if (position === undefined) continue;
@@ -300,7 +252,7 @@ export class Game {
             }
         }
         this.swarm.draw(p, this.camera);
-        this.organic_ships.forEach((ship) => {
+        this.game_object_collection.organic_ships.forEach((ship) => {
             if (ship) ship.draw(p, this.camera);
         });
         this.effects.forEach((effect) => {
@@ -357,6 +309,7 @@ export class Game {
     }
 
 
+    private effects: Array<Effect> = [];
     public add_effect(effect: Effect) {
         this.effects.push(effect);
     }
