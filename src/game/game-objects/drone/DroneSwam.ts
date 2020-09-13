@@ -10,7 +10,6 @@ export class DroneSwarm {
     public deviation: number = 0;
     private queued_new_drones: Array<{ position: p5.Vector, cb(drone: Drone): void }> = [];
     private queued_dying_drones: Array<Drone> = [];
-    public drones: Array<Drone> = [];
 
 
     public level_points: number = 0;
@@ -30,8 +29,9 @@ export class DroneSwarm {
 
         this.deviation = 0;
         let drone_center_sum = new p5.Vector;
-        for (let i = 0; i < this.drones.length; ++i) {
-            const drone = this.drones[i];
+        const drones = this.game.game_object_collection.drones;
+        for (let i = 0; i < drones.length; ++i) {
+            const drone = drones[i];
             if (drone.components.collider === undefined) throw new Error();
             drone.frame_information.reset();
 
@@ -61,19 +61,19 @@ export class DroneSwarm {
             }
         }
         this.deviation = Math.sqrt(this.deviation);
-        if (this.drones.length > 0) drone_center_sum.mult(1 / this.drones.length);
+        if (drones.length > 0) drone_center_sum.mult(1 / drones.length);
         this.center.set(drone_center_sum);
 
         this.queued_new_drones.forEach((data) => {
             const drone = new Drone(this.game, this, data.position);
             data.cb(drone);
-            this.drones.push(drone);
+            drones.push(drone);
         });
         this.queued_new_drones = [];
         this.queued_dying_drones.forEach((drone) => {
             drone.attached = null;
-            const i = this.drones.indexOf(drone);
-            this.drones.splice(i, 1);
+            const i = drones.indexOf(drone);
+            drones.splice(i, 1);
         });
         this.queued_dying_drones = [];
 
@@ -85,8 +85,9 @@ export class DroneSwarm {
     }
 
     public draw(p: p5, camera: Camera) {
-        for (let i = 0; i < this.drones.length; ++i) {
-            const drone = this.drones[i];
+        const drones = this.game.game_object_collection.drones;
+        for (let i = 0; i < drones.length; ++i) {
+            const drone = drones[i];
             if (drone.components.collider === undefined) throw new Error();
             if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.components.collider.cached.position_center.get(), camera)) {
                 drone.draw(p);
@@ -95,7 +96,8 @@ export class DroneSwarm {
     }
 
     public queue_new_drone(position: p5.Vector, cb) {
-        if (this.drones.filter((drone) => drone !== null).length < 600) this.queued_new_drones.push({ position, cb });
+        const drones = this.game.game_object_collection.drones;
+        if (drones.filter((drone) => drone !== null).length < 600) this.queued_new_drones.push({ position, cb });
     }
 
     public queue_dying_drone(drone: Drone) {

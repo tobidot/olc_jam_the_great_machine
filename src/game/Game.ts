@@ -15,6 +15,7 @@ import { PerformanceTracker } from "./tools/PerformanceTracker";
 import { HabitablePlanet } from "./game-objects/stelar-bodies/HabitablePlanet";
 import { ColliderComponent } from "./game-objects/components/collision/ColliderComponent";
 import { GameObjectBoundingBoxWrapper } from "./game-objects/base/GameObjectBoundingBoxWrapper";
+import { GameObjectCollection } from "./game-objects/manager/GameObjectCollection";
 
 export class Game {
     private shared: Shared = Shared.get_instance();
@@ -45,6 +46,7 @@ export class Game {
 
     public game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({ x: 0, y: 0, w: 100, h: 100 });
     public game_objects: Array<GameObject> = [];
+    public game_object_collection: GameObjectCollection = new GameObjectCollection();
 
     public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
 
@@ -186,10 +188,7 @@ export class Game {
 
 
     public restart_game() {
-        this.swarm.drones.forEach((drone) => {
-            if (drone) drone.before_destroy();
-        });
-        this.swarm.drones = [];
+        this.game_object_collection.clear();
         this.stellar_bodies.forEach((body) => {
             if (body) body.before_destroy();
         });
@@ -242,7 +241,7 @@ export class Game {
             if (ship.state.is_to_delete) {
                 return this.remove_game_object(ship);
             }
-            ship.drones = this.swarm.drones;
+            ship.drones = this.game_object_collection.drones;
             ship.update(dt);
         });
 
@@ -268,7 +267,7 @@ export class Game {
         this.camera.update(dt);
 
         if (this.debug_stats.active) {
-            this.debug_stats.drones_allive = this.swarm.drones.length;
+            this.debug_stats.drones_allive = this.game_object_collection.drones.length;
             this.debug_stats.fps.update();
         }
         {
@@ -276,7 +275,7 @@ export class Game {
             this.game_stats.habitats_remaining = this.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
             this.game_stats.asteroids_remaining = this.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
             this.game_stats.asteroids_remaining_percent = 100 * this.game_stats.asteroids_remaining / this.universe.initial_asteroids;
-            this.game_stats.drones = this.swarm.drones.length;
+            this.game_stats.drones = this.game_object_collection.drones.length;
         }
     }
 
