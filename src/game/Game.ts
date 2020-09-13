@@ -174,28 +174,9 @@ export class Game {
 
 
     public update(dt: number, p: p5) {
-        for (let i = 0; i < this.game_object_collection.stellar_bodies.length; ++i) {
-            const body = this.game_object_collection.stellar_bodies[i];
-            if (body === null) continue;
-            body.reset_frame_buffers();
-            body.update(dt);
-            if (body.is_to_delete) {
-                body.before_destroy();
-                const bounding_box_wrapper = body.components.collider?.bounding_box_wrapper;
-                if (bounding_box_wrapper) this.game_object_tree.remove(bounding_box_wrapper);
-                this.game_object_collection.stellar_bodies[i] = null;
-            }
-        }
+
         this.swarm.update(dt);
         this.game_object_collection.update(dt);
-        this.game_object_collection.organic_ships.forEach((ship) => {
-            if (ship === null) return;
-            if (ship.state.is_to_delete) {
-                return this.game_object_collection.remove(ship);
-            }
-            ship.drones = this.game_object_collection.drones;
-            ship.update(dt);
-        });
 
         this.effects = this.effects.filter((effect) => {
             effect.update(dt);

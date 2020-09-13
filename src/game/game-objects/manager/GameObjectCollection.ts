@@ -22,6 +22,10 @@ export class GameObjectCollection {
     }
 
     public update(dt: number) {
+        this.for_all_game_objects((game_object: GameObject) => {
+            game_object.before_update();
+        });
+
         const drones = this.drones;
         for (let i = 0; i < drones.length; ++i) {
             const drone = drones[i];
@@ -42,9 +46,40 @@ export class GameObjectCollection {
                     });
                 }
             }
-
-            drone.update(dt);
         }
+
+        for (let i = 0; i < this.stellar_bodies.length; ++i) {
+            const body = this.stellar_bodies[i];
+            if (body === null) continue;
+            body.reset_frame_buffers();
+            body.update(dt);
+
+        }
+        this.organic_ships.forEach((ship) => {
+            if (ship === null) return;
+            if (ship.state.is_to_delete) {
+                return this.remove(ship);
+            }
+            ship.drones = this.drones;
+            ship.update(dt);
+        });
+
+        // update
+        this.for_all_game_objects((game_object: GameObject) => {
+            game_object.update(dt);
+        });
+        // clean up
+        this.for_all_game_objects((game_object: GameObject) => {
+            if (game_object.state.is_to_delete) {
+                game_object.before_destroy();
+                const collider = game_object.components.collider;
+                if (collider !== undefined) {
+                    const bounding_box_wrapper = collider.bounding_box_wrapper;
+                    this.game.game_object_tree.remove(bounding_box_wrapper);
+                }
+                this.remove(game_object);
+            }
+        });
     }
 
     public for_all_game_objects(callback: (game_object: GameObject) => void) {
