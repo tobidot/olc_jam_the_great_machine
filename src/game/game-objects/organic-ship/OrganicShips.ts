@@ -34,6 +34,10 @@ export class OrganicShip extends GameObject {
         this.destroy_cd = 0;
     }
 
+    public before_update() {
+        super.before_update();
+    }
+
     public update(dt: number) {
         super.update(dt);
         this.position.add(this.velocity.copy().mult(dt));

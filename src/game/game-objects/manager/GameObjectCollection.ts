@@ -26,44 +26,6 @@ export class GameObjectCollection {
             game_object.before_update();
         });
 
-        const drones = this.drones;
-        for (let i = 0; i < drones.length; ++i) {
-            const drone = drones[i];
-            if (drone.components.collider === undefined) throw new Error();
-            drone.frame_information.reset();
-
-            const possible_collisions = this.game.game_object_tree.pick(drone.components.collider.rect);
-            for (let j = 0; j < possible_collisions.length; ++j) {
-                const stelar_body = possible_collisions[j].game_object;
-                if (stelar_body instanceof StelarBody) {
-                    if (stelar_body.components.collider === undefined) throw new Error();
-                    const to_other = p5.Vector.sub(drone.components.collider.cached.position_center.get(), stelar_body.components.collider.cached.position_center.get());
-                    const distance2 = to_other.magSq();
-                    drone.frame_information.add_position_relation({
-                        stelar_body: stelar_body,
-                        to_other,
-                        distance2
-                    });
-                }
-            }
-        }
-
-        for (let i = 0; i < this.stellar_bodies.length; ++i) {
-            const body = this.stellar_bodies[i];
-            if (body === null) continue;
-            body.reset_frame_buffers();
-            body.update(dt);
-
-        }
-        this.organic_ships.forEach((ship) => {
-            if (ship === null) return;
-            if (ship.state.is_to_delete) {
-                return this.remove(ship);
-            }
-            ship.drones = this.drones;
-            ship.update(dt);
-        });
-
         // update
         this.for_all_game_objects((game_object: GameObject) => {
             game_object.update(dt);

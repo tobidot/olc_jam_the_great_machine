@@ -8,6 +8,7 @@ import { DroneStelarBodyRelation } from "./DronePositionRelation";
 import { Game } from "../../Game";
 import { helper } from "../../tools/Rect";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
+import { ColliderCollisionInformation } from "../components/collision/ColliderCollisionInformation";
 
 export class Drone extends GameObject {
     public static readonly PIXEL_SIZE: number = 8;
@@ -94,12 +95,18 @@ export class Drone extends GameObject {
         }
     }
 
+    public before_update() {
+        super.before_update();
+        this.frame_information.reset();
+    }
+
     public update(dt: number) {
         super.update(dt);
         const collider = this.components.collider;
         if (collider === undefined) throw new Error();
         this.DEBUG_colliding = false;
         if (this.update_when_attached(dt)) {
+
         } else {
             this.update_when_not_attached(dt);
         }
@@ -123,14 +130,14 @@ export class Drone extends GameObject {
     }
 
     public update_when_not_attached(dt: number): boolean {
-        this.frame_information.stelar_body_relations.forEach((relation) => {
-            if (relation.stelar_body.components.collider === undefined) throw new Error();
-            if (this.components.collider === undefined) throw new Error();
-            const is_colliding = helper.rect.overlap(relation.stelar_body.components.collider?.rect, this.components.collider?.rect);
+        this.components.collider?.cached.collisions.get().forEach((relation) => {
+            if (relation === null) return;
+            if (relation.collider_source === undefined) throw new Error();
+            if (relation.collider_target === undefined) throw new Error();
+            const is_colliding = helper.rect.overlap(relation.collider_target.rect, relation.collider_source.rect);
             if (is_colliding) {
                 this.DEBUG_colliding = true;
-                if (!this.handle_attach_to_relation(relation)) {
-                };
+                if (!this.handle_attach_to(relation)) { };
             }
         });
         if (this.attached === null) {
@@ -159,14 +166,17 @@ export class Drone extends GameObject {
         return true;
     }
 
-    public handle_attach_to_relation(relation: DroneStelarBodyRelation): boolean {
+    public handle_attach_to(collision: ColliderCollisionInformation): boolean {
         const collider = this.components.collider;
         if (collider === undefined) throw new Error();
-        const cell = relation.stelar_body.get_cell_at_global_coord(collider.cached.position_center.get());
+        const stelar_body = collision.collider_target.game_object;
+        if (!(stelar_body instanceof StelarBody)) return false;
+
+        const cell = stelar_body.get_cell_at_global_coord(collider.cached.position_center.get());
         if (cell && (cell.attached === null || cell.attached.get_attachement_data() === null)) {
             const link = new DroneAttachmentLink(this, cell);
             this.velocity.set(0, 0);
-            collider.set_position_center(relation.stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
+            collider.set_position_center(stelar_body.transform_cells_coordinates_to_global_coordinates(cell.coord.copy()));
             this.progress = this.swarm_ref.get_time_to_dock();
             return true;
         }

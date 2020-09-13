@@ -98,6 +98,11 @@ export class StelarBody extends GameObject {
         return pos.sub(this.components.collider.rect.x, this.components.collider.rect.y).mult(1 / StelarBody.CELL_SIZE);
     }
 
+    public before_update() {
+        super.before_update();
+        this.reset_frame_buffers();
+    }
+
     public update(dt: number) {
         super.update(dt);
     }

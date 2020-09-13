@@ -3,7 +3,6 @@ import p5 from "p5";
 import { Drone } from "./Drone";
 
 export class DroneFrameInformation {
-    public stelar_body_relations: Array<DroneStelarBodyRelation> = [];
     private velocity2: number | null = null;
     private force_modifier: number | null = null;
     private drone: Drone;
@@ -13,13 +12,8 @@ export class DroneFrameInformation {
     }
 
     public reset() {
-        this.stelar_body_relations = [];
         this.velocity2 = null;
         this.force_modifier = null;
-    }
-
-    public add_position_relation(relation: DroneStelarBodyRelation): void {
-        this.stelar_body_relations[relation.stelar_body.uuid] = relation;
     }
 
     public get_force_modifier(): number {
