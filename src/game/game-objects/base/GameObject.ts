@@ -14,7 +14,6 @@ export class GameObject {
 
         };
 
-
     public state = {
         is_to_delete: false,
     };

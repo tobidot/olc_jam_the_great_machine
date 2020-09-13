@@ -176,7 +176,27 @@ export class Game {
     public update(dt: number, p: p5) {
 
         this.swarm.update(dt);
-        this.game_object_collection.update(dt);
+
+        // reset caches
+        this.game_object_collection.for_all_game_objects((game_object: GameObject) => {
+            game_object.before_update();
+        });
+        // update
+        this.game_object_collection.for_all_game_objects((game_object: GameObject) => {
+            game_object.update(dt);
+        });
+        // clean up
+        this.game_object_collection.for_all_game_objects((game_object: GameObject) => {
+            if (game_object.state.is_to_delete) {
+                game_object.before_destroy();
+                const collider = game_object.components.collider;
+                if (collider !== undefined) {
+                    const bounding_box_wrapper = collider.bounding_box_wrapper;
+                    this.game_object_tree.remove(bounding_box_wrapper);
+                }
+                this.game_object_collection.remove(game_object);
+            }
+        });
 
         this.effects = this.effects.filter((effect) => {
             effect.update(dt);
