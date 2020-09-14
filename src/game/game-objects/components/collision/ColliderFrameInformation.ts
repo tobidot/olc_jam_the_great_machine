@@ -59,5 +59,6 @@ export class ColliderFrameInformation extends FrameInformation {
 
     public reset() {
         this.position_center.is_valid = false;
+        this.collisions.is_valid = false;
     }
 }
