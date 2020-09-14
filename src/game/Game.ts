@@ -230,7 +230,20 @@ export class Game {
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
 
-        this.game_object_collection.for_all_game_objects((game_object) => {
+        const visible_width = 800 / this.camera.zoom;
+        const visible_height = 600 / this.camera.zoom;
+        const visible_rect = {
+            x: -this.camera.position.x - visible_width / 2,
+            y: -this.camera.position.y - visible_height / 2,
+            w: visible_width,
+            h: visible_height,
+        };
+        const possibly_visible_objects = this.game_object_tree.pick(
+            visible_rect
+        );
+        possibly_visible_objects.forEach((game_object_wrapper) => {
+            const game_object = game_object_wrapper.game_object;
+            if (!game_object) return;
             const visual = game_object.components.visual;
             if (!visual) return;
             visual.draw();

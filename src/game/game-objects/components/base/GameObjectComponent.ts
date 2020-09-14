@@ -5,6 +5,7 @@ export abstract class GameObjectComponent<T extends FrameInformation> {
     }
 
     public before_update() {
+
     }
 
     public before_destroy() {

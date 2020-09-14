@@ -1,6 +1,7 @@
 import { helper } from "../../game/tools/Rect";
 import { TreeElementNotFoundException } from "./exceptions/TreeElementNotFoundException";
 import p5 from "p5";
+import { tools } from "@game.object/ts-game-toolbox";
 
 export class QuadTree<T extends helper.rect.IRect> {
     private root_branch: QuadTreeBranch<T>;
@@ -94,7 +95,7 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
 
     public pick(rect: helper.rect.IRect, result: Array<T> = []): Array<T> {
         if (!this.overlaps_with(rect)) return result;
-        result.push(...this.elements);
+        result.push(...this.elements.filter((element) => tools.geometries.Rect.overlap(rect, element)));
         if (this.child_branch_nodes === null) return result;
         if (this.is_within(rect)) return this.pick_all(result);
         for (let branch of this.child_branch_nodes) {
