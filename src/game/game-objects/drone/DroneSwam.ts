@@ -77,7 +77,7 @@ export class DroneSwarm {
             const drone = drones[i];
             if (drone.components.collider === undefined) throw new Error();
             if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.components.collider.cached.position_center.get(), camera)) {
-                drone.draw(p);
+                drone.draw(p, this.game.camera);
             }
         }
     }

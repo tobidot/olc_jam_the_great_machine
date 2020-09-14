@@ -19,7 +19,8 @@ import { GameObjectCollection } from "./game-objects/manager/GameObjectCollectio
 
 export class Game {
     private shared: Shared = Shared.get_instance();
-    private camera: Camera = new Camera;
+    public readonly camera: Camera = new Camera;
+    public readonly p: p5;
     private menu: GameMenu = new GameMenu(this);
     private ship_spawn: number = 60;
     private background_music: any;
@@ -61,7 +62,8 @@ export class Game {
         drones_allive: 0,
     };
 
-    constructor() {
+    constructor(p: p5) {
+        this.p = p;
         this.shared.debug_mode.add((mode) => {
             this.debug_stats.active = mode.new;
         });
@@ -253,8 +255,11 @@ export class Game {
             }
         }
         this.swarm.draw(p, this.camera);
-        this.game_object_collection.organic_ships.forEach((ship) => {
-            if (ship) ship.draw(p, this.camera);
+
+        this.game_object_collection.for_all_game_objects((game_object) => {
+            const visual = game_object.components.visual;
+            if (!visual) return;
+            visual.draw();
         });
         this.effects.forEach((effect) => {
             effect.draw(p, this.camera);

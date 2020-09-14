@@ -8,5 +8,6 @@
     "noImplicitAny": false,
     "noEmit": true,
     "target": "ES2015",
+    "noImplicitThis": true,
   }
 }

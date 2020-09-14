@@ -2,6 +2,8 @@ import { Game } from "../../Game";
 import { helper } from "../../tools/Rect";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
 import p5 from "p5";
+import { VisualComponent } from "../components/visual/VisualComponent";
+import { Camera } from "../../helper/Camera";
 
 export class GameObject {
     public static next_uuid = 0;
@@ -9,7 +11,8 @@ export class GameObject {
     public readonly game: Game;
 
     public components: {
-        collider?: ColliderComponent
+        collider?: ColliderComponent,
+        visual?: VisualComponent,
     } = {
 
         };
@@ -32,6 +35,11 @@ export class GameObject {
 
     public update(dt: number) {
         this.components.collider?.update(dt);
+        this.components.visual?.update(dt);
+    }
+
+    public draw(p: p5, camera: Camera) {
+        this.components.visual?.draw();
     }
 
     public debug_draw(p: p5) {

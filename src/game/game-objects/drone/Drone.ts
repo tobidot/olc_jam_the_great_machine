@@ -9,6 +9,8 @@ import { Game } from "../../Game";
 import { helper } from "../../tools/Rect";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
 import { ColliderCollisionInformation } from "../components/collision/ColliderCollisionInformation";
+import { VisualComponent } from "../components/visual/VisualComponent";
+import { Camera } from "../../helper/Camera";
 
 export class Drone extends GameObject {
     public static readonly PIXEL_SIZE: number = 8;
@@ -31,9 +33,6 @@ export class Drone extends GameObject {
     public progress: number = 0;
     public duplicate_progress: number = 100;
     public age: number = 0;
-    public animation_step: number = 0;
-    public animation_max_step: number = 160;
-    public frame = 0;
     public frames = {
         0: 0,
         8: 1,
@@ -60,6 +59,13 @@ export class Drone extends GameObject {
         this.components.collider.rect.h = Drone.PIXEL_SIZE;
         this.components.collider.set_position_center(position);
 
+        this.components.visual = new VisualComponent(this, game.camera, game.p);
+        this.components.visual.base_color = game.p.color(255, 0, 0);
+        this.components.visual.image = game.assets.drone ?? null;
+        this.components.visual.animation = game.assets.drone_idle_sheet ?? null;
+        this.components.visual.animation_frames = this.frames;
+        this.components.visual.animation_max_step = 160;
+
         this.velocity = new p5.Vector();
         this.swarm_ref = drone_swarm;
         this.duplicate_progress = drone_swarm.get_production_cost();
@@ -68,31 +74,8 @@ export class Drone extends GameObject {
         this.update_aim_rotate = Math.floor(Math.random() * 8);
     }
 
-    public draw(p: p5) {
-        const bounding_rect = this.components.collider?.rect;
-        if (bounding_rect === undefined) throw new Error();
-        if (!this.attached) this.animation_step = 0;
-        if (this.game.assets.drone_idle_sheet) {
-            this.animation_step++;
-            if (this.animation_step >= this.animation_max_step) {
-                this.animation_step = 0;
-            }
-            if (this.frames[this.animation_step]) {
-                this.frame = this.frames[this.animation_step];
-            }
-            const frame_offset = this.frame * 8;
-            p.image(this.game.assets.drone_idle_sheet, bounding_rect.x, bounding_rect.y, 8, 8, frame_offset, 0, 8, 8);
-        } else {
-            p.noStroke();
-            p.fill(255, 0, 0);
-            // if (this.DEBUG_colliding) p.fill(0, 255, 0);
-            p.rect(
-                bounding_rect.x,
-                bounding_rect.y,
-                Drone.PIXEL_SIZE,
-                Drone.PIXEL_SIZE
-            );
-        }
+    public draw(p: p5, camera: Camera) {
+        super.draw(p, camera);
     }
 
     public before_update() {

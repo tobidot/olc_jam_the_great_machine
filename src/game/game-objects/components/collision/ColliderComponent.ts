@@ -12,7 +12,7 @@ export class ColliderComponent extends GameObjectComponent<ColliderFrameInformat
     public bounding_box_wrapper = new GameObjectBoundingBoxWrapper(new Rect(0, 0, 100, 100), this.game_object);
 
     public constructor(public game_object: GameObject) {
-        super('Collider');
+        super('collider');
         this.bounding_box_wrapper.x = this.rect.x;
         this.bounding_box_wrapper.y = this.rect.y;
         this.bounding_box_wrapper.w = this.rect.w;
