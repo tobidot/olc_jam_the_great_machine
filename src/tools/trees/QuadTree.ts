@@ -2,6 +2,7 @@ import { helper } from "../../game/tools/Rect";
 import { TreeElementNotFoundException } from "./exceptions/TreeElementNotFoundException";
 import p5 from "p5";
 import { tools } from "@game.object/ts-game-toolbox";
+import { IRect } from "@game.object/ts-game-toolbox/dist/src/geometries/Rect";
 
 export class QuadTree<T extends helper.rect.IRect> {
     private root_branch: QuadTreeBranch<T>;
@@ -24,8 +25,41 @@ export class QuadTree<T extends helper.rect.IRect> {
         }
     }
 
+    /**
+     * First wrap the root in a branch that contains the root at the bottom right,
+     * then create a branch wich has that new branch in the bottom left, 
+     * like that the tree expands in all directions 
+     */
     public elevate_root_branch() {
-        throw new Error("not yet implemented");
+        const old_root_branch = this.root_branch;
+        const extend_top_left_rect = {
+            x: old_root_branch.x - old_root_branch.w,
+            y: old_root_branch.y - old_root_branch.h,
+            w: old_root_branch.w * 2,
+            h: old_root_branch.h * 2,
+        };
+        const extend_bottom_right_rect = {
+            x: extend_top_left_rect.x,
+            y: extend_top_left_rect.y,
+            w: extend_top_left_rect.w * 2,
+            h: extend_top_left_rect.h * 2,
+        };
+
+        this.wrap_root_node_in_node_with_rect(extend_top_left_rect, 2);
+        this.wrap_root_node_in_node_with_rect(extend_bottom_right_rect, 0);
+    }
+
+    public wrap_root_node_in_node_with_rect(rect: IRect, node_pos: 0 | 1 | 2 | 3) {
+        const wrapper_node = new QuadTreeBranch<T>(
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h,
+        );
+        wrapper_node.create_child_branches();
+        if (!wrapper_node.child_branch_nodes) throw new Error();
+        wrapper_node.child_branch_nodes[node_pos] = this.root_branch;
+        this.root_branch = wrapper_node;
     }
 
     public remove(element: T) {
@@ -38,6 +72,9 @@ export class QuadTree<T extends helper.rect.IRect> {
         return this.root_branch.is_empty();
     }
 
+    public clear() {
+        this.root_branch.clear(8);
+    }
 
     public debug_draw(p: p5) {
         p.noFill();
@@ -137,6 +174,19 @@ export class QuadTreeBranch<T extends helper.rect.IRect> extends helper.rect.Rec
 
     public is_self_empty(): boolean {
         return this.elements.length === 0;
+    }
+
+    public clear(max_levels_deep: number) {
+        this.elements.splice(0);
+        if (this.child_branch_nodes) {
+            if (max_levels_deep <= 0) {
+                this.child_branch_nodes = null;
+            } else {
+                this.child_branch_nodes.forEach((node) => {
+                    node.clear(max_levels_deep - 1);
+                })
+            }
+        }
     }
 
     public debug_draw(p: p5) {

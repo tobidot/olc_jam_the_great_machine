@@ -42,10 +42,9 @@ export class Game {
         planet?: p5.Image,
     } = {};
 
-    public game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({ x: 0, y: 0, w: 100, h: 100 });
+    public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
     public game_object_collection: GameObjectCollection = new GameObjectCollection(this);
 
-    public universe: Universe = new Universe(5000, 0, 0, 0, 0, this);
 
 
 
@@ -156,12 +155,6 @@ export class Game {
             this
         );
         const tree_size = this.universe.universe_size * 1.5 + 500;
-        this.game_object_tree = new QuadTree<GameObjectBoundingBoxWrapper>({
-            x: -tree_size,
-            y: -tree_size,
-            w: tree_size * 2,
-            h: tree_size * 2
-        });
         this.universe.generate();
         this.camera.target_position.set(this.camera.position.set(this.universe.get_starting_position().copy().mult(-1)));
 
@@ -238,7 +231,7 @@ export class Game {
             w: visible_width,
             h: visible_height,
         };
-        const possibly_visible_objects = this.game_object_tree.pick(
+        const possibly_visible_objects = this.game_object_collection.tree.pick(
             visible_rect
         );
         possibly_visible_objects.forEach((game_object_wrapper) => {
@@ -275,13 +268,13 @@ export class Game {
 
     public debug_draw(p: p5) {
         if (!this.debug_stats.active) return;
-        this.game_object_tree.debug_draw(p);
+        this.game_object_collection.tree.debug_draw(p);
         // mouse in game coords
         const x = (p.mouseX - 400) / this.camera.zoom - this.camera.position.x;
         const y = (p.mouseY - 300) / this.camera.zoom - this.camera.position.y;
         p.fill(0, 200, 0);
         p.ellipse(x, y, 20 / this.camera.zoom, 20 / this.camera.zoom);
-        const all_selected = this.game_object_tree.pick({
+        const all_selected = this.game_object_collection.tree.pick({
             x,
             y,
             w: 0,

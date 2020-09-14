@@ -23,7 +23,7 @@ export class ColliderFrameInformation extends FrameInformation {
         [],
         (old: Array<ColliderCollisionInformation | null>) => {
             let collision_count = 0;
-            const possible_collisions = this.collider.game_object.game.game_object_tree.pick(this.collider.rect);
+            const possible_collisions = this.collider.game_object.game.game_object_collection.tree.pick(this.collider.rect);
             for (let j = 0; j < possible_collisions.length; ++j) {
                 const other_game_object = possible_collisions[j].game_object;
                 // guards
