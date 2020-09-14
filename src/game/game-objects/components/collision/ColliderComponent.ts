@@ -20,10 +20,7 @@ export class ColliderComponent extends GameObjectComponent<ColliderFrameInformat
     }
 
     public update(dt: number): void {
-        this.bounding_box_wrapper.x = this.rect.x;
-        this.bounding_box_wrapper.y = this.rect.y;
-        this.bounding_box_wrapper.w = this.rect.w;
-        this.bounding_box_wrapper.h = this.rect.h;
+        this.game_object.game.game_object_collection.tree.change_element(this.bounding_box_wrapper, this.rect);
     }
 
     public before_update() {

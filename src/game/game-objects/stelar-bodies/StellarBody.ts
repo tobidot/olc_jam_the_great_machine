@@ -42,7 +42,6 @@ export class StelarBody extends GameObject {
             cell = new BodyCell(this, new p5.Vector().set(x, y));
             return cell;
         });
-        this.update(0);
     }
 
     public for_each_cell(callback: (x: number, y: number, cell: BodyCell | null) => BodyCell | null) {

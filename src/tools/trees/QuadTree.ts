@@ -62,6 +62,15 @@ export class QuadTree<T extends helper.rect.IRect> {
         this.root_branch = wrapper_node;
     }
 
+    public change_element(element: T, rect: IRect) {
+        this.remove(element);
+        element.x = rect.x;
+        element.y = rect.y;
+        element.w = rect.w;
+        element.h = rect.h;
+        this.add(element);
+    }
+
     public remove(element: T) {
         if (!this.root_branch.remove(element)) {
             throw new TreeElementNotFoundException();
