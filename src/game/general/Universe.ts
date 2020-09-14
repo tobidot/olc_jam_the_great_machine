@@ -4,6 +4,7 @@ import { OrganicShip } from "../game-objects/organic-ship/OrganicShips";
 import { Asteroid } from "../game-objects/stelar-bodies/Asteroid";
 import { Game } from "../Game";
 import { HabitablePlanet } from "../game-objects/stelar-bodies/HabitablePlanet";
+import { Drone } from "../game-objects/drone/Drone";
 
 export class Universe {
     protected starting_position = new p5.Vector;
@@ -57,8 +58,8 @@ export class Universe {
         const center = p5.Vector.random2D().mult((Math.random() * 0.25) * this.universe_size + 0.6).add(this.universe_size / 2, this.universe_size / 2);
         for (let i = 0; i < count; ++i) {
             const off = p5.Vector.random2D().mult(10);
-
-            this.game.swarm.queue_new_drone(center.copy().add(off), () => { });
+            const drone = new Drone(this.game, this.game.swarm, center.copy().add(off));
+            this.game.game_object_collection.add(drone);
         }
         this.create_system(center, 150);
         this.starting_position = center;

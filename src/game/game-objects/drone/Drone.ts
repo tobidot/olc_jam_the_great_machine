@@ -100,15 +100,16 @@ export class Drone extends GameObject {
             this.duplicate_progress -= progress;
             if (this.duplicate_progress <= 0) {
                 this.duplicate_progress = this.swarm_ref.get_production_cost();
-                this.swarm_ref.queue_new_drone(collider.cached.position_center.get().copy(), (drone: Drone) => {
-                    drone.parent = this;
-                });
+                const new_drone_position = collider.cached.position_center.get().copy();
+                const drone = new Drone(this.game, this.game.swarm, new_drone_position);
+                drone.parent = this;
+                this.game.game_object_collection.add(drone);
             }
         }
         const control_modifier = this.game.control.distance / 1000 + this.game.control.speed / 100;
         this.age -= dt * control_modifier;
         if (this.age < 0) {
-            this.swarm_ref.queue_dying_drone(this);
+            this.game.game_object_collection.remove(this);
         }
     }
 

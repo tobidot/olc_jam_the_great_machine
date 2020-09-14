@@ -10,9 +10,6 @@ export class DroneSwarm {
     public readonly game: Game;
     public center: p5.Vector = new p5.Vector;
     public deviation: number = 0;
-    private queued_new_drones: Array<{ position: p5.Vector, cb(drone: Drone): void }> = [];
-    private queued_dying_drones: Array<Drone> = [];
-
 
     public level_points: number = 0;
     public level_points_needed: number = 1;
@@ -51,18 +48,6 @@ export class DroneSwarm {
         if (drones.length > 0) drone_center_sum.mult(1 / drone_count);
         this.center.set(drone_center_sum);
 
-        this.queued_new_drones.forEach((data) => {
-            const drone = new Drone(this.game, this, data.position);
-            data.cb(drone);
-            this.game.game_object_collection.add(drone);
-        });
-        this.queued_new_drones = [];
-        this.queued_dying_drones.forEach((drone) => {
-            drone.attached = null;
-            this.game.game_object_collection.remove(drone);
-        });
-        this.queued_dying_drones = [];
-
         while (this.level_progress > 1) {
             this.level_points++;
             this.level_points_needed = this.level_points_needed * 1.5 + 0.1;
@@ -72,16 +57,6 @@ export class DroneSwarm {
 
     public draw(p: p5, camera: Camera) {
     }
-
-    public queue_new_drone(position: p5.Vector, cb) {
-        const drones_count = this.game.game_object_collection.game_objects.filter(go => go instanceof Drone).length;
-        if (drones_count < 600) this.queued_new_drones.push({ position, cb });
-    }
-
-    public queue_dying_drone(drone: Drone) {
-        this.queued_dying_drones.push(drone);
-    }
-
 
     public should_object_be_drawn(pos: p5.Vector, camera: Camera): boolean {
         if (camera.zoom < 0.1) return true;
