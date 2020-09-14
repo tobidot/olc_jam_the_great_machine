@@ -9,9 +9,6 @@ export class GameObjectCollection {
     public readonly game: Game;
 
     // Deprecate these eventually
-    public drones: Array<Drone> = [];
-    public stellar_bodies: Array<StelarBody | null> = [];
-    public organic_ships: Array<OrganicShip | null> = [];
 
     // 
     public game_objects: Array<GameObject | null> = [];
@@ -31,18 +28,8 @@ export class GameObjectCollection {
         this.game_objects.push(object);
 
         const collider = object.components.collider;
-        if (collider !== undefined) {
-            this.game.game_object_tree.add(collider.bounding_box_wrapper);
-        }
-
-        if (object instanceof OrganicShip) {
-            return this.organic_ships.push(object);
-        } else if (object instanceof Drone) {
-            return this.drones.push(object);
-        } else if (object instanceof StelarBody) {
-            return this.stellar_bodies.push(object);
-        }
-        throw "";
+        if (collider === undefined) throw "";
+        this.game.game_object_tree.add(collider.bounding_box_wrapper);
     }
 
     public remove(object: GameObject) {
@@ -53,10 +40,6 @@ export class GameObjectCollection {
         }
         const go_id = this.game_objects.findIndex((check) => check === object);
         if (go_id !== -1) this.game_objects[go_id] = null;
-        if (object instanceof OrganicShip) {
-            const id = this.organic_ships.findIndex((check) => object === check);
-            if (id !== -1) this.organic_ships[id] = null;
-        }
     }
 
     public clear() {
@@ -64,9 +47,6 @@ export class GameObjectCollection {
             if (game_object) game_object.before_destroy();
         });
 
-        this.stellar_bodies = [];
-        this.organic_ships = [];
         this.game_objects = [];
-        this.drones = [];
     }
 }

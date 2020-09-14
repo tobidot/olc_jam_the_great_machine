@@ -211,15 +211,15 @@ export class Game {
         this.camera.update(dt);
 
         if (this.debug_stats.active) {
-            this.debug_stats.drones_allive = this.game_object_collection.drones.length;
+            this.debug_stats.drones_allive = this.game_object_collection.game_objects.filter(go => go instanceof Drone).length;
             this.debug_stats.fps.update();
         }
         {
-            this.game_stats.enemy_ships = this.game_object_collection.organic_ships.filter(body => body !== null).length;
-            this.game_stats.habitats_remaining = this.game_object_collection.stellar_bodies.filter(body => body && body instanceof HabitablePlanet).length;
-            this.game_stats.asteroids_remaining = this.game_object_collection.stellar_bodies.filter(body => body && body instanceof Asteroid).length;
+            this.game_stats.enemy_ships = this.game_object_collection.game_objects.filter(go => go instanceof OrganicShip).length;
+            this.game_stats.habitats_remaining = this.game_object_collection.game_objects.filter(go => go instanceof HabitablePlanet).length;
+            this.game_stats.asteroids_remaining = this.game_object_collection.game_objects.filter(go => go instanceof Asteroid).length;
             this.game_stats.asteroids_remaining_percent = 100 * this.game_stats.asteroids_remaining / this.universe.initial_asteroids;
-            this.game_stats.drones = this.game_object_collection.drones.length;
+            this.game_stats.drones = this.game_object_collection.game_objects.filter(go => go instanceof Drone).length;
         }
     }
 

@@ -46,7 +46,7 @@ export class DroneSwarm {
             }
         });
 
-        const drones = this.game.game_object_collection.drones;
+        const drones = this.game.game_object_collection.game_objects.filter(go => go instanceof Drone);
         this.deviation = Math.sqrt(this.deviation);
         if (drones.length > 0) drone_center_sum.mult(1 / drone_count);
         this.center.set(drone_center_sum);
@@ -59,8 +59,7 @@ export class DroneSwarm {
         this.queued_new_drones = [];
         this.queued_dying_drones.forEach((drone) => {
             drone.attached = null;
-            const i = drones.indexOf(drone);
-            drones.splice(i, 1);
+            this.game.game_object_collection.remove(drone);
         });
         this.queued_dying_drones = [];
 
@@ -75,8 +74,8 @@ export class DroneSwarm {
     }
 
     public queue_new_drone(position: p5.Vector, cb) {
-        const drones = this.game.game_object_collection.drones;
-        if (drones.filter((drone) => drone !== null).length < 600) this.queued_new_drones.push({ position, cb });
+        const drones_count = this.game.game_object_collection.game_objects.filter(go => go instanceof Drone).length;
+        if (drones_count < 600) this.queued_new_drones.push({ position, cb });
     }
 
     public queue_dying_drone(drone: Drone) {
