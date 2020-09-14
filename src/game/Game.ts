@@ -234,13 +234,15 @@ export class Game {
         const possibly_visible_objects = this.game_object_collection.tree.pick(
             visible_rect
         );
-        possibly_visible_objects.forEach((game_object_wrapper) => {
+        const draw_game_object = (game_object_wrapper: GameObjectBoundingBoxWrapper) => {
             const game_object = game_object_wrapper.game_object;
             if (!game_object) return;
             const visual = game_object.components.visual;
             if (!visual) return;
             visual.draw();
-        });
+        }
+        possibly_visible_objects.filter(go => !(go.game_object instanceof Drone)).forEach(draw_game_object);
+        possibly_visible_objects.filter(go => go.game_object instanceof Drone).forEach(draw_game_object);
         this.effects.forEach((effect) => {
             effect.draw(p, this.camera);
         });
