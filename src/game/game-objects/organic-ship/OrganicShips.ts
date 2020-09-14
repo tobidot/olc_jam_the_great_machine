@@ -5,6 +5,7 @@ import { Game } from "../../Game";
 import { LaserDeathEffect } from "../effects/LaserDeathEffect";
 import { GameObject } from "../base/GameObject";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
+import { VisualComponent } from "../components/visual/VisualComponent";
 
 export class OrganicShip extends GameObject {
     private static readonly PIXEL_SIZE = 40;
@@ -24,6 +25,12 @@ export class OrganicShip extends GameObject {
         this.components.collider.rect.w = 20;
         this.components.collider.rect.h = 20;
         this.components.collider.set_position_center(position);
+
+        this.components.visual = new VisualComponent(this, game.camera, game.p);
+        this.components.visual.base_color = game.p.color(0, 200, 0);
+        this.components.visual.image = game.assets.battleship ?? null;
+        this.components.visual.source_rect.w = 32;
+        this.components.visual.source_rect.h = 32;
 
         this.radius = 1;
         this.position = position;
@@ -81,25 +88,5 @@ export class OrganicShip extends GameObject {
 
     public reset_destroy_cd() {
         this.destroy_cd = 1;
-    }
-
-    public draw(p: p5, camera: Camera) {
-        if (this.game.assets.battleship) {
-            const frame_offset = 0;
-            p.image(this.game.assets.battleship, this.position.x, this.position.y, 32, 32, frame_offset, 0, 32, 32);
-        } else {
-            p.stroke(70, 0, 250);
-            p.fill(0, 200, 0);
-            const size = OrganicShip.PIXEL_SIZE / Math.max(0.125, Math.sqrt(camera.zoom));
-            const half_size = size / 2;
-            p.strokeWeight(size / 10);
-            p.ellipse(
-                this.position.x,
-                this.position.y,
-                size,
-                size,
-            );
-        }
-
     }
 }

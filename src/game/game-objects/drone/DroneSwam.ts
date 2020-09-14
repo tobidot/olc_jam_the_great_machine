@@ -72,14 +72,6 @@ export class DroneSwarm {
     }
 
     public draw(p: p5, camera: Camera) {
-        const drones = this.game.game_object_collection.drones;
-        for (let i = 0; i < drones.length; ++i) {
-            const drone = drones[i];
-            if (drone.components.collider === undefined) throw new Error();
-            if (camera.zoom > 0.25 && this.should_object_be_drawn(drone.components.collider.cached.position_center.get(), camera)) {
-                drone.draw(p, this.game.camera);
-            }
-        }
     }
 
     public queue_new_drone(position: p5.Vector, cb) {

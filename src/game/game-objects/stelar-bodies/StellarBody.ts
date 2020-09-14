@@ -6,6 +6,14 @@ import { Game } from "../../Game";
 import { HabitablePlanet } from "./HabitablePlanet";
 import { ColliderComponent } from "../components/collision/ColliderComponent";
 import { GameObject } from "../base/GameObject";
+import { Camera } from "../../helper/Camera";
+import { VisualComponent } from "../components/visual/VisualComponent";
+
+interface WithVisuals {
+    components: {
+        visual: VisualComponent;
+    }
+}
 
 export class StelarBody extends GameObject {
     // Consts
@@ -107,7 +115,7 @@ export class StelarBody extends GameObject {
         super.update(dt);
     }
 
-    public draw(p: p5) {
+    public draw_details_func = (p: p5, camera: Camera) => {
         const collider = this.components.collider;
         if (collider === undefined) throw new Error();
         p.fill(100);
@@ -134,24 +142,10 @@ export class StelarBody extends GameObject {
     }
 
     public before_draw_cell(p: p5, cell: BodyCell) {
-        p.fill(Math.min(200, cell.mass * 5));
-    }
-
-    public draw_roughly(p: p5) {
-        const collider = this.components.collider;
-        if (collider === undefined) throw new Error();
-        this.before_draw_roughly(p);
-        const start_x = collider.rect.x;
-        const start_y = collider.rect.y;
-        p.rect(start_x, start_y, collider.rect.w, collider.rect.w);
-    }
-
-    public before_draw_roughly(p: p5) {
-        p.noStroke();
-        const mass = this.get_mass_center().mass;
-        const grayscale = Math.min(200, mass * 5 / (this.cellmap_size * this.cellmap_size))
-        p.fill(grayscale);
-        p.tint(255, grayscale)
+        const target_color = this.components.visual ? this.components.visual.base_color : p.color(255);
+        const max_cell_mass = this.cellmap_size * this.cellmap_size * BodyCell.MAX_MASS;
+        const color = p.lerpColor(p.color(0), target_color, Math.min(1, cell.mass / BodyCell.MAX_MASS));
+        p.fill(color);
     }
 
     public calculate_gravitational_force_on(

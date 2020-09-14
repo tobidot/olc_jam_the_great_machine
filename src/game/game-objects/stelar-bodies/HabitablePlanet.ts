@@ -4,6 +4,7 @@ import { Game } from "../../Game";
 import p5, { Vector } from "p5";
 import { BodyCell } from "./BodyCell";
 import { OrganicShip } from "../organic-ship/OrganicShips";
+import { VisualComponent } from "../components/visual/VisualComponent";
 
 export class HabitablePlanet extends StelarBody {
     public readonly ships: Array<OrganicShip>;
@@ -16,6 +17,13 @@ export class HabitablePlanet extends StelarBody {
         this.ships = [];
         this.spawn_time = 60;
         this.spawn_time_cd = this.spawn_time / 4;
+
+        this.components.visual = new VisualComponent(this, game.camera, game.p);
+        this.components.visual.base_color = game.p.color(0, 200, 50);
+        this.components.visual.image = game.assets.planet ?? null;
+        this.components.visual.draw_details_func = this.draw_details_func;
+        this.components.visual.source_rect.w = 128;
+        this.components.visual.source_rect.h = 128;
     }
 
     public update(dt: number) {
@@ -43,30 +51,6 @@ export class HabitablePlanet extends StelarBody {
             let to = p.color(60, 60, 20);
             let lerp = p.lerpColor(from, to, cell.mass / BodyCell.MAX_MASS);
             p.fill(lerp);
-        }
-    }
-
-    public before_draw_roughly(p: p5) {
-        const mass = this.get_mass_center().mass;
-        let from = p.color(0, 50, 0);
-        let to = p.color(100, 250, 20);
-        let progress = mass / (BodyCell.MAX_MASS * this.cellmap_size * this.cellmap_size);
-        let lerp = p.lerpColor(from, to, progress);
-        p.stroke(255, 0, 0);
-        p.strokeWeight(4);
-        p.fill(lerp);
-        p.noTint();
-        // p.tint(2 * progress * 255);
-    }
-
-    public draw_roughly(p: p5) {
-        this.before_draw_roughly(p);
-        if (this.game.assets.planet) {
-            const bounding_rect = this.components.collider?.rect;
-            if (bounding_rect === undefined) throw new Error();
-            p.image(this.game.assets.planet, bounding_rect.x, bounding_rect.y, bounding_rect.w, bounding_rect.h);
-        } else {
-            super.draw_roughly(p);
         }
     }
 

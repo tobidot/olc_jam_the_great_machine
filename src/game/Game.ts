@@ -71,11 +71,7 @@ export class Game {
 
     }
 
-    public init(p: p5 & p5.SoundFile) {
-
-        const image = p.createImage(1, 1);
-        image.set(0, 0, 100);
-        this.dead_image = image;
+    public preload(p: p5) {
         this.assets = {
             drone: this.dead_image,
             drone_idle_sheet: this.dead_image,
@@ -99,16 +95,14 @@ export class Game {
         p.loadImage(images.asteroid, (image) => {
             this.assets.asteroid = image;
         });
+    }
 
+    public init(p: p5 & p5.SoundFile) {
 
+        const image = p.createImage(1, 1);
+        image.set(0, 0, 100);
+        this.dead_image = image;
 
-        const sounds = require('../assets/sound/*.mp3');
-        const loadSound = (<any>p).loadSound;
-        loadSound(sounds.the_great_machine_no_lead, (sound) => {
-            sound.setLoop(true);
-            // sound.play();
-            this.shared.background_music.set(sound);
-        });
 
         p.noSmooth();
         p.mouseWheel = (event: { delta: number }) => {
@@ -240,21 +234,6 @@ export class Game {
         p.translate(400, 300);
         p.scale(this.camera.zoom);
         p.translate(this.camera.position);
-        for (let i = 0; i < this.game_object_collection.stellar_bodies.length; ++i) {
-            const body = this.game_object_collection.stellar_bodies[i];
-            if (body === null) continue;
-            const position = body.components.collider?.cached.position_center.get();
-            if (position === undefined) continue;
-            if (this.should_object_be_drawn(position)) {
-                const rough_drawing = this.camera.zoom < 0.5;
-                if (rough_drawing) {
-                    body.draw_roughly(p);
-                } else {
-                    body.draw(p);
-                }
-            }
-        }
-        this.swarm.draw(p, this.camera);
 
         this.game_object_collection.for_all_game_objects((game_object) => {
             const visual = game_object.components.visual;
@@ -264,6 +243,7 @@ export class Game {
         this.effects.forEach((effect) => {
             effect.draw(p, this.camera);
         });
+        this.swarm.draw(p, this.camera);
 
         if (this.camera.zoom <= .25) {
             p.noStroke();

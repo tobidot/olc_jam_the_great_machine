@@ -34,6 +34,7 @@ function connect_container_to_game_screen(container: HTMLDivElement, p5Instance:
 function setup_p5_instance(p: p5 & p5.SoundFile) {
     let game = new Game(p);
     p.preload = function () {
+        game.preload(p);
     }
     let setup_done = false;
     p.setup = function () {

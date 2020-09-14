@@ -14,6 +14,7 @@ export class VisualComponent extends GameObjectComponent<VisualFrameInformation>
     // visuals
     public base_color: p5.Color;
     public image: p5.Image | null = null;
+    public draw_details_func: ((p: p5, camera: Camera,) => void) | null = null;
 
     // animation
     public animation: p5.Image | null = null;
@@ -40,9 +41,11 @@ export class VisualComponent extends GameObjectComponent<VisualFrameInformation>
     }
 
     public draw() {
-        if (this.has_animation() && this.camera.zoom < 2) {
+        if (this.draw_details_func && this.camera.zoom > 0.5) {
+            this.draw_details_func(this.p, this.camera);
+        } else if (this.has_animation() && this.camera.zoom > 0.5) {
             this.draw_animation();
-        } else if (this.has_image() && this.camera.zoom < 10) {
+        } else if (this.has_image() && this.camera.zoom > 0.05) {
             this.draw_image();
         } else {
             this.draw_symbol();
