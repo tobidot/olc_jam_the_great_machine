@@ -185,11 +185,6 @@ export class Game {
         this.game_object_collection.for_all_game_objects((game_object: GameObject) => {
             if (game_object.state.is_to_delete) {
                 game_object.before_destroy();
-                const collider = game_object.components.collider;
-                if (collider !== undefined) {
-                    const bounding_box_wrapper = collider.bounding_box_wrapper;
-                    this.game_object_tree.remove(bounding_box_wrapper);
-                }
                 this.game_object_collection.remove(game_object);
             }
         });

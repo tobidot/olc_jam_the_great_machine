@@ -23,7 +23,6 @@ export class StelarBody extends GameObject {
     // 
     protected cellmap_size: number;
     protected cells: Array<BodyCell | null>;
-    public is_to_delete: boolean = false;
     private frame_buffer: {
         mass_center: { mass: number, center: p5.Vector, global_center: p5.Vector } | null,
     } = {
@@ -184,7 +183,7 @@ export class StelarBody extends GameObject {
         this.cells[cell_id] = null;
         let count = 0;
         this.for_each_cell((x, y, c) => { if (c) count++; return c; });
-        if (count === 0) this.is_to_delete = true;
+        if (count === 0) this.state.is_to_delete = true;
     }
 
     public get_cell_id_at(cell_coord: p5.Vector): number | null {
